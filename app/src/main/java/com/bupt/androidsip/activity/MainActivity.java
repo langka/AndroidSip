@@ -1,7 +1,9 @@
-package com.bupt.androidsip;
+package com.bupt.androidsip.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.bupt.androidsip.R;
 
 public class MainActivity extends AppCompatActivity {
 
