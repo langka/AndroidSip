@@ -1,0 +1,29 @@
+如果你有新的规范，请添加到此处！
+Activity/Fragment:
+1.每个activity必须继承BaseActivity，fragment需要继承BaseFragment
+2.每个Activity必须包含public static void Start(Context context)方法以启动它
+如AActivity:
+public static void Start(Context context){
+Intent intent = new Intent(context,AActivity.class);
+context.startActivity(intent);
+}
+如果要传递参数，则增加参数传递的Start方法
+3.Activity成员声明从上到下：
+    1.静态启动方法
+    2.view变量
+    3.逻辑变量
+    4.eventbus回调
+    5.生命周期回调
+    6.updateView方法
+    7.updateData方法
+    8.其它
+
+
+Layout:
+1.命名开头第一项指明类型，第二项指明具体目标
+如：activity_main，frag_login
+2.id的命名必须以相应的layout关键字开头，并指明作用与类型
+如：@+id/login_submitBtn，@+id/register_profileTextView
+
+
+其它需要添加的在后面继续添加，并在commit中指明有规范更改
