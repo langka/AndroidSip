@@ -22,6 +22,7 @@ import butterknife.ButterKnife;
  */
 
 public class LoginActivity extends BaseActivity {
+
     @BindView(R.id.bgImgview)
     ImageView imageView;
     @BindView(R.id.btnConfirm)
