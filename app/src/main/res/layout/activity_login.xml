@@ -36,7 +36,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginBottom="2dp"
                     android:layout_marginTop="10dp"
                     android:src="@drawable/ic_person_48px" />
 
@@ -46,12 +46,13 @@
                     android:layout_height="match_parent"
                     android:layout_alignBottom="@+id/login_img1"
                     android:layout_marginLeft="20dp"
+                    android:layout_marginBottom="6dp"
                     android:layout_toRightOf="@+id/login_img1"
                     android:background="@null"
                     android:gravity="center_vertical"
                     android:hint="输入账号"
                     android:textColorHint="@color/black_a"
-                    android:textSize="22sp" />
+                    android:textSize="16sp" />
             </RelativeLayout>
 
             <View
@@ -75,12 +76,13 @@
                     android:layout_height="match_parent"
                     android:layout_alignBottom="@+id/login_img2"
                     android:layout_marginLeft="20dp"
+                    android:layout_marginBottom="6dp"
                     android:layout_toRightOf="@+id/login_img2"
                     android:background="@null"
                     android:gravity="center_vertical"
                     android:hint="输入密码"
                     android:textColorHint="@color/black_a"
-                    android:textSize="22sp" />
+                    android:textSize="16sp" />
 
                 <ImageView
                     android:id="@+id/login_img2"
@@ -102,8 +104,8 @@
 
             <com.dd.CircularProgressButton
                 android:id="@+id/btnConfirm"
-                android:layout_width="196dp"
-                android:layout_height="64dp"
+                android:layout_width="140dp"
+                android:layout_height="40dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
                 android:textColor="@color/white"
