@@ -48,6 +48,26 @@
 
     <color name="eighty_trans_blue">#cc091140</color>
 
+
+    <color name="G1">#222222</color>
+    <color name="G2">#777777</color>
+    <color name="G3">#aaaaaa</color>
+    <color name="G4">#cccccc</color>
+    <color name="G5">#ebebeb</color>
+    <color name="G6">#f0f0f0</color>
+    <color name="G7">#f5f5f5</color>
+    <color name="G8">#f7f7f7</color>
+    <color name="TRANS_G4">#30CCCCCC</color>
+
+    <color name="W1">#ffffff</color>
+    <color name="TRANS_W1">#80ffffff</color>
+    <color name="TRANSP_W1">#50ffffff</color>
+    <color name="TRANSP_W2">#3Effffff</color>
+
+
+
+    <color name="R1">#dd502f</color>
+    <color name="R1_PRESS">#cd401f</color>
     <!--腾讯color-->
 
     <color name="tencent_tls_ui_white">#FFFFFF</color>

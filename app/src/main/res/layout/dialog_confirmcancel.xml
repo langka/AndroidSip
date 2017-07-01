@@ -1,0 +1,108 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.sohu.phoenix.customviews.RoundRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:background="@android:color/transparent"
+        custom:borderColor="#3fffffff"
+        custom:rBorderWidth="1px"
+        custom:radius="8dp">
+
+        <RelativeLayout
+            android:id="@+id/dialog_confirmcancel_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:background="@color/white"
+            android:minHeight="80dp"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/dialog_confirmcancel_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="15dp"
+                android:layout_marginTop="15dp"
+                android:text="请为本次作业打平均分请为本次作业打平均分"
+                android:textColor="@color/G1"
+                android:textSize="15sp" />
+
+
+            <TextView
+                android:id="@+id/dialog_confirmcancel_detail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/dialog_confirmcancel_title"
+                android:layout_marginTop="10dp"
+                android:text="内容"
+                android:textColor="@color/G1"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_below="@id/dialog_confirmcancel_content"
+            android:background="@color/W1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/dialog_confirmcancel_cancel"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_dialog"
+                android:gravity="center"
+                android:text="取消"
+                android:textColor="@color/G1"
+                android:textSize="16sp"
+                android:visibility="visible" />
+
+
+            <LinearLayout
+                android:id="@+id/dialog_confirmcancel_cancelcontainer"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="40dp"
+                    android:background="@color/G5" />
+
+                <TextView
+                    android:id="@+id/dialog_confirmcancel_confirm"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/btn_dialog"
+                    android:gravity="center"
+                    android:text="确认"
+                    android:textColor="@color/B1"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_below="@id/dialog_confirmcancel_content"
+            android:background="@color/G5" />
+
+    </com.sohu.phoenix.customviews.RoundRelativeLayout>
+
+</RelativeLayout>
+
