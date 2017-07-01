@@ -27,7 +27,7 @@
             android:text="lasjdfaskjdf"/>
 
         <TextView
-            android:id="@+id/item_friend_description"
+            android:id="@+id/item_friend_signature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
