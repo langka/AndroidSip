@@ -35,24 +35,24 @@
                     android:id="@+id/login_img1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginBottom="2dp"
                     android:layout_marginTop="10dp"
-                    android:src="@drawable/ic_person_48px" />
+                    android:layout_alignParentBottom="true"
+                    android:src="@drawable/ic_account_box_36px" />
 
                 <EditText
                     android:id="@+id/login_account_edit"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_alignBottom="@+id/login_img1"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginBottom="6dp"
                     android:layout_toRightOf="@+id/login_img1"
                     android:background="@null"
+                    android:layout_marginBottom="4dp"
                     android:gravity="center_vertical"
                     android:hint="输入账号"
                     android:textColorHint="@color/black_a"
-                    android:textSize="16sp" />
+                    android:textSize="20sp"
+                    android:inputType="text"/>
             </RelativeLayout>
 
             <View
@@ -76,13 +76,14 @@
                     android:layout_height="match_parent"
                     android:layout_alignBottom="@+id/login_img2"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginBottom="6dp"
+                    android:layout_marginBottom="4dp"
                     android:layout_toRightOf="@+id/login_img2"
                     android:background="@null"
                     android:gravity="center_vertical"
                     android:hint="输入密码"
                     android:textColorHint="@color/black_a"
-                    android:textSize="16sp" />
+                    android:textSize="20sp"
+                    android:inputType="text"/>
 
                 <ImageView
                     android:id="@+id/login_img2"
@@ -91,7 +92,8 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/ic_lock_48px" />
+                    android:layout_marginBottom="2dp"
+                    android:src="@drawable/ic_lock_36px" />
             </RelativeLayout>
 
             <View
@@ -105,11 +107,12 @@
             <com.dd.CircularProgressButton
                 android:id="@+id/btnConfirm"
                 android:layout_width="140dp"
-                android:layout_height="40dp"
+                android:layout_height="55dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="30dp"
                 android:textColor="@color/white"
-                android:textSize="18sp"
+                android:textSize="22sp"
+                android:layout_marginBottom="50dp"
                 app:cpb_textComplete="Success"
                 app:cpb_textError="Failed"
                 app:cpb_textIdle="登录" />
