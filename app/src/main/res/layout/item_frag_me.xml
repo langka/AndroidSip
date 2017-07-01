@@ -27,10 +27,10 @@
         android:id="@+id/item_profile_righttext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="30dp"
-        android:layout_alignParentRight="true"
-        android:text="xrt"
+        android:text="我徐日天第一个不服"
         android:textColor="@color/G1"
         android:textSize="16sp"/>
 

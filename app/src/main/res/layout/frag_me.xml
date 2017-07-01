@@ -19,7 +19,7 @@
             android:clickable="true">
 
             <android.support.v4.widget.CircleImageView
-                android:id="@+id/frag_me_head_image"
+                android:id="@+id/frag_head_image"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_centerHorizontal="true"
@@ -32,7 +32,7 @@
                 android:id="@+id/frag_me_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/frag_me_head_image"
+                android:layout_below="@+id/frag_head_image"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="21dp"
                 android:gravity="center"

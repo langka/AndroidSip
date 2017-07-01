@@ -21,10 +21,10 @@ import static com.bupt.androidsip.R.id.item_profile_text;
  * Created by vita-nove on 01/07/2017.
  */
 
-public class MyFragment extends BaseFragment {
+public class MeFragment extends BaseFragment {
 
     //上方头像姓名等
-    @BindView(R.id.frag_me_head_image)
+    @BindView(R.id.frag_head_image)
     ImageView headIamgeView;
 
     @BindView(R.id.frag_me_name)
@@ -53,7 +53,7 @@ public class MyFragment extends BaseFragment {
                     //AccountActivity.Start(context);
                     break;
                 case R.id.frag_me_settings:
-                    //UserInfoActivity.Start(context);
+                    //SettingsActivity.Start(context);
                     break;
             }
         }
@@ -96,7 +96,7 @@ public class MyFragment extends BaseFragment {
     private void initView() {
         accountContainer.setOnClickListener(fragMeOnClick);
         settingsContainer.setOnClickListener(fragMeOnClick);
-        initRowView(accountContainer, R.drawable.img_loading_1, "账号信息");
-        initRowView(settingsContainer, R.drawable.img_loading_2, "设置");
+        initRowView(accountContainer, R.drawable.ic_account_box_36px, "账号信息");
+        initRowView(settingsContainer, R.drawable.ic_account_box_36px, "设置");
     }
 }

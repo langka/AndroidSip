@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/root"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/G5"
+                android:orientation="vertical">
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/header"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/header"
+        android:layout_marginTop="25dp"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/frag_vip"
+            layout="@layout/item_frag_me"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_marginLeft="15dp"
+            android:background="@color/G7"/>
+
+        <include
+            android:id="@+id/frag_notifications"
+            layout="@layout/item_frag_me"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginLeft="15dp"
+            android:background="@color/G7"/>
+
+        <include
+            android:id="@+id/frag_push_enter"
+            layout="@layout/item_frag_me"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginLeft="15dp"
+            android:background="@color/G7"/>
+
+        <include
+            android:id="@+id/frag_clear_chat_history"
+            layout="@layout/item_frag_me"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginLeft="15dp"
+            android:background="@color/G7"/>
+
+        <include
+            android:id="@+id/frag_change_password"
+            layout="@layout/item_frag_me"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_marginLeft="15dp"
+            android:background="@color/G7"/>
+
+        <include
+            android:id="@+id/frag_logout"
+            layout="@layout/item_frag_me"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+
+
+    </LinearLayout>
+</RelativeLayout>
