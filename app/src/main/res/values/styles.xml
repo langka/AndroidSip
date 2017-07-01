@@ -8,6 +8,27 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <declare-styleable name="RoundRelativeLayout">
+        <attr name="radius" format="dimension" />
+        <attr name="rBorderWidth" format="dimension" />
+        <attr name="borderColor" format="color" />
+    </declare-styleable>
+
+    <style name="progressBarBlue" parent="@android:style/Widget.ProgressBar.Horizontal">
+        <item name="android:maxHeight">50dip</item>
+        <item name="android:minHeight">10dip</item>
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:indeterminateDrawable">
+            @android:drawable/progress_indeterminate_horizontal
+        </item>
+        <item name="android:progressDrawable">@drawable/shape_progressbar_blue</item>
+    </style>
+    <style name="ActionSheetDialogAnimation" parent="@android:style/Animation.Dialog">
+        <item name="android:windowEnterAnimation">@anim/anim_dialog_in</item>
+        <item name="android:windowExitAnimation">@anim/anim_dialog_out</item>
+    </style>
+
+
     <style name="headertext">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/black</item>

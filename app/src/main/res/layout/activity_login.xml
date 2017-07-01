@@ -14,9 +14,14 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <include
-                android:id="@+id/header"
-                layout="@layout/header" />
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true">
+
+                <requestFocus />
+            </View>
 
             <ImageView
                 android:id="@+id/bgImgview"
@@ -45,8 +50,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_alignBottom="@+id/login_img1"
-                    android:layout_marginLeft="20dp"
                     android:layout_marginBottom="6dp"
+                    android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/login_img1"
                     android:background="@null"
                     android:gravity="center_vertical"
@@ -75,8 +80,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_alignBottom="@+id/login_img2"
-                    android:layout_marginLeft="20dp"
                     android:layout_marginBottom="6dp"
+                    android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/login_img2"
                     android:background="@null"
                     android:gravity="center_vertical"

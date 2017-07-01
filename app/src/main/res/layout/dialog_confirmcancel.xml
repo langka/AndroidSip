@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.sohu.phoenix.customviews.RoundRelativeLayout
+    <com.bupt.androidsip.customview.RoundRelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -30,7 +30,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="15dp"
                 android:layout_marginTop="15dp"
-                android:text="请为本次作业打平均分请为本次作业打平均分"
+                android:text=""
                 android:textColor="@color/G1"
                 android:textSize="15sp" />
 
@@ -102,7 +102,7 @@
             android:layout_below="@id/dialog_confirmcancel_content"
             android:background="@color/G5" />
 
-    </com.sohu.phoenix.customviews.RoundRelativeLayout>
+    </com.bupt.androidsip.customview.RoundRelativeLayout>
 
 </RelativeLayout>
 

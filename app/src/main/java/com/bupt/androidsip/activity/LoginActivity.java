@@ -51,6 +51,12 @@ public class LoginActivity extends BaseActivity {
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                showConfirmCancelDialog("王昊阳","lyk","xs",e->{
+
+                },e->{
+
+                });
+
                 if (checkPwdAndAccount()) {
                     if (confirm.getProgress() == 0) {
                         simulateSuccessProgress(confirm, x); // 如果是初始状态就开始进入进度条动画

@@ -50,21 +50,19 @@ public class BaseActivity extends FragmentActivity {
     }
 
     //展示确认取消对话框
-    public void showConfirmCancelDialog(String title, String confirmTitle, String cancel, final View.OnClickListener confirmListener, final View.OnClickListener cancelListener) {
+    public void showConfirmCancelDialog(String detail, String confirmTitle, String cancel, final View.OnClickListener confirmListener, final View.OnClickListener cancelListener) {
         final Dialog dialog = new Dialog(this, R.style.dialog);
         View layout = getLayoutInflater().inflate(R.layout.dialog_confirmcancel, null);
         // set the dialog title
-        TextView titleView = (TextView) layout.findViewById(R.id.dialog_confirmcancel_cancel);
-        titleView.setText(title);
+        TextView cancelTextView = (TextView) layout.findViewById(R.id.dialog_confirmcancel_cancel);
+        TextView detailT = (TextView) layout.findViewById(R.id.dialog_confirmcancel_title);
+        detailT.setText(detail);
         TextView confirmView = (TextView) layout.findViewById(R.id.dialog_confirmcancel_confirm);
         if (confirmTitle != null) {
             confirmView.setText(confirmTitle);
         }
-        if (cancel != null) {
-            TextView textView = (TextView) layout.findViewById(R.id.dialog_confirmcancel_detail);
-            textView.setVisibility(View.VISIBLE);
-            textView.setText(cancel);
-        }
+        if (cancel != null)
+            cancelTextView.setText(cancel);
         layout.findViewById(R.id.dialog_confirmcancel_confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,27 +86,28 @@ public class BaseActivity extends FragmentActivity {
         dialog.setContentView(layout);
         dialog.show();
     }
-    public void showBottomDialog(List<String> tips, final List<View.OnClickListener> listeners){
-        if (tips==null||tips.size()==0||listeners==null||listeners.size()==0||listeners.size()!=tips.size()){
+
+    public void showBottomDialog(List<String> tips, final List<View.OnClickListener> listeners) {
+        if (tips == null || tips.size() == 0 || listeners == null || listeners.size() == 0 || listeners.size() != tips.size()) {
             return;
         }
         final Dialog dialog = new Dialog(this, R.style.ActionSheetDialogStyle);
-        LinearLayout linearLayout=new LinearLayout(this);
+        LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         linearLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
                 , ViewGroup.LayoutParams.WRAP_CONTENT));
         linearLayout.setBackgroundColor(getResources().getColor(R.color.W1));
-        for (int i=0;i<tips.size();i++){
-            View item=getLayoutInflater().inflate(R.layout.dialog_bottom_item1,null);
-            View divide=null;
-            if (i!=0){
-                divide=new View(this);
-                divide.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,1));
+        for (int i = 0; i < tips.size(); i++) {
+            View item = getLayoutInflater().inflate(R.layout.dialog_bottom_item1, null);
+            View divide = null;
+            if (i != 0) {
+                divide = new View(this);
+                divide.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1));
                 divide.setBackgroundColor(getResources().getColor(R.color.G5));
             }
-            TextView textView= (TextView) item.findViewById(R.id.dialog_bottom_text);
+            TextView textView = (TextView) item.findViewById(R.id.dialog_bottom_text);
             textView.setText(tips.get(i));
-            final View.OnClickListener listener=listeners.get(i);
+            final View.OnClickListener listener = listeners.get(i);
             textView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -116,12 +115,12 @@ public class BaseActivity extends FragmentActivity {
                     dialog.dismiss();
                 }
             });
-            if (divide!=null){
+            if (divide != null) {
                 linearLayout.addView(divide);
             }
             linearLayout.addView(item);
         }
-        View cancelContainer=getLayoutInflater().inflate(R.layout.dialog_bottom_item2,null);
+        View cancelContainer = getLayoutInflater().inflate(R.layout.dialog_bottom_item2, null);
         cancelContainer.findViewById(R.id.dialog_bottom_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
