@@ -19,28 +19,32 @@
                 android:id="@+id/header"
                 layout="@layout/header"/>
 
+            <RelativeLayout
+                android:id="@+id/frag_me_head_relative"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/header"
+                android:background="@color/btn_blue">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/frag_head_image"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="60dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_sentiment_satisfied_black_90dp"/>
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/frag_head_image"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/image_view_bound_shape"
+                    android:padding="5dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/xusong"/>
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/frag_head_image"
-                android:layout_marginTop="15dp"
+                android:layout_below="@+id/frag_me_head_relative"
                 android:background="@color/white"
                 android:orientation="vertical">
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp"
-                    android:background="@color/G7"/>
 
                 <include
                     android:id="@+id/frag_nickname"

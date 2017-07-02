@@ -79,8 +79,17 @@ public class MeFragment extends BaseFragment {
         ButterKnife.bind(this, v);
         context = getActivity();
         initView();
+        initData();
 //    getData();
         return v;
+    }
+
+    private void initData() {
+        TextView nameView = (TextView) nameTextView.findViewById(R.id.frag_me_name);
+        nameView.setText("徐日天");
+        TextView descriptionView = (TextView) descriptionTextView.findViewById(R.id.frag_me_description);
+        descriptionView.setText("我爱吃西瓜!!!");
+        ImageView sexView = (ImageView) sexImageView.findViewById(R.id.frag_me_sex);
     }
 
     @Override

@@ -76,8 +76,17 @@ public class SettingsActivity extends BaseActivity {
                     }));
                     break;
                 case R.id.frag_clear_chat_history:
+                    showText("清理成功！");
                     break;
                 case R.id.frag_change_password:
+                    showInputDialog("变更", "请输入新密码", e -> {
+                        if (e.trim().isEmpty())
+                            showText("密码为空");
+                        else {
+                            // TODO: 02/07/2017 真正保存这些内容
+                            showText("变更成功！");
+                        }
+                    });
                     break;
                 case R.id.frag_logout:
                     break;

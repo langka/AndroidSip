@@ -16,6 +16,11 @@ import java.util.Arrays;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.bupt.androidsip.R.id.frag_account_id;
+import static com.bupt.androidsip.R.id.frag_description;
+import static com.bupt.androidsip.R.id.frag_email;
+import static com.bupt.androidsip.R.id.frag_registration_time;
+import static com.bupt.androidsip.R.id.frag_sex;
 import static com.bupt.androidsip.R.id.item_profile_righttext;
 import static com.bupt.androidsip.R.id.item_profile_text;
 
@@ -68,6 +73,9 @@ public class AccountActivity extends BaseActivity {
                             showText("内容为空");
                         else {
                             // TODO: 02/07/2017 真正保存这些内容
+                            TextView tv = (TextView) v.findViewById(R.id.frag_description).
+                                    findViewById(R.id.item_profile_righttext);
+                            tv.setText(e);
                             showText("保存成功！");
                         }
                     });
@@ -77,11 +85,18 @@ public class AccountActivity extends BaseActivity {
                         @Override
                         public void onClick(View view) {
                             // TODO: 02/07/2017 添加更改性别的操作
+                            TextView tv = (TextView) v.findViewById(R.id.frag_sex).
+                                    findViewById(R.id.item_profile_righttext);
+                            tv.setText("男");
+                            showText("保存成功！");
                         }
                     }, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
+                            TextView tv = (TextView) v.findViewById(R.id.frag_sex).
+                                    findViewById(R.id.item_profile_righttext);
+                            tv.setText("女");
+                            showText("保存成功！");
                         }
                     }));
                     break;
@@ -112,8 +127,32 @@ public class AccountActivity extends BaseActivity {
         ButterKnife.bind(this);
         getHeaderDivider().setVisibility(View.GONE);
         enableLeftImage(R.drawable.ic_arrow_back_24px, e -> finish());
-        setTitle("账号信息");
+        initData();
         initView();
+    }
+
+    private void initData() {
+        TextView nameView = (TextView) nicknameContainer.findViewById(R.id.frag_nickname).
+                findViewById(R.id.item_profile_righttext);
+        nameView.setText("徐日天");
+        TextView descriptionView = (TextView) descriptionContainer.
+                findViewById(R.id.frag_description).findViewById(R.id.item_profile_righttext);
+        descriptionView.setText("我爱吃西瓜!!!");
+        TextView sexView = (TextView) sexContainer.findViewById(frag_sex).
+                findViewById(R.id.item_profile_righttext);
+        sexView.setText("女");
+        TextView accountIdView = (TextView) accountIdContainer.findViewById(frag_account_id).
+                findViewById(R.id.item_profile_righttext);
+        accountIdView.setText("233");
+        TextView emailView = (TextView) emailContainer.findViewById(frag_email).
+                findViewById(R.id.item_profile_righttext);
+        emailView.setText("songxu@bupt.edu.cn");
+        TextView registrationView = (TextView) registrationTimeContainer.
+                findViewById(frag_registration_time).
+                findViewById(R.id.item_profile_righttext);
+        registrationView.setText("2017.2.2");
+
+        setTitle("账号信息");
     }
 
     private void initRowView(View v, int imgId, String text, String detail) {
