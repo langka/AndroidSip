@@ -107,6 +107,7 @@ public class AccountActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
         ButterKnife.bind(this);
+        getHeaderDivider().setVisibility(View.GONE);
         initView();
     }
 

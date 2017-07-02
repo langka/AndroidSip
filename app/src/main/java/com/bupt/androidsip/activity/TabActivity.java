@@ -46,8 +46,8 @@ public class TabActivity extends BaseActivity {
     long exitTime = 0;
 
 
-    public static void Start(Context context){
-        Intent  intent = new Intent(context,TabActivity.class);
+    public static void Start(Context context) {
+        Intent intent = new Intent(context, TabActivity.class);
         context.startActivity(intent);
     }
 

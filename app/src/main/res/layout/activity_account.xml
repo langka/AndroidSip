@@ -20,7 +20,7 @@
                 layout="@layout/header"/>
 
 
-            <android.support.v4.widget.CircleImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/frag_head_image"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
@@ -39,7 +39,6 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="10dp"
-                    android:layout_marginLeft="15dp"
                     android:background="@color/G7"/>
 
                 <include

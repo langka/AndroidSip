@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.bupt.androidsip.R;
 
+import java.util.Arrays;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -44,10 +46,33 @@ public class SettingsActivity extends BaseActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.frag_vip:
+                    showText("此项无法更改。");
                     break;
                 case R.id.frag_notifications:
+                    showBottomDialog(Arrays.asList("关闭", "开启"), Arrays.asList(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            // TODO: 02/07/2017 添加开关通知操作
+                        }
+                    }, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                        }
+                    }));
                     break;
                 case R.id.frag_push_enter:
+                    showBottomDialog(Arrays.asList("关闭", "开启"), Arrays.asList(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            // TODO: 02/07/2017 添加更改发送方式的操作
+                        }
+                    }, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                        }
+                    }));
                     break;
                 case R.id.frag_clear_chat_history:
                     break;
@@ -69,6 +94,7 @@ public class SettingsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(this);
+        getHeaderDivider().setVisibility(View.GONE);
         initView();
     }
 

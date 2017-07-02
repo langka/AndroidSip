@@ -37,6 +37,10 @@ public class BaseActivity extends FragmentActivity {
         tv.setText(text);
     }
 
+    public View getHeaderDivider() {
+        return findViewById(R.id.header_divider);
+    }
+
     public ImageView enableLeftImage(int resId, View.OnClickListener listener) {
         ImageView iv = (ImageView) findViewById(R.id.header_leftimage);
         iv.setVisibility(View.VISIBLE);
@@ -150,18 +154,15 @@ public class BaseActivity extends FragmentActivity {
         final Dialog dialog = new Dialog(this, R.style.ActionSheetDialogStyle);
         RelativeLayout relativeLayout = (RelativeLayout) LayoutInflater.from(this).
                 inflate(R.layout.dialog_info, null);
-        Log.d("d","1");
 
         TextView infoView = (TextView) relativeLayout.findViewById(R.id.dialog_info_text);
         TextView cancelView = (TextView) relativeLayout.findViewById(R.id.dialog_info_cancel);
         TextView confirmView = (TextView) relativeLayout.findViewById(R.id.dialog_info_confirm);
 
-        Log.d("d","2");
         cancelView.setOnClickListener(e -> dialog.dismiss());
         confirmView.setOnClickListener(e -> dialog.dismiss());
         infoView.setText(text);
 
-        Log.d("d","3");
         dialog.setContentView(relativeLayout);
         dialog.setCancelable(true);
         Window dialogWindow = dialog.getWindow();
