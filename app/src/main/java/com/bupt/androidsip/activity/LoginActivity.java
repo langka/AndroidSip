@@ -52,17 +52,17 @@ public class LoginActivity extends BaseActivity {
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showText("徐日天吃大便");
-                showTextOnDialog("徐日天吃大便。");
 
-                if (checkPwdAndAccount()) {
-                    if (confirm.getProgress() == 0) {
-                        simulateSuccessProgress(confirm, x); // 如果是初始状态就开始进入进度条动画
-                        x = !x;
-                    } else {
-                        confirm.setProgress(0); // 如果不是初始状态，那么就回到初始状态
-                    }
-                } else showText("账户或密码有格式错误，请您检查!");
+                TabActivity.Start(LoginActivity.this);
+//                if (checkPwdAndAccount()) {
+//                    if (confirm.getProgress() == 0) {
+//                        simulateSuccessProgress(confirm, x); // 如果是初始状态就开始进入进度条动画
+//                        x = !x;
+//                    } else {
+//                        confirm.setProgress(0); // 如果不是初始状态，那么就回到初始状态
+//                    }
+//                } else showText("账户或密码有格式错误，请您检查!");
+
             }
         });
     }
