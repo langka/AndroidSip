@@ -28,6 +28,8 @@ import butterknife.ButterKnife;
 
 public class TabActivity extends BaseActivity {
 
+    @BindView(R.id.header)
+    View header;
     @BindView(R.id.tab_frag_container)
     RelativeLayout fragContainer;
     @BindView(R.id.tab_message_container)
@@ -82,6 +84,9 @@ public class TabActivity extends BaseActivity {
         if (index == currentFrag)
             return;
         else {
+            if (index == 0 || index == 1)
+                header.setVisibility(View.VISIBLE);
+            else header.setVisibility(View.GONE);
             FragmentTransaction ft = fragmentManager.beginTransaction();
             ft.hide(fragmentList.get(currentFrag)).show(fragmentList.get(index));
             currentFrag = index;

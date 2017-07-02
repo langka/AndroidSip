@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import com.bupt.androidsip.R;
 
+import java.util.Arrays;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -42,15 +44,31 @@ public class AccountActivity extends BaseActivity {
     @BindView(R.id.frag_registration_time)
     RelativeLayout registrationTimeContainer;
 
+
     private View.OnClickListener accountOnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.frag_nickname:
+                    showInputDialog("保存", "请输入姓名", e -> {
+                        showText(e);
+                        showText("保存成功！");
+                    });
                     break;
                 case R.id.frag_description:
                     break;
                 case R.id.frag_sex:
+                    showBottomDialog(Arrays.asList("男", "女"), Arrays.asList(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            // TODO: 02/07/2017 添加更改性别的操作
+                        }
+                    }, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                        }
+                    }));
                     break;
                 case R.id.frag_account_id:
                     break;
@@ -73,6 +91,7 @@ public class AccountActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
         ButterKnife.bind(this);
+        initView();
     }
 
     private void initRowView(View v, int imgId, String text) {

@@ -52,11 +52,7 @@ public class LoginActivity extends BaseActivity {
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showConfirmCancelDialog("王昊阳","lyk","xs",e->{
-
-                },e->{
-
-                });
+                showInputDialog("确认","请输入新昵称", e -> showText(e));
 
                 if (checkPwdAndAccount()) {
                     if (confirm.getProgress() == 0) {

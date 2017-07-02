@@ -3,12 +3,15 @@ package com.bupt.androidsip.activity;
 import android.app.Dialog;
 import android.support.v4.app.FragmentActivity;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,16 +57,16 @@ public class BaseActivity extends FragmentActivity {
         final Dialog dialog = new Dialog(this, R.style.dialog);
         View layout = getLayoutInflater().inflate(R.layout.dialog_confirmcancel, null);
         // set the dialog title
-        TextView cancelTextView = (TextView) layout.findViewById(R.id.dialog_confirmcancel_cancel);
+        TextView cancelTextView = (TextView) layout.findViewById(R.id.dialog_input_cancel);
         TextView detailT = (TextView) layout.findViewById(R.id.dialog_confirmcancel_title);
         detailT.setText(detail);
-        TextView confirmView = (TextView) layout.findViewById(R.id.dialog_confirmcancel_confirm);
+        TextView confirmView = (TextView) layout.findViewById(R.id.dialog_input_confirm);
         if (confirmTitle != null) {
             confirmView.setText(confirmTitle);
         }
         if (cancel != null)
             cancelTextView.setText(cancel);
-        layout.findViewById(R.id.dialog_confirmcancel_confirm).setOnClickListener(new View.OnClickListener() {
+        layout.findViewById(R.id.dialog_input_confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (confirmListener != null) {
@@ -72,7 +75,7 @@ public class BaseActivity extends FragmentActivity {
                 dialog.dismiss();
             }
         });
-        layout.findViewById(R.id.dialog_confirmcancel_cancel).setOnClickListener(new View.OnClickListener() {
+        layout.findViewById(R.id.dialog_input_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (cancelListener != null) {
@@ -86,6 +89,7 @@ public class BaseActivity extends FragmentActivity {
         dialog.setContentView(layout);
         dialog.show();
     }
+
 
     public void showBottomDialog(List<String> tips, final List<View.OnClickListener> listeners) {
         if (tips == null || tips.size() == 0 || listeners == null || listeners.size() == 0 || listeners.size() != tips.size()) {
@@ -141,5 +145,36 @@ public class BaseActivity extends FragmentActivity {
         dialog.show();
     }
 
+    public void showInputDialog(String confirm, String hint, OnTextConfirmListener listener) {
+        final Dialog dialog = new Dialog(this, R.style.ActionSheetDialogStyle);
+        RelativeLayout relativeLayout = (RelativeLayout) LayoutInflater.from(this).
+                inflate(R.layout.dialog_with_text, null);
 
+        final EditText text = (EditText) relativeLayout.findViewById(R.id.dialog_input_edit);
+        TextView confirmView = (TextView) relativeLayout.findViewById(R.id.dialog_input_confirm);
+        View cancelView = relativeLayout.findViewById(R.id.dialog_input_cancel);
+
+        text.setHint(hint);
+        cancelView.setOnClickListener(e -> dialog.dismiss());
+        confirmView.setText(confirm);
+        confirmView.setOnClickListener(e -> {
+            listener.onTextConfirm(text.getText().toString());
+            dialog.dismiss();
+        });
+
+        dialog.setContentView(relativeLayout);
+        dialog.setCancelable(true);
+        Window dialogWindow = dialog.getWindow();
+        //设置Dialog从窗体底部弹出
+        dialogWindow.setGravity(Gravity.CENTER_HORIZONTAL);
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        dialogWindow.setAttributes(lp);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.show();
+    }
+
+    public interface OnTextConfirmListener {
+        void onTextConfirm(String text);
+    }
 }
