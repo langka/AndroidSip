@@ -53,7 +53,8 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
 
-                TabActivity.Start(LoginActivity.this);
+                showTextOnDialog("hahaha");
+ //               TabActivity.Start(LoginActivity.this);
 //                if (checkPwdAndAccount()) {
 //                    if (confirm.getProgress() == 0) {
 //                        simulateSuccessProgress(confirm, x); // 如果是初始状态就开始进入进度条动画

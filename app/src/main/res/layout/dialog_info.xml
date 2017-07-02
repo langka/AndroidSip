@@ -23,7 +23,7 @@
             android:padding="20dp">
 
 
-            <Text
+            <TextView
                 android:id="@+id/dialog_info_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
