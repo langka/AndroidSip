@@ -16,6 +16,7 @@ import java.util.Arrays;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.bupt.androidsip.R.id.item_profile_righttext;
 import static com.bupt.androidsip.R.id.item_profile_text;
 
 /**
@@ -46,13 +47,13 @@ public class SettingsActivity extends BaseActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.frag_vip:
-                    showText("此项无法更改。");
+                    showText("会员服务暂未推出。");
                     break;
                 case R.id.frag_notifications:
-                    showBottomDialog(Arrays.asList("关闭", "开启"), Arrays.asList(new View.OnClickListener() {
+                    showBottomDialog(Arrays.asList("震动", "静音"), Arrays.asList(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            // TODO: 02/07/2017 添加开关通知操作
+                            // TODO: 02/07/2017 添加更改通知方式操作
                         }
                     }, new View.OnClickListener() {
                         @Override
@@ -62,7 +63,7 @@ public class SettingsActivity extends BaseActivity {
                     }));
                     break;
                 case R.id.frag_push_enter:
-                    showBottomDialog(Arrays.asList("关闭", "开启"), Arrays.asList(new View.OnClickListener() {
+                    showBottomDialog(Arrays.asList("开启", "关闭"), Arrays.asList(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             // TODO: 02/07/2017 添加更改发送方式的操作
@@ -95,14 +96,19 @@ public class SettingsActivity extends BaseActivity {
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(this);
         getHeaderDivider().setVisibility(View.GONE);
+        enableLeftImage(R.drawable.ic_arrow_back_24px, e -> finish());
+        setTitle("设置");
         initView();
     }
 
-    private void initRowView(View v, int imgId, String text) {
+
+    private void initRowView(View v, int imgId, String text, String detail) {
         ImageView icon = (ImageView) v.findViewById(R.id.item_profile_icon);
         TextView textView = (TextView) v.findViewById(item_profile_text);
+        TextView detailView = (TextView) v.findViewById(item_profile_righttext);
         icon.setImageDrawable(getResources().getDrawable(imgId));
         textView.setText(text);
+        detailView.setText(detail);
     }
 
     private void initView() {
@@ -113,12 +119,14 @@ public class SettingsActivity extends BaseActivity {
         changePasswordContainer.setOnClickListener(settingsOnClick);
         logoutContainer.setOnClickListener(settingsOnClick);
 
-        initRowView(vipContainer, R.drawable.ic_account_box_36px, "办理会员");
-        initRowView(notificationsContainer, R.drawable.ic_account_box_36px, "通知方式");
-        initRowView(pushEnterContainer, R.drawable.ic_account_box_36px, "按回车发送");
-        initRowView(clearChatHistoryContainer, R.drawable.ic_account_box_36px, "清理聊天记录");
-        initRowView(changePasswordContainer, R.drawable.ic_account_box_36px, "更改密码");
-        initRowView(logoutContainer, R.drawable.ic_account_box_36px, "注销登录");
+        initRowView(vipContainer, R.drawable.ic_hourglass_empty_black_30dp, "办理会员", "");
+        initRowView(notificationsContainer, R.drawable.ic_notifications_30px, "通知方式", "");
+        initRowView(pushEnterContainer, R.drawable.ic_subdirectory_arrow_left_black_30dp,
+                "按回车发送", "");
+        initRowView(clearChatHistoryContainer, R.drawable.ic_verified_user_30px, "清理聊天记录", "");
+        initRowView(changePasswordContainer, R.drawable.ic_cached_30px, "更改密码", "");
+        initRowView(logoutContainer, R.drawable.ic_sentiment_very_dissatisfied_black_30dp,
+                "注销登录", "走好不送");
     }
 
 

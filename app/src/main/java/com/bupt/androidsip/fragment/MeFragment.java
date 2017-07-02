@@ -17,6 +17,7 @@ import com.bupt.androidsip.activity.SettingsActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.bupt.androidsip.R.id.item_profile_righttext;
 import static com.bupt.androidsip.R.id.item_profile_text;
 
 /**
@@ -88,17 +89,19 @@ public class MeFragment extends BaseFragment {
         this.context = context;
     }
 
-    private void initRowView(View v, int imgId, String text) {
+    private void initRowView(View v, int imgId, String text, String detail) {
         ImageView icon = (ImageView) v.findViewById(R.id.item_profile_icon);
         TextView textView = (TextView) v.findViewById(item_profile_text);
+        TextView detailView = (TextView) v.findViewById(item_profile_righttext);
         icon.setImageDrawable(getResources().getDrawable(imgId));
         textView.setText(text);
+        detailView.setText(detail);
     }
 
     private void initView() {
         accountContainer.setOnClickListener(fragMeOnClick);
         settingsContainer.setOnClickListener(fragMeOnClick);
-        initRowView(accountContainer, R.drawable.ic_account_box_36px, "账号信息");
-        initRowView(settingsContainer, R.drawable.ic_account_box_36px, "设置");
+        initRowView(accountContainer, R.drawable.ic_account_box_30px, "账号信息", "");
+        initRowView(settingsContainer, R.drawable.ic_perm_data_setting_30px, "设置", "");
     }
 }

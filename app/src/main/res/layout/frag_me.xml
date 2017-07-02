@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/G5">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/G5">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -19,12 +18,12 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/frag_head_image"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="60dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/profile_icon_male" />
+                android:src="@drawable/ic_sentiment_satisfied_black_90dp"/>
 
 
             <TextView
@@ -37,7 +36,7 @@
                 android:gravity="center"
                 android:text="创裤子的云"
                 android:textColor="@color/G1"
-                android:textSize="16dp" />
+                android:textSize="16dp"/>
 
             <ImageView
                 android:id="@+id/frag_me_sex"
@@ -46,7 +45,7 @@
                 android:layout_alignBottom="@+id/frag_me_name"
                 android:layout_marginLeft="6dp"
                 android:layout_toRightOf="@+id/frag_me_name"
-                android:src="@drawable/profile_icon_male" />
+                android:src="@drawable/profile_icon_male"/>
 
             <TextView
                 android:id="@+id/frag_me_description"
@@ -61,7 +60,7 @@
                 android:maxLength="250"
                 android:text="徐日天"
                 android:textColor="@color/G2"
-                android:textSize="12sp" />
+                android:textSize="12sp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -73,25 +72,26 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="10dp"
-                    android:background="@color/G7" />
+                    android:background="@color/G7"/>
 
                 <include
                     android:id="@+id/frag_me_account"
                     layout="@layout/item_frag_me"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp" />
+                    android:layout_height="50dp"/>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginLeft="15dp"
-                    android:background="@color/G7" />
+                    android:layout_marginRight="15dp"
+                    android:background="@color/G7"/>
 
                 <include
                     android:id="@+id/frag_me_settings"
                     layout="@layout/item_frag_me"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp" />
+                    android:layout_height="50dp"/>
 
 
             </LinearLayout>

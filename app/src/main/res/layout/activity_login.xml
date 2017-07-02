@@ -42,7 +42,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:layout_marginTop="10dp"
-                    android:src="@drawable/ic_account_box_36px"/>
+                    android:src="@drawable/ic_account_box_30px"/>
 
                 <EditText
                     android:id="@+id/login_account_edit"

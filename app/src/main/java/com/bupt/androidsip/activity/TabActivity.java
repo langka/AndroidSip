@@ -9,6 +9,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -58,8 +60,8 @@ public class TabActivity extends BaseActivity {
         ButterKnife.bind(this);
         initData();
         initView();
-
     }
+
 
     //初始化fragments，并准备显示第一个
     private void initData() {
