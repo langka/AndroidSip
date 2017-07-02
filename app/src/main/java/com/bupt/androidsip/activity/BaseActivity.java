@@ -3,12 +3,15 @@ package com.bupt.androidsip.activity;
 import android.app.Dialog;
 import android.support.v4.app.FragmentActivity;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -142,5 +145,36 @@ public class BaseActivity extends FragmentActivity {
         dialog.show();
     }
 
+    public void showInputDialog(String confirm, String hint, OnTextConfirmListener listener) {
+        final Dialog dialog = new Dialog(this, R.style.ActionSheetDialogStyle);
+        RelativeLayout relativeLayout = (RelativeLayout) LayoutInflater.from(this).
+                inflate(R.layout.dialog_with_text, null);
 
+        final EditText text = (EditText) relativeLayout.findViewById(R.id.dialog_input_edit);
+        TextView confirmView = (TextView) relativeLayout.findViewById(R.id.dialog_input_confirm);
+        View cancelView = relativeLayout.findViewById(R.id.dialog_input_cancel);
+
+        text.setHint(hint);
+        cancelView.setOnClickListener(e -> dialog.dismiss());
+        confirmView.setText(confirm);
+        confirmView.setOnClickListener(e -> {
+            listener.onTextConfirm(text.getText().toString());
+            dialog.dismiss();
+        });
+
+        dialog.setContentView(relativeLayout);
+        dialog.setCancelable(true);
+        Window dialogWindow = dialog.getWindow();
+        //设置Dialog从窗体底部弹出
+        dialogWindow.setGravity(Gravity.CENTER_HORIZONTAL);
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        dialogWindow.setAttributes(lp);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.show();
+    }
+
+    public interface OnTextConfirmListener {
+        void onTextConfirm(String text);
+    }
 }

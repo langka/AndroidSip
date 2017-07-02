@@ -50,6 +50,10 @@ public class AccountActivity extends BaseActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.frag_nickname:
+                    showInputDialog("保存", "请输入姓名", e -> {
+                        showText(e);
+                        showText("保存成功！");
+                    });
                     break;
                 case R.id.frag_description:
                     break;
