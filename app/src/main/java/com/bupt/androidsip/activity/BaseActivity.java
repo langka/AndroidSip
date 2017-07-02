@@ -54,16 +54,16 @@ public class BaseActivity extends FragmentActivity {
         final Dialog dialog = new Dialog(this, R.style.dialog);
         View layout = getLayoutInflater().inflate(R.layout.dialog_confirmcancel, null);
         // set the dialog title
-        TextView cancelTextView = (TextView) layout.findViewById(R.id.dialog_confirmcancel_cancel);
+        TextView cancelTextView = (TextView) layout.findViewById(R.id.dialog_input_cancel);
         TextView detailT = (TextView) layout.findViewById(R.id.dialog_confirmcancel_title);
         detailT.setText(detail);
-        TextView confirmView = (TextView) layout.findViewById(R.id.dialog_confirmcancel_confirm);
+        TextView confirmView = (TextView) layout.findViewById(R.id.dialog_input_confirm);
         if (confirmTitle != null) {
             confirmView.setText(confirmTitle);
         }
         if (cancel != null)
             cancelTextView.setText(cancel);
-        layout.findViewById(R.id.dialog_confirmcancel_confirm).setOnClickListener(new View.OnClickListener() {
+        layout.findViewById(R.id.dialog_input_confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (confirmListener != null) {
@@ -72,7 +72,7 @@ public class BaseActivity extends FragmentActivity {
                 dialog.dismiss();
             }
         });
-        layout.findViewById(R.id.dialog_confirmcancel_cancel).setOnClickListener(new View.OnClickListener() {
+        layout.findViewById(R.id.dialog_input_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (cancelListener != null) {
@@ -86,6 +86,7 @@ public class BaseActivity extends FragmentActivity {
         dialog.setContentView(layout);
         dialog.show();
     }
+
 
     public void showBottomDialog(List<String> tips, final List<View.OnClickListener> listeners) {
         if (tips == null || tips.size() == 0 || listeners == null || listeners.size() == 0 || listeners.size() != tips.size()) {

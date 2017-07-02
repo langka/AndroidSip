@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -20,14 +20,14 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true">
 
-                <requestFocus />
+                <requestFocus/>
             </View>
 
             <ImageView
                 android:id="@+id/bgImgview"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitCenter"/>
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -40,24 +40,24 @@
                     android:id="@+id/login_img1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:layout_alignParentBottom="true"
-                    android:src="@drawable/ic_account_box_36px" />
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/ic_account_box_36px"/>
 
                 <EditText
                     android:id="@+id/login_account_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignBottom="@+id/login_img1"
+                    android:layout_marginBottom="4dp"
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/login_img1"
                     android:background="@null"
-                    android:layout_marginBottom="4dp"
                     android:gravity="center_vertical"
                     android:hint="输入账号"
+                    android:inputType="text"
                     android:textColorHint="@color/black_a"
-                    android:textSize="20sp"
-                    android:inputType="text"/>
+                    android:textSize="20sp"/>
             </RelativeLayout>
 
             <View
@@ -66,7 +66,7 @@
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="40dp"
                 android:layout_marginTop="10dp"
-                android:background="@color/blue_a" />
+                android:background="@color/blue_a"/>
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -80,15 +80,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_alignBottom="@+id/login_img2"
-                    android:layout_marginLeft="20dp"
                     android:layout_marginBottom="4dp"
+                    android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/login_img2"
                     android:background="@null"
                     android:gravity="center_vertical"
                     android:hint="输入密码"
+                    android:inputType="text"
                     android:textColorHint="@color/black_a"
-                    android:textSize="20sp"
-                    android:inputType="text"/>
+                    android:textSize="20sp"/>
 
                 <ImageView
                     android:id="@+id/login_img2"
@@ -98,7 +98,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
                     android:layout_marginBottom="2dp"
-                    android:src="@drawable/ic_lock_36px" />
+                    android:src="@drawable/ic_lock_36px"/>
             </RelativeLayout>
 
             <View
@@ -107,20 +107,20 @@
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="40dp"
                 android:layout_marginTop="10dp"
-                android:background="@color/blue_a" />
+                android:background="@color/blue_a"/>
 
             <com.dd.CircularProgressButton
                 android:id="@+id/btnConfirm"
                 android:layout_width="140dp"
                 android:layout_height="55dp"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="50dp"
                 android:layout_marginTop="30dp"
                 android:textColor="@color/white"
                 android:textSize="22sp"
-                android:layout_marginBottom="50dp"
                 app:cpb_textComplete="Success"
                 app:cpb_textError="Failed"
-                app:cpb_textIdle="登录" />
+                app:cpb_textIdle="登录"/>
         </LinearLayout>
     </ScrollView>
 
