@@ -32,7 +32,7 @@ import butterknife.ButterKnife;
  */
 
 public class FriendFragment extends BaseFragment {
-    @BindView(R.id.item_friend_head_img)
+    @BindView(R.id.frag_friend_head)
     ImageView headImage;
     @BindView(R.id.frag_friend_append)
     ImageView append;

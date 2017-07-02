@@ -1,5 +1,7 @@
 package com.bupt.androidsip.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -28,8 +30,6 @@ import butterknife.ButterKnife;
 
 public class TabActivity extends BaseActivity {
 
-    @BindView(R.id.header)
-    View header;
     @BindView(R.id.tab_frag_container)
     RelativeLayout fragContainer;
     @BindView(R.id.tab_message_container)
@@ -45,6 +45,12 @@ public class TabActivity extends BaseActivity {
 
     long exitTime = 0;
 
+
+    public static void Start(Context context){
+        Intent  intent = new Intent(context,TabActivity.class);
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +63,6 @@ public class TabActivity extends BaseActivity {
 
     //初始化fragments，并准备显示第一个
     private void initData() {
-        setTitle("首页");
         fragmentManager = getSupportFragmentManager();
         fragmentList = new ArrayList<>();
         fragmentList.add(new MessageFragment());
@@ -84,9 +89,6 @@ public class TabActivity extends BaseActivity {
         if (index == currentFrag)
             return;
         else {
-            if (index == 0 || index == 1)
-                header.setVisibility(View.VISIBLE);
-            else header.setVisibility(View.GONE);
             FragmentTransaction ft = fragmentManager.beginTransaction();
             ft.hide(fragmentList.get(currentFrag)).show(fragmentList.get(index));
             currentFrag = index;

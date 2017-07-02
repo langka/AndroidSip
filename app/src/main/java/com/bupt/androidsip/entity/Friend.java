@@ -5,10 +5,13 @@ package com.bupt.androidsip.entity;
  */
 
 public class Friend {
-    private String name;
-    private String headImageURL;
-    private String onlineStatue;
-    private String signature;
+    public String name;
+    public String headImageURL;
+    public String onlineStatue;
+    public String signature;
+
+    public Friend() {
+    }
 
     public Friend(String name, String headImageURL, String onlineStatue, String signature) {
         this.name = name;

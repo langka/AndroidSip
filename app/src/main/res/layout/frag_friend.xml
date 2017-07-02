@@ -9,7 +9,7 @@
 
         >
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/my_head_img"
+            android:id="@+id/frag_friend_head"
             android:src="@drawable/ic_account_box_18px"
             android:layout_width="50dp"
             android:layout_height="50dp"
