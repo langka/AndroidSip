@@ -8,12 +8,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.bupt.androidsip.R;
-import com.bupt.androidsip.fragment.FriendFragment;
+import com.bupt.androidsip.fragment.ChatListFragment;
 import com.bupt.androidsip.fragment.MeFragment;
 import com.bupt.androidsip.fragment.MessageFragment;
 
@@ -66,7 +65,7 @@ public class TabActivity extends BaseActivity {
         fragmentManager = getSupportFragmentManager();
         fragmentList = new ArrayList<>();
         fragmentList.add(new MessageFragment());
-        fragmentList.add(new FriendFragment());
+        fragmentList.add(new ChatListFragment());
         fragmentList.add(new MeFragment());
         currentFrag = 0;//当前第x号被选中
         final FragmentTransaction ft = fragmentManager.beginTransaction();

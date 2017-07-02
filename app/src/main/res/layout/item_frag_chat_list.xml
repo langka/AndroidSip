@@ -29,7 +29,7 @@
             android:text="lasjdfaskjdf"/>
 
         <TextView
-            android:id="@+id/item_friend_signature"
+            android:id="@+id/item_friend_lastchat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10sp"

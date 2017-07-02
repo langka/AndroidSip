@@ -4,7 +4,7 @@ package com.bupt.androidsip.entity;
  * Created by WHY on 2017/7/1.
  */
 
-public class Friend {
+public class Chat {
 
     /**
      * @String name：
@@ -16,22 +16,23 @@ public class Friend {
      *      0：离线
      *      1：在线
      *      2：忙碌
+     * @String lastChat
+     *  最后一句
      */
     public String name;
     public String headImageURL;
     public int onlineStatue;
-    public String signature;
+    public String lastChat;
 
-    public Friend() {
+    public Chat() {
     }
 
-    public Friend(String name, String headImageURL,  onlineStatue, String signature) {
+    public Chat(String name, String headImageURL, int onlineStatue, String lastChat) {
         this.name = name;
         this.headImageURL = headImageURL;
         this.onlineStatue = onlineStatue;
-        this.signature = signature;
+        this.lastChat = lastChat;
     }
-
 
     public String getName() {
         return name;
@@ -45,7 +46,7 @@ public class Friend {
         return onlineStatue;
     }
 
-    public String getSignature() {
-        return signature;
+    public String getLastChat() {
+        return lastChat;
     }
 }

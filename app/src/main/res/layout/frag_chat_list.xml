@@ -21,17 +21,17 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:textSize="18sp"
-            android:text="联系人"/>
-        <ImageView
-            android:id="@+id/frag_friend_append"
-            android:src="@drawable/ic_account_box_18px"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerInParent="true"
-            android:layout_marginRight="20dp"
-            android:layout_marginEnd="20dp"
-            />
+            android:text="消息"/>
+        <!--<ImageView-->
+            <!--android:id="@+id/frag_friend_append"-->
+            <!--android:src="@drawable/ic_account_box_18px"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:layout_marginRight="20dp"-->
+            <!--android:layout_marginEnd="20dp"-->
+            <!--/>-->
     </RelativeLayout>
 
     <ListView

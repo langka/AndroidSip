@@ -12,25 +12,25 @@ public class User {
     public String headUrl;
     public int head;
     public String name;
-    public List<Friend> friendList;
+    public List<Chat> chatList;
 
     private void init() {
         headUrl = "";
         head = 1;
         name = "lyk";
-        friendList = new ArrayList<>();
-        Friend f1 = new Friend();
-        f1.headImageURL = "";
-        f1.name = "gy";
-        f1.onlineStatue = "online";
-        f1.signature = "帅帅";
-        Friend f2 = new Friend();
-        f2.headImageURL = "";
-        f2.name = "why";
-        f2.signature = "丑出丑";
-        f2.onlineStatue = "offline";
-        friendList.add(f1);
-        friendList.add(f2);
+//        chatList = new ArrayList<>();
+//        Chat f1 = new Chat();
+//        f1.headImageURL = "";
+//        f1.name = "gy";
+//        f1.onlineStatue = 1;
+//        f1.signature = "帅帅";
+//        Chat f2 = new Chat();
+//        f2.headImageURL = "";
+//        f2.name = "why";
+//        f2.signature = "丑出丑";
+//        f2.onlineStatue = 1;
+//        chatList.add(f1);
+//        chatList.add(f2);
 
     }
 
