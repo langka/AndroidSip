@@ -8,11 +8,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.bupt.androidsip.R;
-import com.bupt.androidsip.fragment.ChatListFragment;
+import com.bupt.androidsip.fragment.FriendFragment;
 import com.bupt.androidsip.fragment.MeFragment;
 import com.bupt.androidsip.fragment.MessageFragment;
 
@@ -45,8 +48,8 @@ public class TabActivity extends BaseActivity {
     long exitTime = 0;
 
 
-    public static void Start(Context context){
-        Intent  intent = new Intent(context,TabActivity.class);
+    public static void Start(Context context) {
+        Intent intent = new Intent(context, TabActivity.class);
         context.startActivity(intent);
     }
 
@@ -57,15 +60,15 @@ public class TabActivity extends BaseActivity {
         ButterKnife.bind(this);
         initData();
         initView();
-
     }
+
 
     //初始化fragments，并准备显示第一个
     private void initData() {
         fragmentManager = getSupportFragmentManager();
         fragmentList = new ArrayList<>();
         fragmentList.add(new MessageFragment());
-        fragmentList.add(new ChatListFragment());
+        fragmentList.add(new FriendFragment());
         fragmentList.add(new MeFragment());
         currentFrag = 0;//当前第x号被选中
         final FragmentTransaction ft = fragmentManager.beginTransaction();

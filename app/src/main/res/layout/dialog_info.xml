@@ -7,6 +7,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/dialog_frame_white"
         android:elevation="5dp">
 
@@ -71,10 +73,6 @@
                 android:layout_weight="1"
                 android:orientation="horizontal">
 
-                <!--<View-->
-                <!--android:layout_width="1px"-->
-                <!--android:layout_height="40dp"-->
-                <!--android:background="@color/G5"/>-->
 
                 <TextView
                     android:id="@+id/dialog_info_confirm"
@@ -90,14 +88,7 @@
 
             </LinearLayout>
 
-
         </LinearLayout>
-
-        <!--<View-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="1px"-->
-        <!--android:layout_below="@id/dialog_confirmcancel_content"-->
-        <!--android:background="@color/G5"/>-->
 
     </RelativeLayout>
 </RelativeLayout>
