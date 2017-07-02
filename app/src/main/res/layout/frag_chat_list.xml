@@ -6,20 +6,21 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-
+        android:background="@color/colorSendName4"
         >
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/frag_friend_head"
             android:src="@drawable/ic_account_box_18px"
             android:layout_width="50dp"
             android:layout_height="50dp"
-
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:textSize="25sp"
+            android:textSize="18sp"
             android:text="联系人"/>
         <ImageView
             android:id="@+id/frag_friend_append"
@@ -28,6 +29,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerInParent="true"
+            android:layout_marginRight="20dp"
+            android:layout_marginEnd="20dp"
             />
     </RelativeLayout>
 

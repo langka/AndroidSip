@@ -10,6 +10,7 @@
         android:src="@drawable/ic_account_box_18px"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_marginLeft="10dp"
         android:layout_centerVertical="true"
         />
     <LinearLayout
@@ -18,19 +19,20 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
         >
         <TextView
             android:id="@+id/item_friend_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="25sp"
+            android:textSize="18sp"
             android:text="lasjdfaskjdf"/>
 
         <TextView
             android:id="@+id/item_friend_signature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
+            android:textSize="10sp"
             android:text="djfjfjfjf"/>
 
     </LinearLayout>
@@ -40,6 +42,8 @@
      android:layout_alignParentRight="true"
      android:layout_alignParentEnd="true"
      android:text="dfdfdfd"
+     android:layout_marginRight="20dp"
      android:layout_marginTop="20dp"/>
+
 
 </RelativeLayout>
