@@ -2,6 +2,7 @@ package com.bupt.androidsip.activity;
 
 import android.app.Dialog;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -145,14 +146,41 @@ public class BaseActivity extends FragmentActivity {
         dialog.show();
     }
 
+    public void showTextOnDialog(String text) {
+        final Dialog dialog = new Dialog(this, R.style.ActionSheetDialogStyle);
+        RelativeLayout relativeLayout = (RelativeLayout) LayoutInflater.from(this).
+                inflate(R.layout.dialog_info, null);
+        Log.d("d","1");
+
+        TextView infoView = (TextView) relativeLayout.findViewById(R.id.dialog_info_text);
+        TextView cancelView = (TextView) relativeLayout.findViewById(R.id.dialog_info_cancel);
+        TextView confirmView = (TextView) relativeLayout.findViewById(R.id.dialog_info_confirm);
+
+        Log.d("d","2");
+        cancelView.setOnClickListener(e -> dialog.dismiss());
+        confirmView.setOnClickListener(e -> dialog.dismiss());
+        infoView.setText(text);
+
+        Log.d("d","3");
+        dialog.setContentView(relativeLayout);
+        dialog.setCancelable(true);
+        Window dialogWindow = dialog.getWindow();
+        dialogWindow.setGravity(Gravity.CENTER_HORIZONTAL);
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        dialogWindow.setAttributes(lp);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.show();
+    }
+
     public void showInputDialog(String confirm, String hint, OnTextConfirmListener listener) {
         final Dialog dialog = new Dialog(this, R.style.ActionSheetDialogStyle);
         RelativeLayout relativeLayout = (RelativeLayout) LayoutInflater.from(this).
-                inflate(R.layout.dialog_with_text, null);
+                inflate(R.layout.dialog_input_text, null);
 
         final EditText text = (EditText) relativeLayout.findViewById(R.id.dialog_input_edit);
         TextView confirmView = (TextView) relativeLayout.findViewById(R.id.dialog_input_confirm);
-        View cancelView = relativeLayout.findViewById(R.id.dialog_input_cancel);
+        TextView cancelView = (TextView) relativeLayout.findViewById(R.id.dialog_input_cancel);
 
         text.setHint(hint);
         cancelView.setOnClickListener(e -> dialog.dismiss());
@@ -165,7 +193,6 @@ public class BaseActivity extends FragmentActivity {
         dialog.setContentView(relativeLayout);
         dialog.setCancelable(true);
         Window dialogWindow = dialog.getWindow();
-        //设置Dialog从窗体底部弹出
         dialogWindow.setGravity(Gravity.CENTER_HORIZONTAL);
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;

@@ -11,6 +11,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bupt.androidsip.R;
+import com.bupt.androidsip.activity.AccountActivity;
+import com.bupt.androidsip.activity.SettingsActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,10 +52,10 @@ public class MeFragment extends BaseFragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.frag_me_account:
-                    //AccountActivity.Start(context);
+                    AccountActivity.Start(context);
                     break;
                 case R.id.frag_me_settings:
-                    //SettingsActivity.Start(context);
+                    SettingsActivity.Start(context);
                     break;
             }
         }

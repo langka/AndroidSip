@@ -51,11 +51,23 @@ public class AccountActivity extends BaseActivity {
             switch (v.getId()) {
                 case R.id.frag_nickname:
                     showInputDialog("保存", "请输入姓名", e -> {
-                        showText(e);
-                        showText("保存成功！");
+                        if (e.trim().isEmpty())
+                            showText("内容为空");
+                        else {
+                            // TODO: 02/07/2017 真正保存这些内容
+                            showText("保存成功！");
+                        }
                     });
                     break;
                 case R.id.frag_description:
+                    showInputDialog("保存", "请输入个性签名", e -> {
+                        if (e.trim().isEmpty())
+                            showText("内容为空");
+                        else {
+                            // TODO: 02/07/2017 真正保存这些内容
+                            showText("保存成功！");
+                        }
+                    });
                     break;
                 case R.id.frag_sex:
                     showBottomDialog(Arrays.asList("男", "女"), Arrays.asList(new View.OnClickListener() {
@@ -71,10 +83,14 @@ public class AccountActivity extends BaseActivity {
                     }));
                     break;
                 case R.id.frag_account_id:
+                    // TODO: 02/07/2017 添加一个统一的通知板
+                    showText("此项无法更改。");
                     break;
                 case R.id.frag_email:
+                    showText("此项无法更改。");
                     break;
                 case R.id.frag_registration_time:
+                    showText("此项无法更改。");
                     break;
             }
         }
