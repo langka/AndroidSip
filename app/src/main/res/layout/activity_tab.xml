@@ -10,7 +10,15 @@
 
     </RelativeLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignTop="@+id/tab_botttom_container"
+        android:background="@color/G5" />
+
     <LinearLayout
+        android:background="@color/W1"
+        android:id="@+id/tab_botttom_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">
@@ -26,15 +34,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="5dp" />
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_message_selector" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="5dp"
-                android:layout_marginTop="3dp"
-                android:text="消息" />
+                android:layout_marginTop="1dp"
+                android:text="消息"
+                android:textColor="@drawable/tab_textcolor_selector"
+                android:textSize="12sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -48,16 +59,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="5dp" />
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_friend_selector" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="5dp"
-                android:layout_marginTop="3dp"
+                android:layout_marginTop="1dp"
                 android:gravity="center"
-                android:text="联系人" />
+                android:text="联系人"
+                android:textColor="@drawable/tab_textcolor_selector"
+                android:textSize="12sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -71,16 +85,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="5dp" />
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_me_selector" />
 
             <TextView
+                android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="5dp"
-                android:layout_marginTop="3dp"
+                android:layout_marginTop="1dp"
                 android:gravity="center"
-                android:text="我的" />
+                android:text="我的"
+                android:textColor="@drawable/tab_textcolor_selector"
+                android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
 
