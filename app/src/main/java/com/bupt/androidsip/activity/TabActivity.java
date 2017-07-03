@@ -9,8 +9,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -41,6 +43,8 @@ public class TabActivity extends BaseActivity {
     @BindView(R.id.tab_me_container)
     LinearLayout meContainer;
 
+
+    List<ViewGroup> bottoms;
     List<Fragment> fragmentList;
     int currentFrag = -1;
     FragmentManager fragmentManager;
@@ -60,6 +64,10 @@ public class TabActivity extends BaseActivity {
         ButterKnife.bind(this);
         initData();
         initView();
+        bottoms = new ArrayList<>();
+        bottoms.add(messageContainer);
+        bottoms.add(friendContainer);
+        bottoms.add(meContainer);
     }
 
 
@@ -71,6 +79,8 @@ public class TabActivity extends BaseActivity {
         fragmentList.add(new FriendFragment());
         fragmentList.add(new MeFragment());
         currentFrag = 0;//当前第x号被选中
+        messageContainer.getChildAt(0).setSelected(true);
+        messageContainer.getChildAt(1).setSelected(true);
         final FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.add(R.id.tab_frag_container, fragmentList.get(0), "msg");
         ft.add(R.id.tab_frag_container, fragmentList.get(1), "friend");
@@ -88,15 +98,22 @@ public class TabActivity extends BaseActivity {
     }
 
     private void updateView(int index) {
+
         if (index == currentFrag)
             return;
         else {
+            bottoms.get(currentFrag).getChildAt(0).setSelected(false);
+            bottoms.get(currentFrag).getChildAt(1).setSelected(false);
+            bottoms.get(index).getChildAt(0).setSelected(true);
+            bottoms.get(index).getChildAt(1).setSelected(true);
             FragmentTransaction ft = fragmentManager.beginTransaction();
             ft.hide(fragmentList.get(currentFrag)).show(fragmentList.get(index));
             currentFrag = index;
+
             ft.commit();
         }
     }
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
