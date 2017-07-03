@@ -54,6 +54,7 @@
     <color name="G3">#aaaaaa</color>
     <color name="G4">#cccccc</color>
     <color name="G5">#ebebeb</color>
+    <color name="TRANS_G5">#77ffffff</color>
     <color name="G6">#f0f0f0</color>
     <color name="G7">#f5f5f5</color>
     <color name="G8">#f7f7f7</color>

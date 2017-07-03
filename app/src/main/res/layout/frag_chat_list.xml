@@ -10,12 +10,14 @@
 
         >
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/frag_friend_head"
+            android:id="@+id/frag_chat_my_head"
             android:src="@drawable/xusong"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="3dp"
             />
         <TextView
             android:layout_width="wrap_content"
@@ -24,19 +26,10 @@
             android:textSize="18sp"
             android:text="消息"
             android:textColor="@color/white"/>
-        <!--<ImageView-->
-            <!--android:id="@+id/frag_friend_append"-->
-            <!--android:src="@drawable/ic_account_box_18px"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_alignParentRight="true"-->
-            <!--android:layout_centerInParent="true"-->
-            <!--android:layout_marginRight="20dp"-->
-            <!--android:layout_marginEnd="20dp"-->
-            <!--/>-->
     </RelativeLayout>
 
     <ListView
+        android:overScrollMode="never"
         android:id="@+id/frag_friend_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

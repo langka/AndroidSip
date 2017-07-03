@@ -1,5 +1,7 @@
 package com.bupt.androidsip.entity;
 
+import java.util.List;
+
 /**
  * Created by WHY on 2017/7/1.
  */
@@ -23,13 +25,16 @@ public class Chat {
     public String headImageURL;
     public int onlineStatue;
     public String lastChat;
+    public List chats;
 
     public Chat() {
     }
 
     public Chat(String name, String headImageURL, int onlineStatue, String lastChat) {
         this.name = name;
-        this.headImageURL = headImageURL;
+
+        this.headImageURL = "@drawable/xusong";
+
         this.onlineStatue = onlineStatue;
         this.lastChat = lastChat;
     }

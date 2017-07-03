@@ -1,9 +1,13 @@
 package com.bupt.androidsip.fragment;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +18,7 @@ import android.widget.TextView;
 
 import com.bupt.androidsip.R;
 import com.bupt.androidsip.entity.Chat;
+import com.bupt.androidsip.entity.User;
 import com.bupt.androidsip.mananger.UserManager;
 
 import java.util.ArrayList;
@@ -29,17 +34,12 @@ import butterknife.ButterKnife;
 
 public class MessageFragment extends BaseFragment {
 
-//    @Nullable
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        View v = inflater.inflate(R.layout.frag_message, null);
-//        return v;
-//    }
-
-    @BindView(R.id.frag_friend_head)
+    @BindView(R.id.frag_chat_my_head)
     ImageView headImage;
     @BindView(R.id.frag_friend_list)
     ListView listView;
+
+    User user;
 
     private List<Chat> chatList = new ArrayList<>();
 
@@ -50,12 +50,9 @@ public class MessageFragment extends BaseFragment {
         View v = inflater.inflate(R.layout.frag_chat_list, null);
         ButterKnife.bind(this, v);
 
+
         initdata();
 
-        // TODO: 2017/7/1 动态展示用户头像，获取用户URL
-        //headImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_box_18px));
-
-        // TODO: 2017/7/1 list 动态展示
        ChatListAdapter chatListAdapter = new ChatListAdapter(getActivity(), R.layout.item_frag_chat_list, chatList);
 
         listView.setAdapter(chatListAdapter);
@@ -69,16 +66,34 @@ public class MessageFragment extends BaseFragment {
     }
 
     void initdata() {
-        //chatList = UserManager.getInstance().getUser().chatList;
+        user = UserManager.getInstance().getUser();
+
+        // TODO: 2017/7/1 动态展示用户头像
+        switch (user.head){
+            case 0:
+                break;
+            case 1:
+                headImage.setImageDrawable(getResources().getDrawable(R.drawable.xusong,null));
+                break;
+        }
+
+        chatList.add(new Chat("高远","xusong",1,"快画领域模型"));
+        chatList.add(new Chat("王昊阳","xusong",1,"躺好，等吃饭"));
+        chatList.add(new Chat("马飞飞","xusong",1,"你们再说啥？"));
+        chatList.add(new Chat("栾迎凯","xusong",0,"啦啦啦不会"));
+
+
     }
 
     static class ChatListAdapter extends ArrayAdapter<Chat> {
 
         private int resourceId;
 
+        private Context context;
         public ChatListAdapter(Context context, int textViewResourceId, List<Chat> objects) {
             super(context, textViewResourceId, objects);
             this.resourceId = textViewResourceId;
+            this.context = context;
         }
 
         @NonNull
@@ -97,9 +112,21 @@ public class MessageFragment extends BaseFragment {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            holder.friendHead.setImageURI(null);
+            //为聊天列表中的每一项赋值
+            //holder.friendHead.setImageDrawable(null);
             holder.friendName.setText(chat.getName());
             holder.lastChat.setText(chat.getLastChat());
+            //不在线的头像显示灰色
+            if(chat.onlineStatue == 0){
+//                Drawable wrappedDrawable = DrawableCompat.wrap(context.getResources().getDrawable(R.drawable.xusong));
+//                DrawableCompat.setTint(wrappedDrawable, Color.BLACK);
+//                holder.friendHead.setImageDrawable(wrappedDrawable);
+                convertView.findViewById(R.id.item_chat_head_offline).setVisibility(View.VISIBLE);
+
+            }else{
+                convertView.findViewById(R.id.item_chat_head_offline).setVisibility(View.INVISIBLE);
+
+            }
 
             return convertView;
 
@@ -109,6 +136,8 @@ public class MessageFragment extends BaseFragment {
             ImageView friendHead;
             TextView friendName;
             TextView lastChat;
+
+
         }
     }
 }

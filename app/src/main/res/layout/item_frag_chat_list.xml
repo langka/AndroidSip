@@ -12,7 +12,22 @@
         android:layout_height="50dp"
         android:layout_marginLeft="10dp"
         android:layout_centerVertical="true"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="3dp"
         />
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/item_chat_head_offline"
+        android:background="@color/TRANS_G5"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="10dp"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="3dp"
+        android:visibility="invisible"
+        />
+
+
     <LinearLayout
         android:layout_toRightOf="@+id/item_friend_head_img"
         android:layout_width="match_parent"

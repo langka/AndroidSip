@@ -32,6 +32,7 @@ public class User {
 //        chatList.add(f1);
 //        chatList.add(f2);
 
+
     }
 
     public User() {
