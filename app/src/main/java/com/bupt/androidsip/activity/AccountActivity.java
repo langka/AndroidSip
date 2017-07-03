@@ -34,6 +34,7 @@ public class AccountActivity extends BaseActivity {
     @BindView(R.id.frag_nickname)
     RelativeLayout nicknameContainer;
 
+    
     @BindView(R.id.frag_description)
     RelativeLayout descriptionContainer;
 
