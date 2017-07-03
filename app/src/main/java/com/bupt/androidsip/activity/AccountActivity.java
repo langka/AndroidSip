@@ -70,7 +70,7 @@ public class AccountActivity extends BaseActivity {
                 case R.id.frag_description:
                     showInputDialog("保存", "请输入个性签名", e -> {
                         if (e.trim().isEmpty())
-                            showText("内容为空");
+                            showText("保存成功！");
                         else {
                             // TODO: 02/07/2017 真正保存这些内容
                             TextView tv = (TextView) v.findViewById(R.id.frag_description).
@@ -127,8 +127,8 @@ public class AccountActivity extends BaseActivity {
         ButterKnife.bind(this);
         getHeaderDivider().setVisibility(View.GONE);
         enableLeftImage(R.drawable.ic_arrow_back_24px, e -> finish());
-        initData();
         initView();
+        initData();
     }
 
     private void initData() {
