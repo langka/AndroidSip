@@ -10,7 +10,7 @@ public class Message {
     private String message;
     private boolean isFromMe;
 
-    public boolean getIsFromMe() {
+    public boolean isFromMe() {
         return isFromMe;
     }
 

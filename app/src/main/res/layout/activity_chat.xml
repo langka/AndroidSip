@@ -16,13 +16,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:background="@color/G6"
         android:cacheColorHint="#00000000"
         android:divider="@null"
-        android:dividerHeight="20dp"
+        android:dividerHeight="10dp"
         android:footerDividersEnabled="true"
-        android:overScrollMode="never"
-        android:scrollbars="none"
-        android:background="@drawable/wallpapaer"
+        android:listSelector="@android:color/transparent"
+        android:scrollbars="vertical"
         >
 
 
