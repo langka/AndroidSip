@@ -11,20 +11,19 @@
 
 
     <!-- 中间部分内容 -->
-
     <ListView
         android:id="@+id/msg_listview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="#0000"
         android:cacheColorHint="#00000000"
         android:divider="@null"
         android:dividerHeight="20dp"
         android:footerDividersEnabled="true"
         android:overScrollMode="never"
         android:scrollbars="none"
-        android:stackFromBottom="true">
+        android:background="@drawable/wallpapaer"
+        >
 
 
     </ListView>
