@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_toLeftOf="@+id/item_friend_head_img"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:id="@+id/item_friend_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="10dp"
+            android:gravity="top"
+            android:text="徐松"
+            android:textSize="12sp"
+            android:layout_gravity="right"
+            />
+
+        <TextView
+            android:id="@+id/item_friend_lastchat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:text="在么，晚上吃西瓜瓜瓜瓜瓜瓜瓜瓜瓜瓜瓜瓜瓜瓜瓜瓜瓜瓜瓜瓜瓜瓜瓜瓜瓜瓜瓜，我请客"
+            android:textSize="18sp"
+            android:background="@drawable/dialog_frame_blue"
+            android:gravity="right"
+            android:padding="5dp"/>
+
+    </LinearLayout>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/item_friend_head_img"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="3dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/xusong"
+        android:layout_alignParentRight="true"
+        />
+
+</RelativeLayout>
