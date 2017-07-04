@@ -2,6 +2,7 @@ package com.bupt.androidsip.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,11 +57,17 @@ public class FriendFragment extends BaseFragment {
     HotFriendGridAdapter gridAdapter;
     SortAdapter sortAdapter;
 
+    Handler handler;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.frag_friend, null);
         View headerView = inflater.inflate(R.layout.header_frag_friend, null);
+        showFragLoadingView(v);
+        handler = new Handler();
+        handler.postDelayed(() -> hideFragLoadingView(v), 2000);
+
         ButterKnife.bind(this, v);
         //ButterKnife.bind(this, headerView);
         //listView.addHeaderView(headerView);
@@ -94,9 +101,12 @@ public class FriendFragment extends BaseFragment {
         return v;
     }
 
-    private void initHeader(View header){
+    private void initHeader(View header) {
         searchText = (EditText) header.findViewById(R.id.frag_friend_search_edit);
         searchSubmit = (TextView) header.findViewById(R.id.frag_friend_search_confirm);
+        append = (TextView) header.findViewById(R.id.frag_friend_append);
+        gridView = (GridView) header.findViewById(R.id.frag_friend_hot_friend);
+
 
     }
 

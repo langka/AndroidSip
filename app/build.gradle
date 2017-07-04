@@ -42,4 +42,5 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile files('libs/pinyin4j-2.5.0.jar')
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
+    compile 'com.wang.avi:library:2.1.3'
 }
