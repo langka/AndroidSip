@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bupt.androidsip.R;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.List;
 
@@ -27,6 +28,21 @@ import static com.bupt.androidsip.R.id.header_righttext;
  */
 
 public class BaseActivity extends FragmentActivity {
+
+    public void showLoadingView() {
+        View v = findViewById(R.id.loadingview);
+        v.setVisibility(View.VISIBLE);
+        AVLoadingIndicatorView loadingIndicatorView = (AVLoadingIndicatorView) v.findViewById(R.id.loading_loader);
+        loadingIndicatorView.show();
+    }
+
+    public void hideLoadingView() {
+        View v = findViewById(R.id.loadingview);
+        v.setVisibility(View.INVISIBLE);
+        AVLoadingIndicatorView loadingIndicatorView = (AVLoadingIndicatorView) v.findViewById(R.id.loading_loader);
+        loadingIndicatorView.hide();
+    }
+
     public void showText(String text) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }

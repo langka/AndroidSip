@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layoutAnimation xmlns:android="http://schemas.android.com/apk/res/android"
+                 android:delay="0.5"
+                 android:animationOrder="random"
+                 android:animation="@anim/list_item">
+    <!-- 0.5代表延迟0.5秒后再执行下一个动画(list的item) -->
+</layoutAnimation>
