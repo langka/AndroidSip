@@ -1,13 +1,24 @@
 package com.bupt.androidsip.fragment;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.net.wifi.WpsInfo;
+import android.net.wifi.p2p.WifiP2pConfig;
+import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pDeviceList;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
@@ -17,12 +28,16 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bupt.androidsip.R;
 import com.bupt.androidsip.activity.BaseActivity;
+import com.bupt.androidsip.activity.DemoWifiChatActivity;
 import com.bupt.androidsip.customview.SlideBar;
 import com.bupt.androidsip.entity.Friend;
 import com.bupt.androidsip.mananger.UserManager;
+import com.bupt.androidsip.mananger.WifiDirectManager;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import org.w3c.dom.Text;
 
@@ -40,8 +55,8 @@ import butterknife.ButterKnife;
 
 public class FriendFragment extends BaseFragment {
 
+    WifiDirectManager wifiDirectManager;
 
-    TextView append;
 
     EditText searchText;
 
@@ -49,6 +64,8 @@ public class FriendFragment extends BaseFragment {
 
     GridView gridView;
 
+    @BindView(R.id.frag_friend_append)
+    TextView append;
     @BindView(R.id.friend_list)
     ListView listView;
     @BindView(R.id.frag_friend_slidebar)
@@ -64,12 +81,15 @@ public class FriendFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.frag_friend, null);
         View headerView = inflater.inflate(R.layout.header_frag_friend, null);
+
         showFragLoadingView(v);
         handler = new Handler();
         handler.postDelayed(() -> hideFragLoadingView(v), 2000);
 
         ButterKnife.bind(this, v);
-        //ButterKnife.bind(this, headerView);
+        wifiDirectManager = WifiDirectManager.getInstance(getActivity());
+        append.setOnClickListener(e -> popWifiDialog());
+
         //listView.addHeaderView(headerView);
         sortAdapter = new SortAdapter(getActivity(), UserManager.getInstance().getUser().friends, (o1, o2) ->
                 o1.getSortLetters().compareTo(o2.getSortLetters()));
@@ -101,12 +121,12 @@ public class FriendFragment extends BaseFragment {
         return v;
     }
 
-    private void initHeader(View header) {
+    private void initListHeader(View header) {
         searchText = (EditText) header.findViewById(R.id.frag_friend_search_edit);
         searchSubmit = (TextView) header.findViewById(R.id.frag_friend_search_confirm);
         append = (TextView) header.findViewById(R.id.frag_friend_append);
         gridView = (GridView) header.findViewById(R.id.frag_friend_hot_friend);
-
+        //append.setOnClickListener(v -> popWifiDialog());
 
     }
 
@@ -291,4 +311,142 @@ public class FriendFragment extends BaseFragment {
         return indexes;
     }
 
+    public void popWifiDialog() {
+        final Dialog dialog = new Dialog(getActivity(), R.style.ActionSheetDialogStyle);
+        RelativeLayout root = (RelativeLayout) LayoutInflater.from(getActivity()).
+                inflate(R.layout.dialog_select_wifi, null);
+        dialog.setContentView(root);
+        dialog.setCancelable(true);
+        dialog.setOnDismissListener((e) -> {
+            wifiDirectManager.release();
+        });
+
+        Window dialogWindow = dialog.getWindow();
+        SwipeRefreshLayout refresher = (SwipeRefreshLayout) root.findViewById(R.id.select_wifi_swipe);
+        refresher.setOnRefreshListener(() -> {
+            handler.postDelayed(() -> refresher.setRefreshing(false), 2000);
+        });
+        ListView wifiList = (ListView) root.findViewById(R.id.select_wifi_list);
+
+        SelectWifiAdapter adapter = new SelectWifiAdapter(new ArrayList<>(), getActivity());
+        wifiList.setAdapter(adapter);
+        wifiList.setOnItemClickListener((parent, view, position, id) -> {
+            connectTo((WifiP2pDevice) adapter.getItem(position));
+        });
+
+        View loadingContainer = root.findViewById(R.id.wifi_loading_container);
+        TextView tv = (TextView) loadingContainer.findViewById(R.id.wifi_loading_title);
+        TextView createWifi = (TextView) loadingContainer.findViewById(R.id.select_wifi_create);
+        //createWifi.setOnClickListener(v -> wifiDirectManager.createLocalService());//允许本地成为主机
+        //p2p不用这个
+        tv.setText("WiFi初始化中...");
+        AVLoadingIndicatorView loadingIndicatorView = (AVLoadingIndicatorView) loadingContainer.findViewById(R.id.select_wifi_loader);
+
+        wifiDirectManager.setWifiListener(new WifiDirectManager.WifiListener() {
+            @Override
+            public void onSearchBegin() {
+                loadingContainer.setVisibility(View.VISIBLE);
+                loadingIndicatorView.show();
+            }
+
+            @Override
+            public void onSuccessStart() {
+                tv.setText("开始寻找设备...");
+                Toast.makeText(getActivity(), "初始化成功！", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailStart() {
+                Toast.makeText(getActivity(), "初始化失败 ！", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void OnSearchEnd() {
+
+            }
+
+            @Override
+            public void onFindDevices(WifiP2pDeviceList devices) {
+                Toast.makeText(getActivity(),"找到了"+devices.getDeviceList().size()+"台设备",Toast.LENGTH_SHORT).show();
+                if(devices.getDeviceList().size()>0) {//否则继续显示加载动画
+
+                    loadingContainer.setVisibility(View.INVISIBLE);
+                    loadingIndicatorView.hide();
+                    adapter.updateDataSet(devices);
+                }
+
+            }
+
+            @Override
+            public void onChatPrepared() {//代表着chatmanager已经初始化完成，可以聊天了
+                DemoWifiChatActivity.Start(getActivity());
+            }
+        });
+        wifiDirectManager.prepare();
+        //开始进行search
+        wifiDirectManager.beginSearch();
+        dialogWindow.setGravity(Gravity.TOP);
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        dialogWindow.setAttributes(lp);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.show();
+    }
+
+    public void connectTo(WifiP2pDevice device) {
+        wifiDirectManager.connect(device);
+    }
+
 }
+
+class SelectWifiAdapter extends BaseAdapter {
+
+    Context context;
+    List<WifiP2pDevice> devices;
+
+    public void updateDataSet(WifiP2pDeviceList wifiP2pDeviceList) {
+        devices.clear();
+        devices.addAll(wifiP2pDeviceList.getDeviceList());
+        notifyDataSetChanged();
+    }
+
+    public SelectWifiAdapter(List<WifiP2pDevice> devices, Context context) {
+        this.devices = devices;
+        this.context = context;
+    }
+
+    @Override
+    public int getCount() {
+        return devices.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return devices.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return 0;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder = null;
+        if (convertView == null) {
+            convertView = LayoutInflater.from(context).inflate(R.layout.item_select_wifi, null);
+            holder = new ViewHolder();
+            holder.name = (TextView) convertView.findViewById(R.id.item_wifi_device_name);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+        holder.name.setText(devices.get(position).deviceName);
+        return convertView;
+    }
+
+    static class ViewHolder {
+        TextView name;
+    }
+}
+

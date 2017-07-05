@@ -25,7 +25,7 @@ import static com.bupt.androidsip.R.id.item_profile_righttext;
 import static com.bupt.androidsip.R.id.item_profile_text;
 
 /**
- * Created by vita-nove on 01/07/2017.
+ * Created by vita-nove on 001/7/2017.
  */
 
 public class AccountActivity extends BaseActivity {

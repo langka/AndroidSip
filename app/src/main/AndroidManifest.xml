@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.bupt.androidsip">
-
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -34,6 +34,9 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".activity.TabActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.DemoWifiChatActivity"
             android:screenOrientation="portrait"/>
     </application>
 
