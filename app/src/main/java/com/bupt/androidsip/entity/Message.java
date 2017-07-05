@@ -1,40 +1,25 @@
 package com.bupt.androidsip.entity;
 
 /**
- * Created by vita-nove on 04/07/2017.
+ * Created by vita-nove on 05/07/2017.
  */
 
-public class Message {
-    private String name;
-    private int headImageURL;
-    private String message;
-    private boolean isFromMe;
+import java.io.Serializable;
 
-    public boolean isFromMe() {
-        return isFromMe;
+public class Message implements Serializable {
+    private static final long serialVersionUID = -6240488099748291325L;
+    public int iconFromResId;
+    public String iconFromUrl;
+    public String content;
+    public String time;
+    public int fromOrTo;
+    // 0 是收到的消息，1是发送的消息
+
+    @Override
+    public String toString() {
+        return "ChatInfoEntity [iconFromResId=" + iconFromResId
+                + ", iconFromUrl=" + iconFromUrl + ", content=" + content
+                + ", time=" + time + ", fromOrTo=" + fromOrTo + "]";
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getHeadImageURL() {
-        return headImageURL;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public Message() {
-    }
-
-    public Message(String name, int headImageURL, String message, boolean isFromMe) {
-        this.name = name;
-        this.headImageURL = headImageURL;
-        this.message = message;
-        this.isFromMe = isFromMe;
-    }
-
-
 }
+
