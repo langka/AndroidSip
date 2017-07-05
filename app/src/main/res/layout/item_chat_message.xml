@@ -33,14 +33,15 @@
                 android:id="@+id/avatar_left"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:src="@drawable/xusong"
-                android:background="@drawable/image_view_bound_shape"
-                android:padding="3dp"/>
+                android:background="@drawable/image_view_bound_shape_blue"
+                android:padding="3dp"
+                android:src="@drawable/xusong"/>
 
             <TextView
                 android:id="@+id/msg_left"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="40dp"
                 android:background="@drawable/msg_left_bg"
                 android:gravity="center_vertical"
                 android:textColor="@color/G1"
@@ -59,14 +60,15 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_alignParentRight="true"
-                android:src="@drawable/xusong"
-                android:background="@drawable/image_view_bound_shape"
-                android:padding="3dp"/>
+                android:background="@drawable/image_view_bound_shape_blue"
+                android:padding="3dp"
+                android:src="@drawable/xusong"/>
 
             <TextView
                 android:id="@+id/msg_right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
                 android:layout_toLeftOf="@id/avatar_right"
                 android:background="@drawable/msg_right_bg"
                 android:gravity="center_vertical"
