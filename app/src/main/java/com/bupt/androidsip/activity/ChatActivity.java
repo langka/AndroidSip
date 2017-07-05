@@ -43,6 +43,7 @@ import android.widget.TextView;
 
 import com.bupt.androidsip.R;
 import com.bupt.androidsip.entity.Message;
+import com.bupt.androidsip.util.VibratorUtils;
 import com.bupt.androidsip.view.DropdownListView;
 import com.bupt.androidsip.view.MyEditText;
 
@@ -165,6 +166,8 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
                 msgAdapter.setList(messages);
                 msgAdapter.notifyDataSetChanged();
                 msgListView.setSelection(messages.size() - 1);
+
+                VibratorUtils.Vibrate(ChatActivity.this,500);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {

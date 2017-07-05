@@ -11,8 +11,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:background="@drawable/time_frame_gray"
+        android:paddingBottom="2dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="2dp"
         android:text="09-25 12:00"
-        android:textColor="@color/G4"
+        android:textColor="@color/white"
         android:textSize="12sp"/>
 
     <RelativeLayout
@@ -42,6 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="40dp"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/msg_left_bg"
                 android:gravity="center_vertical"
                 android:textColor="@color/G1"
@@ -69,6 +75,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="40dp"
+                android:layout_marginTop="10dp"
                 android:layout_toLeftOf="@id/avatar_right"
                 android:background="@drawable/msg_right_bg"
                 android:gravity="center_vertical"
