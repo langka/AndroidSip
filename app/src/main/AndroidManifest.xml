@@ -36,7 +36,7 @@
             android:name=".activity.TabActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".activity.DemoWifiChatActivity"
+            android:name=".activity.DemoWifiChatActivity"/>
             android:screenOrientation="portrait"/>
     </application>
 

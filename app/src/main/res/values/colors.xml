@@ -42,7 +42,7 @@
     <color name="eighty_trans">#cc000000</color>
     <color name="dialog_bg">#5f000000</color>
     <color name="black_trans">#33000000</color>
-    <color name="transparent">#50000000</color>
+    <color name="transparent">#00000000</color>
     <color name="fifty_trans">#80000000</color>
     <color name="full_trans">#00000000</color>
 

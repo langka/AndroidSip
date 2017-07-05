@@ -1,0 +1,97 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/root"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/header"/>
+
+
+    <!-- 中间部分内容 -->
+    <com.bupt.androidsip.view.DropdownListView
+        android:id="@+id/msg_listview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/G6"
+        android:cacheColorHint="#00000000"
+        android:divider="@null"
+        android:dividerHeight="10dp"
+        android:footerDividersEnabled="true"
+        android:listSelector="@android:color/transparent"
+        android:scrollbars="vertical"
+        >
+
+
+    </com.bupt.androidsip.view.DropdownListView>
+
+
+    <LinearLayout
+        android:id="@+id/input_linear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="visible">
+
+
+        <Button
+            android:id="@+id/face_btn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="3dp"
+            android:background="@drawable/ic_face_black_30dp"
+            />
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1">
+
+
+            <com.bupt.androidsip.view.MyEditText
+                android:id="@+id/send_to_msg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:hint="请输入聊天信息"
+                android:maxLines="1"/>
+
+        </FrameLayout>
+
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center">
+
+
+            <Button
+                android:id="@+id/send_to_btn"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="6dp"
+                android:background="@drawable/ic_subdirectory_arrow_left_black_30dp"
+                android:gravity="center"/>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <include
+        android:id="@+id/chat_face_container"
+        layout="@layout/chat_face_container"
+        android:visibility="gone"
+        />
+
+    <!-- </LinearLayout> -->
+</LinearLayout>
