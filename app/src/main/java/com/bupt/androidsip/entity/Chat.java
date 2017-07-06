@@ -1,5 +1,6 @@
 package com.bupt.androidsip.entity;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -9,42 +10,59 @@ import java.util.List;
 public class Chat {
 
     /**
-     * @String name：
-     *  用户名
-     * @String headImageURL
-     *  头像的URL
+     * @String leftName：
+     * 用户名
+     * @String leftAvatar
+     * 头像的URL
      * @int onlineStatue
-     *  在线状态
-     *      0：离线
-     *      1：在线
-     *      2：忙碌
+     * 在线状态
+     * 0：离线
+     * 1：在线
+     * 2：忙碌
      * @String lastChat
-     *  最后一句
+     * 最后一句
      */
-    public String name;
-    public String headImageURL;
+    public String leftName;
+    public String leftAvatar;
     public int onlineStatue;
     public String lastChat;
     public List chats;
+    public LinkedList<Message> messages;
+    private int unread;
 
     public Chat() {
     }
 
-    public Chat(String name, String headImageURL, int onlineStatue, String lastChat) {
-        this.name = name;
-
-        this.headImageURL = "@drawable/xusong";
-
+    public Chat(String leftName, String leftAvatar, int onlineStatue, String lastChat) {
+        this.leftName = leftName;
+        this.leftAvatar = "@drawable/xusong";
         this.onlineStatue = onlineStatue;
         this.lastChat = lastChat;
+        this.unread = (int) (1 + Math.random() * (10 - 1 + 1));
     }
 
-    public String getName() {
-        return name;
+    public void addMessage(Message msg) {
+        if (messages == null)
+            messages = new LinkedList<>();
+        messages.add(msg);
+        lastChat = msg.toString();
+        ++unread;
     }
 
-    public String getHeadImageURL() {
-        return headImageURL;
+    public int getUnread() {
+        return unread;
+    }
+
+    public void removeUnread() {
+        unread = 0;
+    }
+
+    public String getLeftName() {
+        return leftName;
+    }
+
+    public String getLeftAvatar() {
+        return leftAvatar;
     }
 
     public int getOnlineStatue() {

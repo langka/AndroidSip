@@ -93,7 +93,7 @@
 //            }
 //
 //            holder.friendHead.setImageURI(null);
-//            holder.friendName.setText(chat.getName());
+//            holder.friendName.setText(chat.getLeftName());
 //            holder.lastChat.setText(chat.getLastChat());
 //
 //            return convertView;

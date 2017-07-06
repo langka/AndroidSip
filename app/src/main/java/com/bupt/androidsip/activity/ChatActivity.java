@@ -40,6 +40,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bupt.androidsip.R;
 import com.bupt.androidsip.entity.Message;
@@ -59,6 +60,8 @@ import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import q.rorbin.badgeview.Badge;
+import q.rorbin.badgeview.QBadgeView;
 
 /**
  * Created by vita-nove on 04/07/2017.
@@ -167,7 +170,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
                 msgAdapter.notifyDataSetChanged();
                 msgListView.setSelection(messages.size() - 1);
 
-                VibratorUtils.Vibrate(ChatActivity.this,500);
+                VibratorUtils.Vibrate(ChatActivity.this, 500);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -572,38 +575,40 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
             if (convertView == null) {
                 holder = new ViewHolder();
                 convertView = LayoutInflater.from(context).inflate(R.layout.item_chat_message, null);
-                holder.fromContainer = (ViewGroup) convertView.findViewById(R.id.chat_left);
-                holder.toContainer = (ViewGroup) convertView.findViewById(R.id.chat_right);
-                holder.fromContent = (TextView) convertView.findViewById(R.id.msg_left);
-                holder.toContent = (TextView) convertView.findViewById(R.id.msg_right);
+                holder.leftContainer = (ViewGroup) convertView.findViewById(R.id.chat_left);
+                holder.rightContainer = (ViewGroup) convertView.findViewById(R.id.chat_right);
+                holder.leftContent = (TextView) convertView.findViewById(R.id.msg_left);
+                holder.rightContent = (TextView) convertView.findViewById(R.id.msg_right);
                 holder.time = (TextView) convertView.findViewById(R.id.msg_time);
+                holder.rightAvatar = (ImageView) convertView.findViewById(R.id.avatar_right);
+                holder.badge = new QBadgeView(ChatActivity.this).bindTarget(convertView.findViewById(R.id.avatar_right));
                 convertView.setTag(holder);
+
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
             if (list.get(position).fromOrTo == 0) {
                 // 收到消息 from显示
-                holder.toContainer.setVisibility(View.GONE);
-                holder.fromContainer.setVisibility(View.VISIBLE);
+                holder.rightContainer.setVisibility(View.GONE);
+                holder.leftContainer.setVisibility(View.VISIBLE);
 
                 // 对内容做处理
-                SpannableStringBuilder sb = handler(holder.fromContent,
+                SpannableStringBuilder sb = handler(holder.leftContent,
                         list.get(position).content);
-                holder.fromContent.setText(sb);
+                holder.leftContent.setText(sb);
                 holder.time.setText(list.get(position).time);
             } else {
                 // 发送消息 to显示
-                holder.toContainer.setVisibility(View.VISIBLE);
-                holder.fromContainer.setVisibility(View.GONE);
-
+                holder.rightContainer.setVisibility(View.VISIBLE);
+                holder.leftContainer.setVisibility(View.GONE);
                 // 对内容做处理
-                SpannableStringBuilder sb = handler(holder.toContent,
+                SpannableStringBuilder sb = handler(holder.rightContent,
                         list.get(position).content);
-                holder.toContent.setText(sb);
+                holder.rightContent.setText(sb);
                 holder.time.setText(list.get(position).time);
             }
-            holder.fromContent.setOnClickListener(new View.OnClickListener() {
+            holder.leftContent.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
@@ -611,7 +616,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
 
                 }
             });
-            holder.toContent.setOnClickListener(new View.OnClickListener() {
+            holder.rightContent.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
@@ -621,9 +626,9 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
             });
 
             // 设置+按钮点击效果
-            holder.fromContent.setOnLongClickListener(new popAction(convertView,
+            holder.leftContent.setOnLongClickListener(new popAction(convertView,
                     position, list.get(position).fromOrTo));
-            holder.toContent.setOnLongClickListener(new popAction(convertView,
+            holder.rightContent.setOnLongClickListener(new popAction(convertView,
                     position, list.get(position).fromOrTo));
             return convertView;
         }
@@ -638,10 +643,6 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
                 try {
                     String num = tempText.substring("#[face/png/f_static_".length(), tempText.length() - ".png]#".length());
                     String gif = "face/gif/f" + num + ".gif";
-                    /**
-                     * 如果open这里不抛异常说明存在gif，则显示对应的gif
-                     * 否则说明gif找不到，则显示png
-                     * */
                     InputStream is = context.getAssets().open(gif);
                     sb.setSpan(new com.bupt.androidsip.util.gif.AnimatedImageSpan(new com.bupt.androidsip.util.gif.AnimatedGifDrawable(is, new com.bupt.androidsip.util.gif.AnimatedGifDrawable.UpdateListener() {
                                 @Override
@@ -666,14 +667,12 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         }
 
         class ViewHolder {
-            ImageView fromIcon, toIcon;
-            TextView fromContent, toContent, time;
-            ViewGroup fromContainer, toContainer;
+            Badge badge;
+            ImageView leftAvatar, rightAvatar;
+            TextView leftContent, rightContent, time;
+            ViewGroup leftContainer, rightContainer;
         }
 
-        /**
-         * 屏蔽listitem的所有事件
-         */
         @Override
         public boolean areAllItemsEnabled() {
             return false;
@@ -684,9 +683,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
             return false;
         }
 
-        /**
-         * 初始化弹出的pop
-         */
+
         private void initPopWindow() {
             View popView = inflater.inflate(R.layout.item_copy_delete_menu,
                     null);
@@ -699,9 +696,6 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
             // popupWindow.setAnimationStyle(R.style.PopMenuAnimation);
         }
 
-        /**
-         * 显示popWindow
-         */
         public void showPop(View parent, int x, int y, final View view,
                             final int position, final int fromOrTo) {
             // 设置popwindow显示位置
@@ -754,9 +748,6 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
             }
         }
 
-        /**
-         * 每个ITEM中more按钮对应的点击动作
-         */
         public class popAction implements View.OnLongClickListener {
             int position;
             View view;
@@ -806,9 +797,6 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
             view.startAnimation(animation);
         }
 
-        /**
-         * item删除动画
-         */
         private void leftRemoveAnimation(final View view, final int position) {
             final Animation animation = (Animation) AnimationUtils.loadAnimation(context, R.anim.msg_left_remove_anim);
             animation.setAnimationListener(new Animation.AnimationListener() {
@@ -828,12 +816,6 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
             view.startAnimation(animation);
         }
 
-        /**
-         * 在此方法中执行item删除之后，其他的item向上或者向下滚动的动画，并且将position回调到方法onDismiss()中
-         *
-         * @param dismissView
-         * @param dismissPosition
-         */
         private void performDismiss(final View dismissView,
                                     final int dismissPosition) {
             final ViewGroup.LayoutParams lp = dismissView.getLayoutParams();// 获取item的布局参数
@@ -848,8 +830,6 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
                 public void onAnimationEnd(Animator animation) {
                     list.remove(dismissPosition);
                     notifyDataSetChanged();
-                    // 这段代码很重要，因为我们并没有将item从ListView中移除，而是将item的高度设置为0
-                    // 所以我们在动画执行完毕之后将item设置回来
 //				ViewHelper.setAlpha(dismissView, 1f);
 //				ViewHelper.setTranslationX(dismissView, 0);
                     ViewGroup.LayoutParams lp = dismissView.getLayoutParams();
@@ -861,7 +841,6 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
             animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    // 这段代码的效果是ListView删除某item之后，其他的item向上滑动的效果
                     lp.height = (Integer) valueAnimator.getAnimatedValue();
                     dismissView.setLayoutParams(lp);
                 }
