@@ -1,5 +1,10 @@
 package com.bupt.androidsip.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -7,7 +12,7 @@ import java.util.List;
  * Created by WHY on 2017/7/1.
  */
 
-public class Chat {
+public class Chat implements Parcelable {
 
     /**
      * @String leftName：
@@ -27,9 +32,34 @@ public class Chat {
     public int onlineStatue;
     public String lastChat;
     public int ID;
-    public List chats;
-    public LinkedList<Message> messages;
+    public ArrayList<Message> messages;
     private int unread;
+
+    public int describeContents() {
+        //几乎所有情况都返回0，仅在当前对象中存在文件描述符时返回1
+        return 0;
+    }
+
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeString(leftAvatar);
+        out.writeList(messages);
+    }
+
+    public static final Parcelable.Creator<Chat> CREATOR = new Parcelable.Creator<Chat>() {
+        public Chat createFromParcel(Parcel in) {
+            return new Chat(in);
+        }
+
+        public Chat[] newArray(int size) {
+            return new Chat[size];
+        }
+    };
+
+    public Chat(Parcel parcel) {
+        this.leftAvatar = parcel.readString();
+        this.messages = parcel.readArrayList(null);
+    }
+
 
     public Chat() {
     }
@@ -55,7 +85,7 @@ public class Chat {
 
     public void addMsgToList(Message msg) {
         if (messages == null)
-            messages = new LinkedList<>();
+            messages = new ArrayList<>();
         messages.add(msg);
     }
 
@@ -82,4 +112,5 @@ public class Chat {
     public String getLastChat() {
         return lastChat;
     }
+
 }

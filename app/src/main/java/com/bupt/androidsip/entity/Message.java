@@ -15,6 +15,13 @@ public class Message implements Serializable {
     public int fromOrTo;// 0 是收到的消息，1是发送的消息
     public int ID;
 
+    public Message(String msg) {
+        this.content = msg;
+    }
+
+    public Message() {
+    }
+
     @Override
     public String toString() {
         return "MessageEntity [rightAvatar=" + rightAvatar

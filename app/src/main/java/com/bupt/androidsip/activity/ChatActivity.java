@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
@@ -22,6 +23,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.ImageSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -42,8 +44,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bupt.androidsip.R;
+import com.bupt.androidsip.entity.Chat;
 import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.entity.Message;
+import com.bupt.androidsip.mananger.ChatManager;
 import com.bupt.androidsip.view.DropdownListView;
 import com.bupt.androidsip.view.MyEditText;
 
@@ -118,6 +122,13 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         simpleDateFormat = new SimpleDateFormat("MM-dd HH:mm");
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
+        Intent intent = getIntent();
+        Chat chat = (Chat) intent.getParcelableExtra("chat");
+        Log.d("tag", chat.leftAvatar);
+        Log.d("content", chat.messages.get(0).content);
+        //       messages = chat.messages;
+
+
         context = ChatActivity.this;
         msgAdapter = new MessageAdapter(this, messages);
         msgListView.setAdapter(msgAdapter);
@@ -154,7 +165,6 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         //清零未读的消息
         int fakeID = 0;
         EventBus.getDefault().post(new EventConst.Unread(0, false, true, fakeID));
-        System.out.println("按下了back键   onBackPressed()");
     }
 
 
@@ -197,6 +207,14 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
             // TODO: 04/07/2017 成发送消息的操作
         }
     };
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiveNewMsg(EventConst.NewMsg newMsg) {
+        messages.add(getChatMsgFrom(newMsg.getMsg()));
+        msgAdapter.setList(messages);
+        msgAdapter.notifyDataSetChanged();
+        msgListView.setSelection(messages.size() - 1);
+    }
 
     Button.OnClickListener faceBtnListener = new Button.OnClickListener() {
         public void onClick(View v) {

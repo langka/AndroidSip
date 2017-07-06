@@ -1,6 +1,7 @@
 package com.bupt.androidsip.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,10 +16,12 @@ import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.bupt.androidsip.R;
+import com.bupt.androidsip.activity.ChatActivity;
 import com.bupt.androidsip.entity.Chat;
 import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.entity.Message;
 import com.bupt.androidsip.entity.User;
+import com.bupt.androidsip.mananger.ChatManager;
 import com.bupt.androidsip.mananger.UserManager;
 import com.bupt.androidsip.util.VibratorUtils;
 
@@ -72,7 +75,13 @@ public class MessageFragment extends BaseFragment {
 
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
             // TODO: 2017/7/1 触发点击
-            // EventBus.getDefault().postSticky(new EventConst.LastMsg());
+            Intent intent = new Intent(getActivity(), ChatActivity.class);
+            Chat chat = new Chat("高远", "xusong", 1, "快画领域模型", 1);
+            chat.addMsgToList(new Message("^^^^^^^^^^^^^"));
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("chat", chat);
+            intent.putExtras(bundle);
+            startActivity(intent);
 
         });
         EventBus.getDefault().register(this);
