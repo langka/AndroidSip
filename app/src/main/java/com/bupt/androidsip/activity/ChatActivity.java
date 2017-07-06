@@ -40,13 +40,16 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bupt.androidsip.R;
+import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.entity.Message;
-import com.bupt.androidsip.util.VibratorUtils;
 import com.bupt.androidsip.view.DropdownListView;
 import com.bupt.androidsip.view.MyEditText;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,7 +64,6 @@ import java.util.regex.Pattern;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import q.rorbin.badgeview.Badge;
-import q.rorbin.badgeview.QBadgeView;
 
 /**
  * Created by vita-nove on 04/07/2017.
@@ -107,7 +109,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     private MessageAdapter msgAdapter;
     private LinkedList<Message> messages = new LinkedList<Message>();
     private SimpleDateFormat simpleDateFormat;
-    private String reply;
+    private String inputMsg;
 
 
     @Override
@@ -135,7 +137,26 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         messages.add(getChatMsgFrom("我爱吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜"));
         messages.add(getChatMsgTo("测试测试#[face/png/f_static_018.png]#"));
 
+        EventBus.getDefault().register(this);
+
     }
+
+    @Override
+    public void onDestroy() {
+        // TODO Auto-generated method stub
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        //清零未读的消息
+        int fakeID = 0;
+        EventBus.getDefault().post(new EventConst.Unread(0, false, true, fakeID));
+        System.out.println("按下了back键   onBackPressed()");
+    }
+
 
     private Message getChatMsgFrom(String message) {
         Message msg = new Message();
@@ -163,26 +184,17 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
 
     Button.OnClickListener sendBtnListener = new Button.OnClickListener() {
         public void onClick(View v) {
-            reply = sendToMsg.getText().toString();
-            if (!TextUtils.isEmpty(reply)) {
-                messages.add(getChatMsgTo(reply));
+            inputMsg = sendToMsg.getText().toString();
+            if (!TextUtils.isEmpty(inputMsg)) {
+                messages.add(getChatMsgTo(inputMsg));
                 msgAdapter.setList(messages);
                 msgAdapter.notifyDataSetChanged();
                 msgListView.setSelection(messages.size() - 1);
-
-                VibratorUtils.Vibrate(ChatActivity.this, 500);
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        messages.add(getChatMsgFrom(reply));
-                        msgAdapter.setList(messages);
-                        msgAdapter.notifyDataSetChanged();
-                        msgListView.setSelection(messages.size() - 1);
-                    }
-                }, 1000);
+                int fakeID = 1;
+                EventBus.getDefault().post(new EventConst.LastMsg(fakeID, inputMsg));
                 sendToMsg.setText("");
             }
-            // TODO: 04/07/2017 完成发送消息的操作
+            // TODO: 04/07/2017 成发送消息的操作
         }
     };
 
@@ -522,20 +534,13 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     public class MessageAdapter extends BaseAdapter {
         private Context context;
         private List<Message> list;
-        /**
-         * 弹出的更多选择框
-         */
+
         private PopupWindow popupWindow;
 
-        /**
-         * 复制，删除
-         */
         private TextView copy, delete;
 
         private LayoutInflater inflater;
-        /**
-         * 执行动画的时间
-         */
+
         protected long animationTime = 150;
 
         public MessageAdapter(Context context, List<Message> list) {
@@ -552,25 +557,21 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
 
         @Override
         public int getCount() {
-            // TODO Auto-generated method stub
             return list.size();
         }
 
         @Override
         public Object getItem(int position) {
-            // TODO Auto-generated method stub
             return list.get(position);
         }
 
         @Override
         public long getItemId(int position) {
-            // TODO Auto-generated method stub
             return position;
         }
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            // TODO Auto-generated method stub
             ViewHolder holder;
             if (convertView == null) {
                 holder = new ViewHolder();
@@ -581,7 +582,6 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
                 holder.rightContent = (TextView) convertView.findViewById(R.id.msg_right);
                 holder.time = (TextView) convertView.findViewById(R.id.msg_time);
                 holder.rightAvatar = (ImageView) convertView.findViewById(R.id.avatar_right);
-                holder.badge = new QBadgeView(ChatActivity.this).bindTarget(convertView.findViewById(R.id.avatar_right));
                 convertView.setTag(holder);
 
             } else {
@@ -710,7 +710,6 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     if (popupWindow.isShowing()) {
                         popupWindow.dismiss();
                     }
@@ -726,7 +725,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
+                    // TODO: 06/07/2017 添加从chatlist中删除message的操作
                     if (popupWindow.isShowing()) {
                         popupWindow.dismiss();
                     }
@@ -774,9 +773,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
             }
         }
 
-        /**
-         * item删除动画
-         */
+
         private void rightRemoveAnimation(final View view, final int position) {
             final Animation animation = (Animation) AnimationUtils.loadAnimation(
                     context, R.anim.msg_right_remove_anim);

@@ -8,16 +8,17 @@ import java.io.Serializable;
 
 public class Message implements Serializable {
     private static final long serialVersionUID = -6240488099748291325L;
-    public int iconFromResId;
-    public String iconFromUrl;
+    public int rightAvatar;
+    public int leftAvatar;
     public String content;
     public String time;
     public int fromOrTo;// 0 是收到的消息，1是发送的消息
+    public int ID;
 
     @Override
     public String toString() {
-        return "ChatInfoEntity [iconFromResId=" + iconFromResId
-                + ", iconFromUrl=" + iconFromUrl + ", content=" + content
+        return "MessageEntity [rightAvatar=" + rightAvatar
+                + ", leftAvatar=" + leftAvatar + ", content=" + content
                 + ", time=" + time + ", fromOrTo=" + fromOrTo + "]";
     }
 }

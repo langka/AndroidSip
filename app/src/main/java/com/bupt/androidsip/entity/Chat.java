@@ -26,6 +26,7 @@ public class Chat {
     public String leftAvatar;
     public int onlineStatue;
     public String lastChat;
+    public int ID;
     public List chats;
     public LinkedList<Message> messages;
     private int unread;
@@ -33,20 +34,29 @@ public class Chat {
     public Chat() {
     }
 
-    public Chat(String leftName, String leftAvatar, int onlineStatue, String lastChat) {
+    public Chat(String leftName, String leftAvatar, int onlineStatue, String lastChat, int ID) {
         this.leftName = leftName;
         this.leftAvatar = "@drawable/xusong";
         this.onlineStatue = onlineStatue;
         this.lastChat = lastChat;
         this.unread = (int) (1 + Math.random() * (10 - 1 + 1));
+        this.ID = ID;
     }
 
-    public void addMessage(Message msg) {
+    public void setLastChat(String msg) {
+        lastChat = msg;
+        ++unread;
+    }
+
+    public void setLastMsgWithUnread(String msg) {
+        lastChat = msg;
+        ++unread;
+    }
+
+    public void addMsgToList(Message msg) {
         if (messages == null)
             messages = new LinkedList<>();
         messages.add(msg);
-        lastChat = msg.toString();
-        ++unread;
     }
 
     public int getUnread() {

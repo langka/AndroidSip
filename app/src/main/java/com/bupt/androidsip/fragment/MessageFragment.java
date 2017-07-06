@@ -4,22 +4,17 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 
 import android.view.View;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.bupt.androidsip.R;
-import com.bupt.androidsip.activity.TabActivity;
 import com.bupt.androidsip.entity.Chat;
 import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.entity.Message;
@@ -31,9 +26,10 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,6 +50,8 @@ public class MessageFragment extends BaseFragment {
 
     User user;
     public static int unreadTotal;
+    private SimpleDateFormat simpleDateFormat;
+
 
     private static List<Chat> chatList = new ArrayList<>();
     ChatListAdapter chatListAdapter = null;
@@ -65,6 +63,7 @@ public class MessageFragment extends BaseFragment {
         View v = inflater.inflate(R.layout.frag_chat_list, null);
         ButterKnife.bind(this, v);
 
+        simpleDateFormat = new SimpleDateFormat("MM-dd HH:mm");
         initdata();
 
         chatListAdapter = new ChatListAdapter(getActivity(), R.layout.item_frag_chat_list, chatList);
@@ -73,7 +72,7 @@ public class MessageFragment extends BaseFragment {
 
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
             // TODO: 2017/7/1 触发点击
-            EventBus.getDefault().postSticky(new EventConst.NewMessage());
+            // EventBus.getDefault().postSticky(new EventConst.LastMsg());
 
         });
         EventBus.getDefault().register(this);
@@ -81,34 +80,53 @@ public class MessageFragment extends BaseFragment {
 
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void removeUnread(EventConst.Unread unread) {
-        if (unread.removeAll == false)
-            return;
-        for (int i = 0; i < chatList.size(); i++) {
-            chatList.get(i).removeUnread();
+        if (unread.isRemoveAll()) {
+            for (int i = 0; i < chatList.size(); ++i)
+                chatList.get(i).removeUnread();
             chatListAdapter.notifyDataSetChanged();
+        } else if (unread.isRemoveOne()) {
+            for (int i = 0; i < chatList.size(); ++i) {
+                if (chatList.get(i).ID == unread.getID()) {
+                    chatList.get(i).removeUnread();
+                    chatListAdapter.notifyDataSetChanged();
+                }
+            }
+        } else
+            return;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void setLastMsg(EventConst.LastMsg lastMsg) {
+        for (int i = 0; i < chatList.size(); ++i)
+            if (chatList.get(i).ID == lastMsg.getID())
+                chatList.get(i).setLastChat(lastMsg.getMsg());
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiveNewMsg(EventConst.NewMsg newMsg) {
+        for (int i = 0; i < chatList.size(); ++i) {
+            if (chatList.get(i).ID == newMsg.getID()) {
+                //// TODO: 06/07/2017 根据传入的ID判断那个聊天是否在前台
+//                if (1 == 1) {
+//                    //如果在前台
+//                    chatList.get(i).setLastChat(newMsg.getMsg());
+//                } else {
+                chatList.get(i).messages.add(getChatMsgFrom(newMsg.getMsg()));
+                chatList.get(i).setLastMsgWithUnread(newMsg.getMsg());
+            }
+            VibratorUtils.Vibrate(getActivity(), 200);
+            return;
         }
-    }
 
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    public void addNewMessage(EventConst.NewMessage newMsg) {
-        Message msg = new Message();
-        chatList.get((int) (1 + Math.random() * (4 - 1 + 1)) - 1).addMessage(msg);
-        chatListAdapter.notifyDataSetChanged();
+        //如果都不在聊天列表就新建一个chat对象
+        chatList.add(new Chat("name", "avatar", 1, newMsg.getMsg(), newMsg.getID()));
+        chatList.get(chatList.size() - 1).messages.add(getChatMsgFrom(newMsg.getMsg()));
         VibratorUtils.Vibrate(getActivity(), 200);
+        chatListAdapter.notifyDataSetChanged();
     }
-
-//    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-//    public void addUnread(EventConst.Unread unread) {
-//        //// TODO: 06/07/2017 为合适的chatlist中的元素添加unread 参数要更改
-//        chatListAdapter.notifyDataSetChanged();
-//        unreadTotal = 0;
-//        for (int i = 0; i < chatList.size(); i++)
-//            unreadTotal += chatList.get(i).getUnread();
-//        if (unreadTotal != 0)
-//            EventBus.getDefault().postSticky(new EventConst.Unread(unreadTotal));
-//    }
 
 
     @Override
@@ -130,10 +148,10 @@ public class MessageFragment extends BaseFragment {
                 break;
         }
 
-        chatList.add(new Chat("高远", "xusong", 1, "快画领域模型"));
-        chatList.add(new Chat("王昊阳", "xusong", 1, "躺好，等吃饭"));
-        chatList.add(new Chat("马飞飞", "xusong", 1, "你们再说啥？"));
-        chatList.add(new Chat("栾迎凯", "xusong", 0, "啦啦啦不会"));
+        chatList.add(new Chat("高远", "xusong", 1, "快画领域模型", 1));
+        chatList.add(new Chat("王昊阳", "xusong", 1, "躺好，等吃饭", 2));
+        chatList.add(new Chat("马飞飞", "xusong", 1, "你们再说啥？", 3));
+        chatList.add(new Chat("栾迎凯", "xusong", 0, "啦啦啦不会", 4));
 
 
     }
@@ -184,7 +202,7 @@ public class MessageFragment extends BaseFragment {
                         for (int i = 0; i < chatList.size(); i++)
                             unreadTotal += chatList.get(i).getUnread();
 
-                        EventBus.getDefault().postSticky(new EventConst.Unread(unreadTotal));
+                        EventBus.getDefault().post(new EventConst.Unread(unreadTotal));
                     }
                 }
             });
@@ -216,7 +234,7 @@ public class MessageFragment extends BaseFragment {
             for (int i = 0; i < chatList.size(); i++)
                 unreadTotal += chatList.get(i).getUnread();
             if (unreadTotal != 0)
-                EventBus.getDefault().postSticky(new EventConst.Unread(unreadTotal));
+                EventBus.getDefault().post(new EventConst.Unread(unreadTotal));
 
             return convertView;
 
@@ -240,5 +258,21 @@ public class MessageFragment extends BaseFragment {
             TextView time;
             Badge badge;
         }
+    }
+
+    private Message getChatMsgFrom(String message) {
+        Message msg = new Message();
+        msg.content = message;
+        msg.fromOrTo = 0;
+        msg.time = simpleDateFormat.format(new Date());
+        return msg;
+    }
+
+    private Message getChatMsgTo(String message) {
+        Message msg = new Message();
+        msg.content = message;
+        msg.fromOrTo = 1;
+        msg.time = simpleDateFormat.format(new Date());
+        return msg;
     }
 }

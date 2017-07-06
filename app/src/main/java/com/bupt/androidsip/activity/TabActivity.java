@@ -93,7 +93,7 @@ public class TabActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void showUnreadMessage(EventConst.Unread unread) {
-        if (unread.removeAll)
+        if (unread.isRemoveAll())
             return;
         if (badge == null) {
             badge = new QBadgeView(TabActivity.this).bindTarget(messageContainer.
@@ -103,7 +103,7 @@ public class TabActivity extends BaseActivity {
                 @Override
                 public void onDragStateChanged(int dragState, Badge badge, View targetView) {
                     if (dragState == STATE_SUCCEED)
-                        EventBus.getDefault().postSticky(new EventConst.Unread(0, true));
+                        EventBus.getDefault().post(new EventConst.Unread(0, true, false, 0));
                 }
             });
         } else

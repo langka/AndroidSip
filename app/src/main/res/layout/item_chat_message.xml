@@ -38,8 +38,6 @@
                 android:id="@+id/avatar_left"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:background="@drawable/image_view_bound_shape_blue"
-                android:padding="3dp"
                 android:src="@drawable/xusong"/>
 
             <TextView
@@ -66,8 +64,6 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_alignParentRight="true"
-                android:background="@drawable/image_view_bound_shape_blue"
-                android:padding="3dp"
                 android:src="@drawable/xusong"/>
 
             <TextView
