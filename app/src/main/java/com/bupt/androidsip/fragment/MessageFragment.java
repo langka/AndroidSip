@@ -25,6 +25,7 @@ import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.entity.Message;
 import com.bupt.androidsip.entity.User;
 import com.bupt.androidsip.mananger.UserManager;
+import com.bupt.androidsip.util.VibratorUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -93,8 +94,9 @@ public class MessageFragment extends BaseFragment {
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void addNewMessage(EventConst.NewMessage newMsg) {
         Message msg = new Message();
-        chatList.get(1).addMessage(msg);
+        chatList.get((int) (1 + Math.random() * (4 - 1 + 1)) - 1).addMessage(msg);
         chatListAdapter.notifyDataSetChanged();
+        VibratorUtils.Vibrate(getActivity(), 200);
     }
 
 //    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
