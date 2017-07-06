@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.bupt.androidsip">
+
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
@@ -8,6 +9,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:name=".SipAplication"
@@ -36,7 +38,10 @@
             android:name=".activity.TabActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".activity.DemoWifiChatActivity"/>
+            android:name=".activity.DemoWifiChatActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.ChatActivity"
             android:screenOrientation="portrait"/>
     </application>
 
