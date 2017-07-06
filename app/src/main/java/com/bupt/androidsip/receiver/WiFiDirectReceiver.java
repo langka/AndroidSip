@@ -48,13 +48,16 @@ public class WiFiDirectReceiver extends BroadcastReceiver {
                 int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
                 if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
                     // WiFi P2P 可以使用
+                    Log.d(TAG,"P2P ENABLED");
                     listener.onP2PEnabled();
                 } else {
                     // WiFi P2P 不可以使用
+                    Log.d(TAG,"P2P DISABLED");
                     listener.onP2PDisabled();
                 }
                 break;
             case WIFI_P2P_PEERS_CHANGED_ACTION:
+                Log.d(TAG,"PEERS CHANGED");
                 listener.onPeersChanged();
                 break;
             case WIFI_P2P_CONNECTION_CHANGED_ACTION:
@@ -62,14 +65,16 @@ public class WiFiDirectReceiver extends BroadcastReceiver {
                         .getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
 
                 if (networkInfo.isConnected()) {
+                    Log.d(TAG,"CONN CHANGED CONNECTED");
                     listener.onConnected();
                 } else {
+                    Log.d(TAG,"CONN CHANGED NOT CONN");
                     listener.onDisConnected();
                 }
 
                 break;
             case WIFI_P2P_THIS_DEVICE_CHANGED_ACTION:
-
+                Log.d(TAG,"this device changed");
 
                 break;
 

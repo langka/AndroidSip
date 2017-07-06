@@ -5,14 +5,16 @@
     android:orientation="vertical">
 
     <TextView
-        android:layout_above="@+id/wifi_chat_send"
         android:id="@+id/wifi_chat_board"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_above="@+id/wifi_chat_send"
+        android:textSize="20sp" />
+
     <EditText
         android:id="@+id/wifi_chat_edit"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:layout_toLeftOf="@id/wifi_chat_send"
         android:textColor="@color/G2"
