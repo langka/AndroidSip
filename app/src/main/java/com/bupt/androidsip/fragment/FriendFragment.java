@@ -318,7 +318,7 @@ public class FriendFragment extends BaseFragment {
         dialog.setContentView(root);
         dialog.setCancelable(true);
         dialog.setOnDismissListener((e) -> {
-            wifiDirectManager.release();
+            wifiDirectManager.release();//停止接收广播
         });
 
         Window dialogWindow = dialog.getWindow();
@@ -367,9 +367,8 @@ public class FriendFragment extends BaseFragment {
 
             @Override
             public void onFindDevices(WifiP2pDeviceList devices) {
-                Toast.makeText(getActivity(),"找到了"+devices.getDeviceList().size()+"台设备",Toast.LENGTH_SHORT).show();
-                if(devices.getDeviceList().size()>0) {//否则继续显示加载动画
-
+                Toast.makeText(getActivity(), "找到了" + devices.getDeviceList().size() + "台设备", Toast.LENGTH_SHORT).show();
+                if (devices.getDeviceList().size() > 0) {//否则继续显示加载动画
                     loadingContainer.setVisibility(View.INVISIBLE);
                     loadingIndicatorView.hide();
                     adapter.updateDataSet(devices);
@@ -378,11 +377,12 @@ public class FriendFragment extends BaseFragment {
             }
 
             @Override
-            public void onChatPrepared() {//代表着chatmanager已经初始化完成，可以聊天了
+            public void onChatPrepared() {//代表着chatmanager已经初始化完成，可以聊天了,这个方法会在其它线程调用
+                handler.post(() -> Toast.makeText(getActivity(), "成功连接，可以开始聊天了", Toast.LENGTH_SHORT).show());
                 DemoWifiChatActivity.Start(getActivity());
             }
         });
-        wifiDirectManager.prepare();
+        wifiDirectManager.prepare();//准备阶段
         //开始进行search
         wifiDirectManager.beginSearch();
         dialogWindow.setGravity(Gravity.TOP);
@@ -394,7 +394,7 @@ public class FriendFragment extends BaseFragment {
     }
 
     public void connectTo(WifiP2pDevice device) {
-        wifiDirectManager.connect(device);
+        wifiDirectManager.talkToDevice(device);
     }
 
 }
