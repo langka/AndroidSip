@@ -4,6 +4,8 @@ package com.bupt.androidsip.entity;
  * Created by vita-nove on 05/07/2017.
  */
 
+import com.bupt.androidsip.mananger.UserManager;
+
 import java.io.Serializable;
 
 public class Message implements Serializable {
@@ -20,6 +22,7 @@ public class Message implements Serializable {
     }
 
     public Message() {
+        rightAvatar = UserManager.getInstance().getUser().head;
     }
 
     @Override

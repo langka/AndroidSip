@@ -23,7 +23,6 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.ImageSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -47,7 +46,6 @@ import com.bupt.androidsip.R;
 import com.bupt.androidsip.entity.Chat;
 import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.entity.Message;
-import com.bupt.androidsip.mananger.ChatManager;
 import com.bupt.androidsip.view.DropdownListView;
 import com.bupt.androidsip.view.MyEditText;
 
@@ -60,7 +58,6 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -105,15 +102,43 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     @BindView(R.id.face_dots_container)
     LinearLayout dotsContainer;
 
+    private int myAvatar;
+    private int leftAvatar;
+
     private Context context;
     private List<String> staticFacesList;
     private List<View> views = new ArrayList<View>();
     private int columns = 6;
     private int rows = 4;
     private MessageAdapter msgAdapter;
-    private LinkedList<Message> messages = new LinkedList<Message>();
+    private ArrayList<Message> messages = new ArrayList<Message>();
     private SimpleDateFormat simpleDateFormat;
     private String inputMsg;
+
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(Chat chat) {
+        this.ID = chat.ID;
+    }
+
+    private int ID;
+
+    public void setLeftAvatarFromID(int ID) {
+        // TODO: 07/07/2017 根据ID查询头像
+        leftAvatar = R.drawable.xusong;
+    }
+
+    public void setMyAvatar() {
+        // myAvatar = UserManager.getInstance().getUser().head;
+        myAvatar = R.drawable.xusong;
+    }
+
+    public void setTitle(Chat chat) {
+        String title = chat.getLeftName();
+        super.setTitle(title);
+    }
 
 
     @Override
@@ -122,12 +147,9 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         simpleDateFormat = new SimpleDateFormat("MM-dd HH:mm");
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
-        Intent intent = getIntent();
-        Chat chat = (Chat) intent.getParcelableExtra("chat");
-        Log.d("tag", chat.leftAvatar);
-        Log.d("content", chat.messages.get(0).content);
-        //       messages = chat.messages;
 
+        Intent intent = getIntent();
+        initData(intent);
 
         context = ChatActivity.this;
         msgAdapter = new MessageAdapter(this, messages);
@@ -145,11 +167,26 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         initStaticFaces();
         initViewPager();
 
-        messages.add(getChatMsgFrom("我爱吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜"));
-        messages.add(getChatMsgTo("测试测试#[face/png/f_static_018.png]#"));
+        msgAdapter.notifyDataSetChanged();
+        messages.add(getChatMsgFrom("我爱吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜", getID()));
+        messages.add(getChatMsgTo("测试测试#[face/png/f_static_018.png]#", getID()));
 
         EventBus.getDefault().register(this);
 
+    }
+
+    public void initData(Intent intent) {
+        setChat(intent.getParcelableExtra("chat"));
+        setID(intent.getParcelableExtra("chat"));
+        setTitle((Chat) intent.getParcelableExtra("chat"));
+        setMyAvatar();
+        setLeftAvatarFromID(getID());
+    }
+
+    public void setChat(Chat chat) {
+        if (messages == null)
+            messages = new ArrayList<>();
+        messages = chat.messages;
     }
 
     @Override
@@ -160,26 +197,29 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        //清零未读的消息
-        int fakeID = 0;
-        EventBus.getDefault().post(new EventConst.Unread(0, false, true, fakeID));
+    public void onPause() {
+        super.onPause();
+        EventBus.getDefault().post(new EventConst.RemoveOne(0, getID()));
     }
 
-
-    private Message getChatMsgFrom(String message) {
+    private Message getChatMsgFrom(String message, int ID) {
         Message msg = new Message();
         msg.content = message;
         msg.fromOrTo = 0;
+        msg.rightAvatar = myAvatar;
+        msg.leftAvatar = leftAvatar;
+        msg.ID = ID;
         msg.time = simpleDateFormat.format(new Date());
         return msg;
     }
 
-    private Message getChatMsgTo(String message) {
+    private Message getChatMsgTo(String message, int ID) {
         Message msg = new Message();
         msg.content = message;
         msg.fromOrTo = 1;
+        msg.rightAvatar = myAvatar;
+        msg.leftAvatar = leftAvatar;
+        msg.ID = ID;
         msg.time = simpleDateFormat.format(new Date());
         return msg;
     }
@@ -196,12 +236,13 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         public void onClick(View v) {
             inputMsg = sendToMsg.getText().toString();
             if (!TextUtils.isEmpty(inputMsg)) {
-                messages.add(getChatMsgTo(inputMsg));
+                Message msg = getChatMsgTo(inputMsg, getID());
+                messages.add(msg);
                 msgAdapter.setList(messages);
                 msgAdapter.notifyDataSetChanged();
                 msgListView.setSelection(messages.size() - 1);
-                int fakeID = 1;
-                EventBus.getDefault().post(new EventConst.LastMsg(fakeID, inputMsg));
+                EventBus.getDefault().post(msg);
+                EventBus.getDefault().post(new EventConst.LastMsg(getID(), inputMsg));
                 sendToMsg.setText("");
             }
             // TODO: 04/07/2017 成发送消息的操作
@@ -210,7 +251,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveNewMsg(EventConst.NewMsg newMsg) {
-        messages.add(getChatMsgFrom(newMsg.getMsg()));
+        messages.add(getChatMsgFrom(newMsg.getMsg(), getID()));
         msgAdapter.setList(messages);
         msgAdapter.notifyDataSetChanged();
         msgListView.setSelection(messages.size() - 1);
@@ -616,6 +657,8 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
                         list.get(position).content);
                 holder.leftContent.setText(sb);
                 holder.time.setText(list.get(position).time);
+//                holder.leftAvatar.setImageResource(list.get(position).leftAvatar);
+//                holder.rightAvatar.setImageResource(list.get(position).rightAvatar);
             } else {
                 // 发送消息 to显示
                 holder.rightContainer.setVisibility(View.VISIBLE);
@@ -625,6 +668,8 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
                         list.get(position).content);
                 holder.rightContent.setText(sb);
                 holder.time.setText(list.get(position).time);
+                //               holder.leftAvatar.setImageResource(list.get(position).leftAvatar);
+                //               holder.rightAvatar.setImageResource(list.get(position).rightAvatar);
             }
             holder.leftContent.setOnClickListener(new View.OnClickListener() {
 

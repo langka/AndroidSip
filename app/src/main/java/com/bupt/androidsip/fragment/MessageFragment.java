@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 
 import android.view.View;
@@ -12,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.bupt.androidsip.R;
@@ -21,7 +21,6 @@ import com.bupt.androidsip.entity.Chat;
 import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.entity.Message;
 import com.bupt.androidsip.entity.User;
-import com.bupt.androidsip.mananger.ChatManager;
 import com.bupt.androidsip.mananger.UserManager;
 import com.bupt.androidsip.util.VibratorUtils;
 
@@ -55,6 +54,17 @@ public class MessageFragment extends BaseFragment {
     public static int unreadTotal;
     private SimpleDateFormat simpleDateFormat;
 
+    public void setMyAvatar() {
+        // myAvatar = UserManager.getInstance().getUser().head;
+        myAvatar = R.drawable.xusong;
+    }
+
+    private int myAvatar;
+
+    public int getUserAvatarFromID(int ID) {
+        return R.drawable.xusong;
+    }
+
 
     private static List<Chat> chatList = new ArrayList<>();
     ChatListAdapter chatListAdapter = null;
@@ -69,6 +79,7 @@ public class MessageFragment extends BaseFragment {
         simpleDateFormat = new SimpleDateFormat("MM-dd HH:mm");
         initdata();
 
+        setMyAvatar();
         chatListAdapter = new ChatListAdapter(getActivity(), R.layout.item_frag_chat_list, chatList);
 
         listView.setAdapter(chatListAdapter);
@@ -76,10 +87,8 @@ public class MessageFragment extends BaseFragment {
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
             // TODO: 2017/7/1 触发点击
             Intent intent = new Intent(getActivity(), ChatActivity.class);
-            Chat chat = new Chat("高远", "xusong", 1, "快画领域模型", 1);
-            chat.addMsgToList(new Message("^^^^^^^^^^^^^"));
             Bundle bundle = new Bundle();
-            bundle.putParcelable("chat", chat);
+            bundle.putParcelable("chat", chatList.get(i));
             intent.putExtras(bundle);
             startActivity(intent);
 
@@ -90,20 +99,28 @@ public class MessageFragment extends BaseFragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void removeUnread(EventConst.Unread unread) {
-        if (unread.isRemoveAll()) {
+    public void removeAllUnread(EventConst.RemoveAll removeAll) {
+        Log.d("get from fragment", "aaaa");
+        if (removeAll.isRemovaAll()) {
             for (int i = 0; i < chatList.size(); ++i)
                 chatList.get(i).removeUnread();
             chatListAdapter.notifyDataSetChanged();
-        } else if (unread.isRemoveOne()) {
-            for (int i = 0; i < chatList.size(); ++i) {
-                if (chatList.get(i).ID == unread.getID()) {
-                    chatList.get(i).removeUnread();
-                    chatListAdapter.notifyDataSetChanged();
-                }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void removeOneUnread(EventConst.RemoveOne removeOne) {
+        for (int i = 0; i < chatList.size(); ++i) {
+            if (chatList.get(i).ID == removeOne.getID()) {
+                chatList.get(i).removeUnread();
+                chatListAdapter.notifyDataSetChanged();
             }
-        } else
-            return;
+        }
+        unreadTotal = 0;
+        for (int i = 0; i < chatList.size(); i++)
+            unreadTotal += chatList.get(i).getUnread();
+        Log.d("new unread", unreadTotal + "");
+        EventBus.getDefault().post(new EventConst.Unread(unreadTotal, removeOne.getID()));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -115,6 +132,13 @@ public class MessageFragment extends BaseFragment {
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
+    public void addNewMsg(Message msg) {
+        for (int i = 0; i < chatList.size(); ++i)
+            if (chatList.get(i).ID == msg.ID)
+                chatList.get(i).messages.add(msg);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveNewMsg(EventConst.NewMsg newMsg) {
         for (int i = 0; i < chatList.size(); ++i) {
             if (chatList.get(i).ID == newMsg.getID()) {
@@ -123,16 +147,15 @@ public class MessageFragment extends BaseFragment {
 //                    //如果在前台
 //                    chatList.get(i).setLastChat(newMsg.getMsg());
 //                } else {
-                chatList.get(i).messages.add(getChatMsgFrom(newMsg.getMsg()));
+                chatList.get(i).messages.add(getChatMsgFrom(newMsg.getMsg(), 1));
                 chatList.get(i).setLastMsgWithUnread(newMsg.getMsg());
             }
             VibratorUtils.Vibrate(getActivity(), 200);
             return;
         }
 
-        //如果都不在聊天列表就新建一个chat对象
-        chatList.add(new Chat("name", "avatar", 1, newMsg.getMsg(), newMsg.getID()));
-        chatList.get(chatList.size() - 1).messages.add(getChatMsgFrom(newMsg.getMsg()));
+        chatList.add(new Chat("name", R.id.avatar_left, 1, newMsg.getMsg(), newMsg.getID()));
+        chatList.get(chatList.size() - 1).messages.add(getChatMsgFrom(newMsg.getMsg(), 1));
         VibratorUtils.Vibrate(getActivity(), 200);
         chatListAdapter.notifyDataSetChanged();
     }
@@ -157,12 +180,10 @@ public class MessageFragment extends BaseFragment {
                 break;
         }
 
-        chatList.add(new Chat("高远", "xusong", 1, "快画领域模型", 1));
-        chatList.add(new Chat("王昊阳", "xusong", 1, "躺好，等吃饭", 2));
-        chatList.add(new Chat("马飞飞", "xusong", 1, "你们再说啥？", 3));
-        chatList.add(new Chat("栾迎凯", "xusong", 0, "啦啦啦不会", 4));
-
-
+        chatList.add(new Chat("高远", R.drawable.xusong, 1, "快画领域模型", 0));
+        chatList.add(new Chat("王昊阳", R.drawable.xusong, 1, "躺好，等吃饭", 1));
+        chatList.add(new Chat("马飞飞", R.drawable.xusong, 1, "你们再说啥？", 2));
+        chatList.add(new Chat("栾迎凯", R.drawable.xusong, 0, "啦啦啦不会", 3));
     }
 
 
@@ -211,7 +232,7 @@ public class MessageFragment extends BaseFragment {
                         for (int i = 0; i < chatList.size(); i++)
                             unreadTotal += chatList.get(i).getUnread();
 
-                        EventBus.getDefault().post(new EventConst.Unread(unreadTotal));
+                        EventBus.getDefault().post(new EventConst.Unread(unreadTotal, chat.ID));
                     }
                 }
             });
@@ -243,7 +264,7 @@ public class MessageFragment extends BaseFragment {
             for (int i = 0; i < chatList.size(); i++)
                 unreadTotal += chatList.get(i).getUnread();
             if (unreadTotal != 0)
-                EventBus.getDefault().post(new EventConst.Unread(unreadTotal));
+                EventBus.getDefault().post(new EventConst.Unread(unreadTotal, chat.ID));
 
             return convertView;
 
@@ -269,18 +290,22 @@ public class MessageFragment extends BaseFragment {
         }
     }
 
-    private Message getChatMsgFrom(String message) {
+    private Message getChatMsgFrom(String message, int ID) {
         Message msg = new Message();
         msg.content = message;
         msg.fromOrTo = 0;
+        msg.rightAvatar = myAvatar;
+        msg.leftAvatar = getUserAvatarFromID(ID);
         msg.time = simpleDateFormat.format(new Date());
         return msg;
     }
 
-    private Message getChatMsgTo(String message) {
+    private Message getChatMsgTo(String message, int ID) {
         Message msg = new Message();
         msg.content = message;
         msg.fromOrTo = 1;
+        msg.rightAvatar = myAvatar;
+        msg.leftAvatar = getUserAvatarFromID(ID);
         msg.time = simpleDateFormat.format(new Date());
         return msg;
     }

@@ -10,6 +10,36 @@ public class EventConst {
 
     }
 
+    public static class RemoveAll {
+        private boolean removaAll;
+
+        public boolean isRemovaAll() {
+            return removaAll;
+        }
+
+        public RemoveAll(boolean removaAll) {
+            this.removaAll = removaAll;
+        }
+    }
+
+    public static class RemoveOne {
+        private int howMany;
+        private int ID;
+
+        public RemoveOne(int howMany, int ID) {
+            this.howMany = howMany;
+
+            this.ID = ID;
+        }
+
+        public int getHowMany() {
+            return howMany;
+        }
+
+        public int getID() {
+            return ID;
+        }
+    }
 
     public static class Unread {
         private int howMany;
@@ -20,34 +50,14 @@ public class EventConst {
 
         private int ID;
 
-        public Unread(int howMany) {
+        public Unread(int howMany, int ID) {
             this.howMany = howMany;
-            removeAll = false;
-            removeOne = false;
-        }
-
-        public Unread(int howMany, boolean removeAll, boolean removeOne, int ID) {
-            this.howMany = howMany;
-            this.removeAll = removeAll;
-            this.removeOne = removeOne;
             this.ID = ID;
         }
 
         public int getHowMany() {
             return howMany;
         }
-
-        public boolean isRemoveAll() {
-            return removeAll;
-        }
-
-        private boolean removeAll;
-
-        public boolean isRemoveOne() {
-            return removeOne;
-        }
-
-        private boolean removeOne;
 
 
     }

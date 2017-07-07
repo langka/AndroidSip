@@ -85,16 +85,15 @@ public class TabActivity extends BaseActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         EventBus.getDefault().unregister(TabActivity.this);
     }
 
 
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void showUnreadMessage(EventConst.Unread unread) {
-        if (unread.isRemoveAll())
-            return;
+        Log.d("get from activity", "aaa");
         if (badge == null) {
             badge = new QBadgeView(TabActivity.this).bindTarget(messageContainer.
                     findViewById(R.id.message_icon));
@@ -103,11 +102,13 @@ public class TabActivity extends BaseActivity {
                 @Override
                 public void onDragStateChanged(int dragState, Badge badge, View targetView) {
                     if (dragState == STATE_SUCCEED)
-                        EventBus.getDefault().post(new EventConst.Unread(0, true, false, 0));
+                        EventBus.getDefault().post(new EventConst.RemoveAll(true));
                 }
             });
         } else
             badge.setBadgeNumber(unread.getHowMany());
+
+        Log.d("show how many", "" + unread.getHowMany());
     }
 
 

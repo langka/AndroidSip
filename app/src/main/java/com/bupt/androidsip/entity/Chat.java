@@ -3,10 +3,15 @@ package com.bupt.androidsip.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.bupt.androidsip.R;
+import com.bupt.androidsip.mananger.UserManager;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import static com.bupt.androidsip.R.drawable.xusong;
 
 /**
  * Created by WHY on 2017/7/1.
@@ -28,7 +33,8 @@ public class Chat implements Parcelable {
      * 最后一句
      */
     public String leftName;
-    public String leftAvatar;
+    public int leftAvatar;
+    public int rightAvatar;
     public int onlineStatue;
     public String lastChat;
     public int ID;
@@ -36,12 +42,12 @@ public class Chat implements Parcelable {
     private int unread;
 
     public int describeContents() {
-        //几乎所有情况都返回0，仅在当前对象中存在文件描述符时返回1
         return 0;
     }
 
     public void writeToParcel(Parcel out, int flags) {
-        out.writeString(leftAvatar);
+        out.writeInt(ID);
+        out.writeString(leftName);
         out.writeList(messages);
     }
 
@@ -56,7 +62,8 @@ public class Chat implements Parcelable {
     };
 
     public Chat(Parcel parcel) {
-        this.leftAvatar = parcel.readString();
+        this.ID = parcel.readInt();
+        this.leftName = parcel.readString();
         this.messages = parcel.readArrayList(null);
     }
 
@@ -64,18 +71,19 @@ public class Chat implements Parcelable {
     public Chat() {
     }
 
-    public Chat(String leftName, String leftAvatar, int onlineStatue, String lastChat, int ID) {
+    public Chat(String leftName, int leftAvatar, int onlineStatue, String lastChat, int ID) {
         this.leftName = leftName;
-        this.leftAvatar = "@drawable/xusong";
+        this.leftAvatar = leftAvatar;
         this.onlineStatue = onlineStatue;
         this.lastChat = lastChat;
         this.unread = (int) (1 + Math.random() * (10 - 1 + 1));
         this.ID = ID;
+        this.messages = new ArrayList<>();
+        this.rightAvatar = UserManager.getInstance().getUser().head;
     }
 
     public void setLastChat(String msg) {
         lastChat = msg;
-        ++unread;
     }
 
     public void setLastMsgWithUnread(String msg) {
@@ -101,7 +109,7 @@ public class Chat implements Parcelable {
         return leftName;
     }
 
-    public String getLeftAvatar() {
+    public int getLeftAvatar() {
         return leftAvatar;
     }
 
