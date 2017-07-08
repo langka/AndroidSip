@@ -23,6 +23,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.ImageSpan;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -47,13 +48,13 @@ import com.bupt.androidsip.R;
 import com.bupt.androidsip.entity.Chat;
 import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.entity.Message;
-<<<<<<< HEAD
+import com.bupt.androidsip.entity.User;
+import com.bupt.androidsip.entity.response.SipSendMsgResponse;
 import com.bupt.androidsip.entity.sip.SipFailure;
 import com.bupt.androidsip.entity.sip.SipMessage;
-import com.bupt.androidsip.entity.sip.SipResponse;
-=======
->>>>>>> a566f33ebeb2829185faa3d82a1e297a69cb745f
-import com.bupt.androidsip.sip.ISipService;
+
+import com.bupt.androidsip.sip.SipNetListener;
+import com.bupt.androidsip.sip.impl.SipManager;
 import com.bupt.androidsip.view.DropdownListView;
 import com.bupt.androidsip.view.MyEditText;
 
@@ -138,10 +139,10 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
 
     private int ID;
 
-    public void setLeftAvatarFromID(int ID) {
-        // TODO: 07/07/2017 根据ID查询头像
-        leftAvatar = R.drawable.xusong;
-    }
+//    public void setLeftAvatarFromID(int ID) {
+//        // TODO: 07/07/2017 根据ID查询头像
+//        leftAvatar = R.drawable.xusong;
+//    }
 
     public void setMyAvatar() {
         // myAvatar = UserManager.getSipMa().getUser().head;
@@ -157,7 +158,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        simpleDateFormat = new SimpleDateFormat("MM-dd HH:mm");
+        simpleDateFormat = new SimpleDateFormat("HH:mm");
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
         Intent intent = getIntent();
@@ -192,7 +193,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         setID(intent.getParcelableExtra("chat"));
         setTitle((Chat) intent.getParcelableExtra("chat"));
         setMyAvatar();
-        setLeftAvatarFromID(getID());
+//        setLeftAvatarFromID(getID());
     }
 
     public void setChat(Chat chat) {
@@ -215,12 +216,12 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         EventBus.getDefault().post(new EventConst.RemoveOne(0, getID()));
     }
 
-    private Message getChatMsgFrom(String message, int ID) {
+    private Message getChatMsgFrom(String message, User user) {
         Message msg = new Message();
         msg.content = message;
         msg.fromOrTo = 0;
         msg.rightAvatar = myAvatar;
-        msg.leftAvatar = leftAvatar;
+        msg.leftAvatar = user.head;
         msg.ID = ID;
         msg.time = simpleDateFormat.format(new Date());
         return msg;
@@ -231,7 +232,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         msg.content = message;
         msg.fromOrTo = 1;
         msg.rightAvatar = myAvatar;
-        msg.leftAvatar = leftAvatar;
+        msg.leftAvatar = ID;
         msg.ID = ID;
         msg.time = simpleDateFormat.format(new Date());
         return msg;
@@ -242,7 +243,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
             if (chatFaceContainer.getVisibility() == View.VISIBLE)
                 chatFaceContainer.setVisibility(View.GONE);
 
-            EventBus.getDefault().post(new EventConst.NewMsg(1, "test"));
+            //           EventBus.getDefault().post(new EventConst.NewMsg(1, "test"));
         }
     };
 
@@ -253,35 +254,38 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
             if (!TextUtils.isEmpty(inputMsg)) {
                 Message msg = getChatMsgTo(inputMsg, getID());
 
-                sipManager.sendMessage(createStringMessage(chat, inputMsg), new SipNetListener() {
-                    @Override
-                    public void onSuccess(SipResponse response) {
-                        messages.add(msg);
-                        msgAdapter.setList(messages);
-                        msgAdapter.notifyDataSetChanged();
-                        msgListView.setSelection(messages.size() - 1);
-                        EventBus.getDefault().post(msg);
-                        EventBus.getDefault().post(new EventConst.LastMsg(getID(), inputMsg));
-                        sendToMsg.setText("");
-                    }
+                sipManager.sendMessage(createStringMessage(chat, inputMsg),
+                        new SipNetListener<SipSendMsgResponse>() {
+                            @Override
+                            public void onSuccess(SipSendMsgResponse response) {
+                                messages.add(msg);
+                                msgAdapter.setList(messages);
+                                msgAdapter.notifyDataSetChanged();
+                                msgListView.setSelection(messages.size() - 1);
+                                EventBus.getDefault().post(msg);
+                                EventBus.getDefault().post(new EventConst.LastMsg(getID(),
+                                        inputMsg));
+                                sendToMsg.setText("");
+                            }
 
-                    @Override
-                    public void onFailure(SipFailure failure) {
+                            @Override
+                            public void onFailure(SipFailure failure) {
 
-                        Toast.makeText(getApplicationContext(),
-                                "因" + failure.reason + "发送失败，请稍后重试。",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
+                                Toast.makeText(getApplicationContext(),
+                                        "因" + failure.reason + "发送失败，请稍后重试。",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        });
             }
         }
     };
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveNewMsg(EventConst.NewMsg newMsg) {
-        if (newMsg.getID() != getID())
+        if (newMsg.getUser().id != getID())
             return;
-        messages.add(getChatMsgFrom(newMsg.getMsg(), getID()));
+
+        messages.add(getChatMsgFrom(newMsg.getMsg(), newMsg.getUser()));
         msgAdapter.setList(messages);
         msgAdapter.notifyDataSetChanged();
         msgListView.setSelection(messages.size() - 1);

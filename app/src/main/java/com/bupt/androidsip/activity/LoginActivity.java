@@ -7,9 +7,18 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bupt.androidsip.R;
+import com.bupt.androidsip.entity.Friend;
+import com.bupt.androidsip.entity.response.SipLoginResponse;
+import com.bupt.androidsip.entity.sip.SipFailure;
+import com.bupt.androidsip.mananger.FriendManager;
+import com.bupt.androidsip.mananger.SipChatManager;
+import com.bupt.androidsip.mananger.UserManager;
 import com.bupt.androidsip.sip.ISipService;
+import com.bupt.androidsip.sip.SipNetListener;
+import com.bupt.androidsip.sip.impl.SipManager;
 import com.bupt.androidsip.util.BitmapUtils;
 import com.dd.CircularProgressButton;
 
@@ -30,6 +39,11 @@ public class LoginActivity extends BaseActivity {
     EditText accountEdit;
     @BindView(R.id.login_pwd_edit)
     EditText pwdEdit;
+
+    SipManager sipManager = SipManager.getSipManager();
+    UserManager userManager = UserManager.getInstance();
+    SipChatManager sipChatManager = SipChatManager.getInstance();
+    FriendManager friendManager = FriendManager.getInstance();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,12 +68,28 @@ public class LoginActivity extends BaseActivity {
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                showLoadingView();
+                sipManager.login(accountEdit.getText().toString(), pwdEdit.getText().toString(),
+                        new SipNetListener<SipLoginResponse>() {
+                            @Override
+                            public void onSuccess(SipLoginResponse response) {
 
-                // showTextOnDialog("hahaha");
-                
-                TabActivity.Start(LoginActivity.this);
-                finish();
+                                userManager.setUser(response.self);
+                                sipChatManager.setSipChat(response.groups);
+                                friendManager.setFriends(response.friends);
+                                hideLoadingView();
 
+                                TabActivity.Start(LoginActivity.this);
+                                finish();
+                            }
+
+                            @Override
+                            public void onFailure(SipFailure failure) {
+                                Toast.makeText(getApplicationContext(),
+                                        failure.reason, Toast.LENGTH_SHORT).show();
+                                hideLoadingView();
+                            }
+                        });
 
 //                if (checkPwdAndAccount()) {
 //                    if (confirm.getProgress() == 0) {

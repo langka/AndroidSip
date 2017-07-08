@@ -45,7 +45,7 @@
 //        View v = inflater.inflate(R.layout.frag_chat_list, null);
 //        ButterKnife.bind(this, v);
 //
-//        initdata();
+//        initData();
 //
 //        // TODO: 2017/7/1 动态展示用户头像，获取用户URL
 //        headImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_box_18px));
@@ -63,7 +63,7 @@
 //
 //    }
 //
-//    void initdata(){
+//    void initData(){
 //        chatList = UserManager.getSipMa().getUser().chatList;
 //    }
 //

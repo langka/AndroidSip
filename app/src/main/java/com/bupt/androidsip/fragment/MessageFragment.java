@@ -2,14 +2,12 @@ package com.bupt.androidsip.fragment;
 
 import android.content.Context;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import android.view.LayoutInflater;
@@ -27,7 +25,12 @@ import com.bupt.androidsip.entity.Chat;
 import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.entity.Message;
 import com.bupt.androidsip.entity.User;
+import com.bupt.androidsip.entity.sip.SipChat;
+import com.bupt.androidsip.entity.sip.SipMessage;
+import com.bupt.androidsip.mananger.SipChatManager;
 import com.bupt.androidsip.mananger.UserManager;
+import com.bupt.androidsip.sip.SipMessageListener;
+import com.bupt.androidsip.sip.impl.SipManager;
 import com.bupt.androidsip.util.VibratorUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -44,6 +47,8 @@ import butterknife.ButterKnife;
 import q.rorbin.badgeview.Badge;
 import q.rorbin.badgeview.QBadgeView;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * Created by xusong on 2017/7/2.
  * About:
@@ -55,26 +60,30 @@ public class MessageFragment extends BaseFragment {
     ImageView headImage;
     @BindView(R.id.frag_friend_list)
     ListView listView;
+    UserManager userManager = UserManager.getInstance();
 
     User user;
     public static int unreadTotal;
-    private SimpleDateFormat simpleDateFormat;
+    public static SimpleDateFormat simpleDateFormat;
 
     public void setMyAvatar() {
-        // myAvatar = UserManager.getSipMa().getUser().head;
-        myAvatar = R.drawable.xusong;
+        myAvatar = userManager.getUser().head;
     }
 
     private int myAvatar;
+    private List<SipChat> groups;
 
     public int getUserAvatarFromID(int ID) {
         return R.drawable.xusong;
     }
 
-
     private static List<Chat> chatList = new ArrayList<>();
     ChatListAdapter chatListAdapter = null;
 
+    boolean isShock = true;
+    boolean pushEnterToSend = true;
+
+    SipManager sipManager = SipManager.getSipManager();
 
     @Nullable
     @Override
@@ -82,10 +91,9 @@ public class MessageFragment extends BaseFragment {
         View v = inflater.inflate(R.layout.frag_chat_list, null);
         ButterKnife.bind(this, v);
 
-        simpleDateFormat = new SimpleDateFormat("MM-dd HH:mm");
-        initdata();
+        simpleDateFormat = new SimpleDateFormat("HH:mm");
+        initData();
 
-        setMyAvatar();
         chatListAdapter = new ChatListAdapter(getActivity(), R.layout.item_frag_chat_list, chatList);
 
         listView.setAdapter(chatListAdapter);
@@ -99,9 +107,41 @@ public class MessageFragment extends BaseFragment {
             startActivity(intent);
 
         });
+
+        sipManager.setMessageListener(new SipMessageListener() {
+            @Override
+            public void onNewMessage(SipMessage message) {
+                createChatFromSipMessage(message);
+            }
+        });
+
         EventBus.getDefault().register(this);
         return v;
 
+    }
+
+    public void createChatFromSipMessage(SipMessage sipMessage) {
+        for (int i = 0; i < chatList.size(); ++i) {
+            if (sipMessage.from.id == chatList.get(i).ID) {
+                chatList.get(i).messages.add(getChatMsgFrom(sipMessage.content,
+                        sipMessage.from));
+                chatList.get(i).setLastMsgWithUnread(sipMessage.content);
+                chatListAdapter.notifyDataSetChanged();
+                EventBus.getDefault().post(new EventConst.NewMsg(sipMessage.from,
+                        sipMessage.content));
+                VibratorUtils.Vibrate(getActivity(), 200);
+                return;
+            }
+        }
+
+        chatList.add(new Chat(sipMessage.from.name, sipMessage.from.head, 1,
+                sipMessage.content, sipMessage.from.id));
+        chatList.get(chatList.size() - 1).messages.add(getChatMsgFrom(sipMessage.content,
+                sipMessage.from));
+        EventBus.getDefault().post(new EventConst.NewMsg(sipMessage.from,
+                sipMessage.content));
+        VibratorUtils.Vibrate(getActivity(), 200);
+        chatListAdapter.notifyDataSetChanged();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -144,23 +184,6 @@ public class MessageFragment extends BaseFragment {
                 chatList.get(i).messages.add(msg);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void receiveNewMsg(EventConst.NewMsg newMsg) {
-        for (int i = 0; i < chatList.size(); ++i) {
-            if (chatList.get(i).ID == newMsg.getID()) {
-                chatList.get(i).messages.add(getChatMsgFrom(newMsg.getMsg(), newMsg.getID()));
-                chatList.get(i).setLastMsgWithUnread(newMsg.getMsg());
-                chatListAdapter.notifyDataSetChanged();
-                VibratorUtils.Vibrate(getActivity(), 200);
-                return;
-            }
-        }
-        chatList.add(new Chat("name", R.id.avatar_left, 1, newMsg.getMsg(), newMsg.getID()));
-        chatList.get(chatList.size() - 1).messages.add(getChatMsgFrom(newMsg.getMsg(), newMsg.getID()));
-        VibratorUtils.Vibrate(getActivity(), 200);
-        chatListAdapter.notifyDataSetChanged();
-    }
-
 
     @Override
     public void onDestroy() {
@@ -169,22 +192,36 @@ public class MessageFragment extends BaseFragment {
         EventBus.getDefault().unregister(this);
     }
 
-    void initdata() {
+    void initData() {
         user = UserManager.getInstance().getUser();
+        groups = SipChatManager.getInstance().getSipChat();
 
-        // TODO: 2017/7/1 动态展示用户头像
-        switch (user.head) {
-            case 0:
-                break;
-            case 1:
-                headImage.setImageDrawable(getResources().getDrawable(R.drawable.xusong, null));
-                break;
+        for (int i = 0; i < groups.size(); ++i) {
+            chatList.add(fromSipChatToChat(groups.get(i)));
+        }
+        setMyAvatar();
+    }
+
+    public Chat fromSipChatToChat(SipChat sipChat) {
+        Chat chat = new Chat();
+        if (sipChat.users.size() > 1) {
+            chat.leftAvatar = R.drawable.ic_group_blue_90dp;
+            chat.leftName = sipChat.users.size() + "人群聊";
+            chat.latestTime = sipChat.latestTime;
+            chat.lastMessage = "本地存储方案还没实现";
+            chat.onlineStatue = 1;
+            chat.ID = sipChat.id;
+        } else {
+            chat.leftAvatar = sipChat.users.get(0).head;
+            chat.leftName = sipChat.users.get(0).name;
+            chat.latestTime = sipChat.latestTime;
+            chat.lastMessage = "本地存储方案还没实现";
+            chat.onlineStatue = 1;
+            chat.ID = sipChat.id;
+            // TODO: 08/07/2017 聊天记录本地储存读取
         }
 
-        chatList.add(new Chat("高远", R.drawable.xusong, 1, "快画领域模型", 0));
-        chatList.add(new Chat("王昊阳", R.drawable.xusong, 1, "躺好，等吃饭", 1));
-        chatList.add(new Chat("马飞飞", R.drawable.xusong, 1, "你们再说啥？", 2));
-        chatList.add(new Chat("栾迎凯", R.drawable.xusong, 0, "啦啦啦不会", 3));
+        return chat;
     }
 
 
@@ -221,6 +258,8 @@ public class MessageFragment extends BaseFragment {
                 holder = (ViewHolder) convertView.getTag();
             }
 
+
+            holder.time.setText(simpleDateFormat.format(chat.latestTime));
             holder.badge.setBadgeNumber(chat.getUnread());
             holder.badge.setOnDragStateChangedListener(new Badge.OnDragStateChangedListener() {
                 @Override
@@ -293,12 +332,12 @@ public class MessageFragment extends BaseFragment {
         }
     }
 
-    private Message getChatMsgFrom(String message, int ID) {
+    private Message getChatMsgFrom(String message, User user) {
         Message msg = new Message();
         msg.content = message;
         msg.fromOrTo = 0;
         msg.rightAvatar = myAvatar;
-        msg.leftAvatar = getUserAvatarFromID(ID);
+        msg.leftAvatar = user.head;
         msg.time = simpleDateFormat.format(new Date());
         return msg;
     }

@@ -2,6 +2,7 @@ package com.bupt.androidsip.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -42,6 +43,10 @@ public class SettingsActivity extends BaseActivity {
     @BindView(R.id.frag_logout)
     RelativeLayout logoutContainer;
 
+    SharedPreferences.Editor editor = getSharedPreferences("MySettings", MODE_PRIVATE).edit();
+    boolean isShock = true;
+    boolean pushEnterToSend = true;
+
     private View.OnClickListener settingsOnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -54,11 +59,14 @@ public class SettingsActivity extends BaseActivity {
                         @Override
                         public void onClick(View view) {
                             // TODO: 02/07/2017 添加更改通知方式操作
+                            editor.putBoolean("isShock", isShock);
+                            editor.commit();
                         }
                     }, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
+                            editor.putBoolean("isShock", !isShock);
+                            editor.commit();
                         }
                     }));
                     break;
@@ -67,16 +75,20 @@ public class SettingsActivity extends BaseActivity {
                         @Override
                         public void onClick(View view) {
                             // TODO: 02/07/2017 添加更改发送方式的操作
+                            editor.putBoolean("pushEnterToSend", pushEnterToSend);
+                            editor.commit();
                         }
                     }, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
+                            editor.putBoolean("pushEnterToSend", !pushEnterToSend);
+                            editor.commit();
                         }
                     }));
                     break;
                 case R.id.frag_clear_chat_history:
                     showText("清理成功！");
+                    // TODO: 08/07/2017 清空本地聊天信息缓存
                     break;
                 case R.id.frag_change_password:
                     showInputDialog("变更", "请输入新密码", e -> {

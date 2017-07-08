@@ -14,5 +14,4 @@ public class SipLoginResponse {
     public User self;
     public List<User> friends;
     public List<SipChat> groups;
-
 }
