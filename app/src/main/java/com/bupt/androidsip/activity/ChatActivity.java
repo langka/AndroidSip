@@ -174,8 +174,8 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         initViewPager();
 
         msgAdapter.notifyDataSetChanged();
-        messages.add(getChatMsgFrom("我爱吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜", getID()));
-        messages.add(getChatMsgTo("测试测试#[face/png/f_static_018.png]#", getID()));
+//        messages.add(getChatMsgFrom("我爱吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜", getID()));
+//        messages.add(getChatMsgTo("测试测试#[face/png/f_static_018.png]#", getID()));
 
         EventBus.getDefault().register(this);
 
@@ -234,6 +234,8 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         public void onClick(View v) {
             if (chatFaceContainer.getVisibility() == View.VISIBLE)
                 chatFaceContainer.setVisibility(View.GONE);
+
+            EventBus.getDefault().post(new EventConst.NewMsg(1, "test"));
         }
     };
 
@@ -257,6 +259,8 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveNewMsg(EventConst.NewMsg newMsg) {
+        if (newMsg.getID() != getID())
+            return;
         messages.add(getChatMsgFrom(newMsg.getMsg(), getID()));
         msgAdapter.setList(messages);
         msgAdapter.notifyDataSetChanged();

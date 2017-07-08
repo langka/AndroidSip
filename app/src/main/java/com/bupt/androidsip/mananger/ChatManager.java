@@ -4,38 +4,27 @@ import android.content.Context;
 
 import com.bupt.androidsip.entity.Chat;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+
+import static java.lang.String.valueOf;
+
 /**
  * Created by vita-nove on 07/07/2017.
  */
 
 public class ChatManager {
-    private static ChatManager instance;
+    private static ChatManager instance = new ChatManager();
+    private static int key = 0;
 
-    public Chat getChat() {
-        return chat;
+    private ChatManager() {
+        chatList = new ArrayList<>();
     }
 
-    private Chat chat;
-
-    public void setChat(Chat chat) {
-        this.chat = chat;
-    }
-
-
-
-
-    private ChatManager(Context context) {
-
-    }
-
-    public static ChatManager GetInstance(Context context) {
-        if (instance == null) {
-            synchronized (ChatManager.class) {
-                if (instance == null) {
-                    instance = new ChatManager(context);
-                }
-            }
-        }
+    public static ChatManager GetInstance() {
         return instance;
     }
+
+    private ArrayList<Chat> chatList;
 }
