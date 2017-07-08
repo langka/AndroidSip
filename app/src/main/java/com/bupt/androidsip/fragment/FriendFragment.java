@@ -2,6 +2,7 @@ package com.bupt.androidsip.fragment;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -32,9 +33,13 @@ import android.widget.Toast;
 
 import com.bupt.androidsip.R;
 import com.bupt.androidsip.activity.BaseActivity;
+import com.bupt.androidsip.activity.ChatActivity;
 import com.bupt.androidsip.activity.DemoWifiChatActivity;
 import com.bupt.androidsip.customview.SlideBar;
+import com.bupt.androidsip.entity.Chat;
 import com.bupt.androidsip.entity.Friend;
+import com.bupt.androidsip.entity.User;
+import com.bupt.androidsip.mananger.ChatManager;
 import com.bupt.androidsip.mananger.UserManager;
 import com.bupt.androidsip.mananger.WifiDirectManager;
 import com.wang.avi.AVLoadingIndicatorView;
@@ -118,6 +123,23 @@ public class FriendFragment extends BaseFragment {
             }
         });
         listView.setAdapter(sortAdapter);
+        listView.setOnItemClickListener((adapterView, view, i, l) -> {
+            // TODO: 08/07/2017 添加识别好友并且创建对应chat对象的操作
+            Intent intent = new Intent(getActivity(), ChatActivity.class);
+            Bundle bundle = new Bundle();
+//            bundle.putParcelable("chat", );
+            User user = (User) sortAdapter.getItem(i);
+            if (ChatManager.getChatManager().isInList(user.id))
+                bundle.putParcelable("chat", ChatManager.getChatManager().getChatFromID(user.id));
+            else {
+                Chat chat = new Chat(user.name, user.head, 1, "", user.id);
+                ChatManager.getChatManager().addChat(chat);
+                bundle.putParcelable("chat", chat);
+            }
+            intent.putExtras(bundle);
+            startActivity(intent);
+
+        });
         return v;
     }
 

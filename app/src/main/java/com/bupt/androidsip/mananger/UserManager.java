@@ -17,7 +17,6 @@ public class UserManager {
     private static UserManager instance = new UserManager();
 
     private UserManager() {
-        user = null;
     }
 
     public void setUser(User user) {

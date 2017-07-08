@@ -27,6 +27,7 @@ import com.bupt.androidsip.entity.Message;
 import com.bupt.androidsip.entity.User;
 import com.bupt.androidsip.entity.sip.SipChat;
 import com.bupt.androidsip.entity.sip.SipMessage;
+import com.bupt.androidsip.mananger.ChatManager;
 import com.bupt.androidsip.mananger.SipChatManager;
 import com.bupt.androidsip.mananger.UserManager;
 import com.bupt.androidsip.sip.SipMessageListener;
@@ -38,7 +39,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -60,15 +60,10 @@ public class MessageFragment extends BaseFragment {
     ImageView headImage;
     @BindView(R.id.frag_friend_list)
     ListView listView;
-    UserManager userManager = UserManager.getInstance();
 
-    User user;
+    User user = UserManager.getInstance().getUser();
     public static int unreadTotal;
     public static SimpleDateFormat simpleDateFormat;
-
-    public void setMyAvatar() {
-        myAvatar = userManager.getUser().head;
-    }
 
     private int myAvatar;
     private List<SipChat> groups;
@@ -77,10 +72,11 @@ public class MessageFragment extends BaseFragment {
         return R.drawable.xusong;
     }
 
-    private static List<Chat> chatList = new ArrayList<>();
+    ChatManager chatManager = ChatManager.getChatManager();
+
+    private static List<Chat> chatList = ChatManager.getChatManager().getChatList();
     ChatListAdapter chatListAdapter = null;
 
-    //    SharedPreferences pref = getActivity().getSharedPreferences("MySettings", MODE_PRIVATE);
     boolean isShock = true;
 
     SipManager sipManager = SipManager.getSipManager();
@@ -91,20 +87,20 @@ public class MessageFragment extends BaseFragment {
         View v = inflater.inflate(R.layout.frag_chat_list, null);
         ButterKnife.bind(this, v);
 
-        //       isShock = pref.getBoolean("isShock", true);
+        SharedPreferences pref = getActivity().getSharedPreferences("MySettings", MODE_PRIVATE);
+        isShock = pref.getBoolean("isShock", true);
 
         simpleDateFormat = new SimpleDateFormat("HH:mm");
         initData();
 
-        chatListAdapter = new ChatListAdapter(getActivity(), R.layout.item_frag_chat_list, chatList);
-
+        chatListAdapter = new ChatListAdapter(getActivity(), R.layout.item_frag_chat_list,
+                chatManager.getChatList());
         listView.setAdapter(chatListAdapter);
-
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
             // TODO: 2017/7/1 触发点击
             Intent intent = new Intent(getActivity(), ChatActivity.class);
             Bundle bundle = new Bundle();
-            bundle.putParcelable("chat", chatList.get(i));
+            bundle.putParcelable("chat", chatManager.getChat(i));
             intent.putExtras(bundle);
             startActivity(intent);
 
@@ -123,12 +119,18 @@ public class MessageFragment extends BaseFragment {
 
     }
 
+    public void setMyAvatar() {
+        myAvatar = user.head;
+    }
+
     public void createChatFromSipMessage(SipMessage sipMessage) {
         for (int i = 0; i < chatList.size(); ++i) {
             if (sipMessage.from.id == chatList.get(i).ID) {
-                chatList.get(i).messages.add(getChatMsgFrom(sipMessage.content,
-                        sipMessage.from));
-                chatList.get(i).setLastMsgWithUnread(sipMessage.content);
+//                chatList.get(i).messages.add(getChatMsgFrom(sipMessage.content,
+//                        sipMessage.from));
+                chatManager.addMsg(i, getChatMsgFrom(sipMessage.content, sipMessage.from));
+//                chatList.get(i).setLastMsgWithUnread(sipMessage.content);
+                chatManager.setLastMsgWithUnread(i, sipMessage.content);
                 chatListAdapter.notifyDataSetChanged();
                 EventBus.getDefault().post(new EventConst.NewMsg(sipMessage.from,
                         sipMessage.content));
@@ -138,10 +140,15 @@ public class MessageFragment extends BaseFragment {
             }
         }
 
-        chatList.add(new Chat(sipMessage.from.name, sipMessage.from.head, 1,
+//        chatList.add(new Chat(sipMessage.from.name, sipMessage.from.head, 1,
+//                sipMessage.content, sipMessage.from.id));
+        chatManager.addChat(new Chat(sipMessage.from.name, sipMessage.from.head, 1,
                 sipMessage.content, sipMessage.from.id));
-        chatList.get(chatList.size() - 1).messages.add(getChatMsgFrom(sipMessage.content,
+//        chatList.get(chatList.size() - 1).messages.add(getChatMsgFrom(sipMessage.content,
+//                sipMessage.from));
+        chatManager.addMsg(chatManager.getChatList().size() - 1, getChatMsgFrom(sipMessage.content,
                 sipMessage.from));
+
         EventBus.getDefault().post(new EventConst.NewMsg(sipMessage.from,
                 sipMessage.content));
         VibratorUtils.Vibrate(getActivity(), 200);
@@ -151,10 +158,10 @@ public class MessageFragment extends BaseFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void removeAllUnread(EventConst.RemoveAll removeAll) {
-        Log.d("get from fragment", "aaaa");
         if (removeAll.isRemoveAll()) {
             for (int i = 0; i < chatList.size(); ++i)
-                chatList.get(i).removeUnread();
+//                chatList.get(i).removeUnread();
+                chatManager.removeUnread(i);
             chatListAdapter.notifyDataSetChanged();
         }
     }
@@ -163,22 +170,27 @@ public class MessageFragment extends BaseFragment {
     public void removeOneUnread(EventConst.RemoveOne removeOne) {
         for (int i = 0; i < chatList.size(); ++i) {
             if (chatList.get(i).ID == removeOne.getID()) {
-                chatList.get(i).removeUnread();
+//                chatList.get(i).removeUnread();
+                chatManager.removeUnread(i);
                 chatListAdapter.notifyDataSetChanged();
             }
         }
-        unreadTotal = 0;
-        for (int i = 0; i < chatList.size(); i++)
-            unreadTotal += chatList.get(i).getUnread();
-        Log.d("new unread", unreadTotal + "");
-        EventBus.getDefault().post(new EventConst.Unread(unreadTotal, removeOne.getID()));
+//        unreadTotal = 0;
+//        //刷新一下当前的chatlist
+//        chatList = chatManager.getChatList();
+//        for (int i = 0; i < chatList.size(); i++)
+//            unreadTotal += chatList.get(i).getUnread();
+//        Log.d("new unread", unreadTotal + "");
+        EventBus.getDefault().post(new EventConst.Unread(chatManager.getTotalUnread(),
+                removeOne.getID()));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void setLastMsg(EventConst.LastMsg lastMsg) {
         for (int i = 0; i < chatList.size(); ++i)
             if (chatList.get(i).ID == lastMsg.getID())
-                chatList.get(i).setLastChat(lastMsg.getMsg());
+//                chatList.get(i).setLastChat(lastMsg.getMsg());
+                chatManager.setLastMsgWithUnread(i, lastMsg.getMsg());
     }
 
 
@@ -186,7 +198,8 @@ public class MessageFragment extends BaseFragment {
     public void addNewMsg(Message msg) {
         for (int i = 0; i < chatList.size(); ++i)
             if (chatList.get(i).ID == msg.ID)
-                chatList.get(i).messages.add(msg);
+//                chatList.get(i).messages.add(msg);
+                chatManager.addMsg(i, msg);
     }
 
 
@@ -202,7 +215,8 @@ public class MessageFragment extends BaseFragment {
         groups = SipChatManager.getInstance().getSipChat();
 
         for (int i = 0; i < groups.size(); ++i) {
-            chatList.add(fromSipChatToChat(groups.get(i)));
+//            chatList.add(fromSipChatToChat(groups.get(i)));
+            chatManager.addChat(fromSipChatToChat(groups.get(i)));
         }
         setMyAvatar();
     }
@@ -272,12 +286,14 @@ public class MessageFragment extends BaseFragment {
                     if (dragState == STATE_SUCCEED) {
                         targetView.setPadding(0, 5, 0, 5);
                         badge.setBadgeNumber(0);
-                        chat.removeUnread();  //去除未读
-                        unreadTotal = 0;
-                        for (int i = 0; i < chatList.size(); i++)
-                            unreadTotal += chatList.get(i).getUnread();
+                        ChatManager.getChatManager().removeUnread(position);
+//                        chat.removeUnread();  //去除未读
+//                        unreadTotal = 0;
+//                        for (int i = 0; i < chatList.size(); i++)
+//                            unreadTotal += chatList.get(i).getUnread();
 
-                        EventBus.getDefault().post(new EventConst.Unread(unreadTotal, chat.ID));
+                        EventBus.getDefault().post(new EventConst.Unread(
+                                ChatManager.getChatManager().getTotalUnread(), chat.ID));
                     }
                 }
             });
@@ -307,11 +323,12 @@ public class MessageFragment extends BaseFragment {
                 holder.time.setPadding(0, 10, 80, 10);
 
             //设置tab上的未读信息数
-            unreadTotal = 0;
-            for (int i = 0; i < chatList.size(); i++)
-                unreadTotal += chatList.get(i).getUnread();
-            if (unreadTotal != 0)
-                EventBus.getDefault().post(new EventConst.Unread(unreadTotal, chat.ID));
+//            unreadTotal = 0;
+//            for (int i = 0; i < chatList.size(); i++)
+//                unreadTotal += chatList.get(i).getUnread();
+//            if (unreadTotal != 0)
+            EventBus.getDefault().post(new EventConst.Unread(
+                    ChatManager.getChatManager().getTotalUnread(), chat.ID));
 
             return convertView;
 

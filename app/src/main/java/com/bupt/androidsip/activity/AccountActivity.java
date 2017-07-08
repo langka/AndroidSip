@@ -70,7 +70,6 @@ public class AccountActivity extends BaseActivity {
                         if (e.trim().isEmpty())
                             showText("内容为空");
                         else {
-                            // TODO: 02/07/2017 真正保存这些内容
                             user.name = e.toString();
                             sipManager.modifyUserInfo(user);
                             TextView tv = (TextView) v.findViewById(R.id.frag_nickname).
@@ -85,7 +84,6 @@ public class AccountActivity extends BaseActivity {
                         if (e.trim().isEmpty())
                             showText("保存成功！");
                         else {
-                            // TODO: 02/07/2017 真正保存这些内容
                             user.description = e.toString();
                             sipManager.modifyUserInfo(user);
                             TextView tv = (TextView) v.findViewById(R.id.frag_description).
@@ -99,7 +97,6 @@ public class AccountActivity extends BaseActivity {
                     showBottomDialog(Arrays.asList("男", "女"), Arrays.asList(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            // TODO: 02/07/2017 添加更改性别的操作
                             user.sex = "男";
                             sipManager.modifyUserInfo(user);
                             TextView tv = (TextView) v.findViewById(R.id.frag_sex).

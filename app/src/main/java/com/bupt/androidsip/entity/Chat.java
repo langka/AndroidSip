@@ -43,16 +43,15 @@ public class Chat implements Parcelable {
 
     public SipChat sipChat;
     public String name;
-    public String headImageURL;
+//    public String headImageURL;
     public String lastMessage;
     public String leftName;
     public int leftAvatar;
     public int rightAvatar;
     public int onlineStatue;
-    public String lastChat;
     public int ID;
     public ArrayList<Message> messages;
-    private int unread;
+    public int unread;
     public long latestTime;
 
     public int describeContents() {
@@ -90,7 +89,6 @@ public class Chat implements Parcelable {
         this.leftAvatar = leftAvatar;
         this.onlineStatue = onlineStatue;
         this.lastMessage = lastChat;
-        this.lastChat = lastChat;
 //        this.unread = (int) (1 + Math.random() * (10 - 1 + 1));
         this.unread = 0;
         this.ID = ID;
@@ -98,20 +96,20 @@ public class Chat implements Parcelable {
         this.rightAvatar = UserManager.getInstance().getUser().head;
     }
 
-    public void setLastChat(String msg) {
-        lastChat = msg;
-    }
-
-    public void setLastMsgWithUnread(String msg) {
-        lastChat = msg;
-        ++unread;
-    }
-
-    public void addMsgToList(Message msg) {
-        if (messages == null)
-            messages = new ArrayList<>();
-        messages.add(msg);
-    }
+//    public void setLastChat(String msg) {
+//        lastMessage = msg;
+//    }
+//
+//    public void setLastMsgWithUnread(String msg) {
+//        lastMessage = msg;
+//        ++unread;
+//    }
+//
+//    public void addMsgToList(Message msg) {
+//        if (messages == null)
+//            messages = new ArrayList<>();
+//        messages.add(msg);
+//    }
 
     public int getUnread() {
         return unread;
