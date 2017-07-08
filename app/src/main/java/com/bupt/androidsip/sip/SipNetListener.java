@@ -1,5 +1,7 @@
 package com.bupt.androidsip.sip;
 
+import com.bupt.androidsip.entity.sip.SipFailure;
+
 /**
  * Created by xusong on 2017/7/8.
  * About:
@@ -8,5 +10,5 @@ package com.bupt.androidsip.sip;
 public interface SipNetListener<T> {
     void onSuccess(T response);//成功回调
 
-    void onFailure(T failure);//失败回调
+    void onFailure(SipFailure failure);//失败回调
 }

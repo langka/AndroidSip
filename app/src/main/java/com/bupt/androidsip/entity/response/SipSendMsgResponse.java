@@ -6,6 +6,6 @@ package com.bupt.androidsip.entity.response;
  */
 
 public class SipSendMsgResponse {
-    
+
 
 }

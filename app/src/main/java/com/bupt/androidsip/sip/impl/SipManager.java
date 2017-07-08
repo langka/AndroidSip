@@ -2,13 +2,16 @@ package com.bupt.androidsip.sip.impl;
 
 import android.javax.sip.Dialog;
 import android.javax.sip.ListeningPoint;
+import android.javax.sip.ObjectInUseException;
+import android.javax.sip.PeerUnavailableException;
 import android.javax.sip.SipFactory;
+import android.javax.sip.SipListener;
 import android.javax.sip.SipProvider;
+import android.javax.sip.SipStack;
 import android.javax.sip.address.AddressFactory;
 import android.javax.sip.header.HeaderFactory;
 import android.javax.sip.message.MessageFactory;
 import android.javax.sip.message.Request;
-import android.net.sip.SipProfile;
 import android.os.Handler;
 import android.util.Log;
 
@@ -20,6 +23,7 @@ import com.bupt.androidsip.sip.SipNetListener;
 import com.bupt.androidsip.sip.SipSystemListener;
 
 import java.util.HashMap;
+import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
@@ -61,12 +65,15 @@ public class SipManager implements ISipService {
     private HeaderFactory headerFactory;
     private AddressFactory addressFactory;
     private MessageFactory messageFactory;
-    private SipFactory 		sipFactory;
+    private SipFactory sipFactory;
     private ListeningPoint udpListeningPoint;
     private SipProfile sipProfile;
     private Dialog dialog;
     private Request ackRequest;
+    private static SipStack sipStack;
+    private volatile StackState stackState = StackState.UNINIT;
 
+    private SipListener sipListener;
 
     /**
      * static methods
@@ -90,39 +97,59 @@ public class SipManager implements ISipService {
      */
     private SipManager(Handler handler) {
         this.handler = handler;
-        initLock  = new Semaphore(0);
+        initLock = new Semaphore(0);
         executor = Executors.newSingleThreadExecutor();//因为我们的消息不够密集，单个线程应该足够处理了
         taskQueue = new ArrayBlockingQueue<>(20, false);
     }
 
     //启动消息循环,并且发起异步的sip初始化过程，初始化成功就complete
     private void initialise() {
-      new Thread(()->{
-          exeTask = () -> {
-              try {
-                  initLock.acquire();
-                  for (; !isWorkEnd; ) {
-                      try {
-                          SipTask sipTask = taskQueue.poll(2000, TimeUnit.MILLISECONDS);
-                          dealWithTask(sipTask);
-                      } catch (InterruptedException e) {
-                          e.printStackTrace();
-                          isWorkEnd = true;
-                      }
-                  }
-              } catch (InterruptedException e) {
-                  e.printStackTrace();
-              }
-              Log.d(TAG, "EXECUTOR EXIT");
-          };
-          executor.submit(exeTask);
-          isInitialised = true;
-          initLock.release();
-      }).start();
+        new Thread(() -> {
+            initSipStack();
+            exeTask = () -> {
+                try {
+                    initLock.acquire();
+                    for (; !isWorkEnd; ) {
+                        try {
+                            SipTask sipTask = taskQueue.poll(2000, TimeUnit.MILLISECONDS);
+                            dealWithTask(sipTask);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            isWorkEnd = true;
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Log.d(TAG, "EXECUTOR EXIT");
+            };
+            executor.submit(exeTask);
+            isInitialised = true;
+            initLock.release();
+        }).start();
     }
 
     //初始化sip协议栈
-    private void initSipStack(){
+    private void initSipStack() {
+        stackState = StackState.INITIALISING;
+        sipFactory = SipFactory.getInstance();
+        sipFactory.resetFactory();
+        sipFactory.setPathName("android.gov.nist");
+        Properties properties = new Properties();
+        properties.setProperty("android.javax.sip.OUTBOUND_PROXY", sipProfile.getRemoteEndpoint()
+                + "/" + sipProfile.getTransport());
+        properties.setProperty("android.javax.sip.STACK_NAME", "AndroidSip");
+        try {
+            if (udpListeningPoint != null) {
+                // Binding again
+                sipStack.deleteListeningPoint(udpListeningPoint);
+                sipProvider.removeSipListener(null);
+            }
+            sipStack = sipFactory.createSipStack(properties);
+            System.out.println("createSipStack " + sipStack);
+        } catch (PeerUnavailableException | ObjectInUseException e) {
+            stackState = StackState.ERROR;
+        }
 
     }
 
