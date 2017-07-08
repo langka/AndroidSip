@@ -2,7 +2,6 @@ package com.bupt.androidsip.activity;
 
 import android.app.Dialog;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,10 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bupt.androidsip.R;
-import com.bupt.androidsip.entity.sip.SipFailure;
-import com.bupt.androidsip.entity.sip.SipResponse;
-import com.bupt.androidsip.sip.ISipService;
-import com.bupt.androidsip.sip.SipNetListener;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.List;

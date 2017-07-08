@@ -46,11 +46,7 @@ import com.bupt.androidsip.R;
 import com.bupt.androidsip.entity.Chat;
 import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.entity.Message;
-import com.bupt.androidsip.entity.sip.SipFailure;
-import com.bupt.androidsip.entity.sip.SipResponse;
 import com.bupt.androidsip.sip.ISipService;
-import com.bupt.androidsip.sip.SipNetListener;
-import com.bupt.androidsip.sip.impl.SipManager;
 import com.bupt.androidsip.view.DropdownListView;
 import com.bupt.androidsip.view.MyEditText;
 
