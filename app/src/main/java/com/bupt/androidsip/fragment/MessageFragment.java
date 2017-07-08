@@ -1,11 +1,17 @@
 package com.bupt.androidsip.fragment;
 
 import android.content.Context;
+
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+
 import android.view.LayoutInflater;
 
 import android.view.View;
@@ -234,8 +240,10 @@ public class MessageFragment extends BaseFragment {
 
             //为聊天列表中的每一项赋值
             //holder.friendHead.setImageDrawable(null);
+
+
             holder.friendName.setText(chat.getLeftName());
-            holder.lastChat.setText(chat.getLastChat());
+            holder.lastChat.setText(chat.getLastMessage());
             //不在线的头像显示灰色
             if (chat.onlineStatue == 0) {
 //                Drawable wrappedDrawable = DrawableCompat.wrap(context.getResources().getDrawable(R.drawable.xusong));

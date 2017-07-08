@@ -1,5 +1,10 @@
 package com.bupt.androidsip.entity;
 
+import com.bupt.androidsip.mananger.UserManager;
+
+
+import com.bupt.androidsip.entity.sip.SipChat;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -10,7 +15,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
 import static com.bupt.androidsip.R.drawable.xusong;
 
 /**
@@ -25,13 +29,21 @@ public class Chat implements Parcelable {
      * @String leftAvatar
      * 头像的URL
      * @int onlineStatue
-     * 在线状态
-     * 0：离线
-     * 1：在线
-     * 2：忙碌
-     * @String lastChat
-     * 最后一句
+<<<<<<< HEAD
+     *  在线状态
+     *      0：离线
+     *      1：在线
+     *      2：忙碌
+     * @String lastMessage
+     *  最后一句
+     *
+     *  注意，chat没有name这个域！！！使用sipchat 代替 name
      */
+
+    public SipChat sipChat;
+    public String name;
+    public String headImageURL;
+    public String lastMessage;
     public String leftName;
     public int leftAvatar;
     public int rightAvatar;
@@ -40,6 +52,7 @@ public class Chat implements Parcelable {
     public int ID;
     public ArrayList<Message> messages;
     private int unread;
+
 
     public int describeContents() {
         return 0;
@@ -75,6 +88,9 @@ public class Chat implements Parcelable {
         this.leftName = leftName;
         this.leftAvatar = leftAvatar;
         this.onlineStatue = onlineStatue;
+
+        this.lastMessage = lastChat;
+
         this.lastChat = lastChat;
         this.unread = (int) (1 + Math.random() * (10 - 1 + 1));
         this.ID = ID;
@@ -117,8 +133,8 @@ public class Chat implements Parcelable {
         return onlineStatue;
     }
 
-    public String getLastChat() {
-        return lastChat;
+    public String getLastMessage() {
+        return lastMessage;
     }
 
 }

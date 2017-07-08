@@ -84,7 +84,7 @@ public class FriendFragment extends BaseFragment {
 
         showFragLoadingView(v);
         handler = new Handler();
-        handler.postDelayed(() -> hideFragLoadingView(v), 2000);
+        handler.postDelayed(() -> hideFragLoadingView(v), 3000);
 
         ButterKnife.bind(this, v);
         wifiDirectManager = WifiDirectManager.getInstance(getActivity());

@@ -95,7 +95,7 @@ public class WifiDirectManager {
 
                 @Override
                 public void onConnected() {
-                    p2pManager.requestConnectionInfo(channel, info -> {//广播告诉我连接成功，现在应当准备好socket了
+                    p2pManager.requestConnectionInfo(channel, info -> {//广播告诉我连接成功，不要准备socket，等待它主动连接就好了
                         InetAddress address = info.groupOwnerAddress;
                         if (info.groupFormed && info.isGroupOwner) {
 //                            executeServerWork(socket -> {
@@ -106,13 +106,13 @@ public class WifiDirectManager {
 //                                }
 //                            });
                         } else if (info.groupFormed) {
-                            executeClientWork(address, socket -> {
-                                chatManager = WifiChatManager.createChatManager(1, socket);
-                                if (chatManager.isConnectSuccess()) {
-                                    wifiListener.onChatPrepared();
-                                    chatManager.setOnReleaseListener(releaseListener);
-                                }
-                            });
+//                            executeClientWork(address, socket -> {
+//                                chatManager = WifiChatManager.createChatManager(1, socket);
+//                                if (chatManager.isConnectSuccess()) {
+//                                    wifiListener.onChatPrepared();
+//                                    chatManager.setOnReleaseListener(releaseListener);
+//                                }
+//                            });
                         }
                     });
                 }
