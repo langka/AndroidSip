@@ -11,14 +11,14 @@ public class EventConst {
     }
 
     public static class RemoveAll {
-        private boolean removaAll;
+        private boolean removeAll;
 
-        public boolean isRemovaAll() {
-            return removaAll;
+        public boolean isRemoveAll() {
+            return removeAll;
         }
 
-        public RemoveAll(boolean removaAll) {
-            this.removaAll = removaAll;
+        public RemoveAll(boolean removeAll) {
+            this.removeAll = removeAll;
         }
     }
 

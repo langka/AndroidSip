@@ -1,11 +1,17 @@
 package com.bupt.androidsip.fragment;
 
 import android.content.Context;
+
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+
 import android.view.LayoutInflater;
 
 import android.view.View;
@@ -55,7 +61,7 @@ public class MessageFragment extends BaseFragment {
     private SimpleDateFormat simpleDateFormat;
 
     public void setMyAvatar() {
-        // myAvatar = UserManager.getInstance().getUser().head;
+        // myAvatar = UserManager.getSipMa().getUser().head;
         myAvatar = R.drawable.xusong;
     }
 
@@ -101,7 +107,7 @@ public class MessageFragment extends BaseFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void removeAllUnread(EventConst.RemoveAll removeAll) {
         Log.d("get from fragment", "aaaa");
-        if (removeAll.isRemovaAll()) {
+        if (removeAll.isRemoveAll()) {
             for (int i = 0; i < chatList.size(); ++i)
                 chatList.get(i).removeUnread();
             chatListAdapter.notifyDataSetChanged();
@@ -142,20 +148,15 @@ public class MessageFragment extends BaseFragment {
     public void receiveNewMsg(EventConst.NewMsg newMsg) {
         for (int i = 0; i < chatList.size(); ++i) {
             if (chatList.get(i).ID == newMsg.getID()) {
-                //// TODO: 06/07/2017 根据传入的ID判断那个聊天是否在前台
-//                if (1 == 1) {
-//                    //如果在前台
-//                    chatList.get(i).setLastChat(newMsg.getMsg());
-//                } else {
-                chatList.get(i).messages.add(getChatMsgFrom(newMsg.getMsg(), 1));
+                chatList.get(i).messages.add(getChatMsgFrom(newMsg.getMsg(), newMsg.getID()));
                 chatList.get(i).setLastMsgWithUnread(newMsg.getMsg());
+                chatListAdapter.notifyDataSetChanged();
+                VibratorUtils.Vibrate(getActivity(), 200);
+                return;
             }
-            VibratorUtils.Vibrate(getActivity(), 200);
-            return;
         }
-
         chatList.add(new Chat("name", R.id.avatar_left, 1, newMsg.getMsg(), newMsg.getID()));
-        chatList.get(chatList.size() - 1).messages.add(getChatMsgFrom(newMsg.getMsg(), 1));
+        chatList.get(chatList.size() - 1).messages.add(getChatMsgFrom(newMsg.getMsg(), newMsg.getID()));
         VibratorUtils.Vibrate(getActivity(), 200);
         chatListAdapter.notifyDataSetChanged();
     }
@@ -239,8 +240,10 @@ public class MessageFragment extends BaseFragment {
 
             //为聊天列表中的每一项赋值
             //holder.friendHead.setImageDrawable(null);
+
+
             holder.friendName.setText(chat.getLeftName());
-            holder.lastChat.setText(chat.getLastChat());
+            holder.lastChat.setText(chat.getLastMessage());
             //不在线的头像显示灰色
             if (chat.onlineStatue == 0) {
 //                Drawable wrappedDrawable = DrawableCompat.wrap(context.getResources().getDrawable(R.drawable.xusong));

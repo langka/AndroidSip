@@ -46,6 +46,11 @@ import com.bupt.androidsip.R;
 import com.bupt.androidsip.entity.Chat;
 import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.entity.Message;
+import com.bupt.androidsip.entity.sip.SipFailure;
+import com.bupt.androidsip.entity.sip.SipResponse;
+import com.bupt.androidsip.sip.ISipService;
+import com.bupt.androidsip.sip.SipNetListener;
+import com.bupt.androidsip.sip.impl.SipManager;
 import com.bupt.androidsip.view.DropdownListView;
 import com.bupt.androidsip.view.MyEditText;
 
@@ -102,6 +107,8 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     @BindView(R.id.face_dots_container)
     LinearLayout dotsContainer;
 
+    ISipService sipService;
+
     private int myAvatar;
     private int leftAvatar;
 
@@ -131,7 +138,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     }
 
     public void setMyAvatar() {
-        // myAvatar = UserManager.getInstance().getUser().head;
+        // myAvatar = UserManager.getSipMa().getUser().head;
         myAvatar = R.drawable.xusong;
     }
 
@@ -147,7 +154,6 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         simpleDateFormat = new SimpleDateFormat("MM-dd HH:mm");
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
-
         Intent intent = getIntent();
         initData(intent);
 
@@ -168,8 +174,8 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         initViewPager();
 
         msgAdapter.notifyDataSetChanged();
-        messages.add(getChatMsgFrom("我爱吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜", getID()));
-        messages.add(getChatMsgTo("测试测试#[face/png/f_static_018.png]#", getID()));
+//        messages.add(getChatMsgFrom("我爱吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜吃西瓜", getID()));
+//        messages.add(getChatMsgTo("测试测试#[face/png/f_static_018.png]#", getID()));
 
         EventBus.getDefault().register(this);
 
@@ -228,6 +234,8 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         public void onClick(View v) {
             if (chatFaceContainer.getVisibility() == View.VISIBLE)
                 chatFaceContainer.setVisibility(View.GONE);
+
+            EventBus.getDefault().post(new EventConst.NewMsg(1, "test"));
         }
     };
 
@@ -251,6 +259,8 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveNewMsg(EventConst.NewMsg newMsg) {
+        if (newMsg.getID() != getID())
+            return;
         messages.add(getChatMsgFrom(newMsg.getMsg(), getID()));
         msgAdapter.setList(messages);
         msgAdapter.notifyDataSetChanged();
