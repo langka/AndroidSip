@@ -9,9 +9,12 @@ import java.util.List;
 
 public class User {
 
-    public String headUrl;
+    public String description;
     public int head;
     public String name;
+    public String sex;
+    public String email;
+    public long registerTime;
     public List<Chat> chatList;
     public int id;
 
@@ -19,7 +22,6 @@ public class User {
 
 
     private void init() {
-        headUrl = "";
         head = 1;
         name = "lyk";
 //        chatList = new ArrayList<>();

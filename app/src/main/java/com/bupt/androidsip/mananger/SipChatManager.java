@@ -18,6 +18,7 @@ public class SipChatManager {
     private static SipChatManager instance = new SipChatManager();
 
     private SipChatManager() {
+        groups = null;
     }
 
     public void setSipChat(List<SipChat> groups) {

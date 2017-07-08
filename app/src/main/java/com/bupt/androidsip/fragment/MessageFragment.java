@@ -80,8 +80,8 @@ public class MessageFragment extends BaseFragment {
     private static List<Chat> chatList = new ArrayList<>();
     ChatListAdapter chatListAdapter = null;
 
+    //    SharedPreferences pref = getActivity().getSharedPreferences("MySettings", MODE_PRIVATE);
     boolean isShock = true;
-    boolean pushEnterToSend = true;
 
     SipManager sipManager = SipManager.getSipManager();
 
@@ -90,6 +90,8 @@ public class MessageFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.frag_chat_list, null);
         ButterKnife.bind(this, v);
+
+        //       isShock = pref.getBoolean("isShock", true);
 
         simpleDateFormat = new SimpleDateFormat("HH:mm");
         initData();
@@ -113,6 +115,7 @@ public class MessageFragment extends BaseFragment {
             public void onNewMessage(SipMessage message) {
                 createChatFromSipMessage(message);
             }
+
         });
 
         EventBus.getDefault().register(this);
@@ -129,7 +132,8 @@ public class MessageFragment extends BaseFragment {
                 chatListAdapter.notifyDataSetChanged();
                 EventBus.getDefault().post(new EventConst.NewMsg(sipMessage.from,
                         sipMessage.content));
-                VibratorUtils.Vibrate(getActivity(), 200);
+                if (isShock)
+                    VibratorUtils.Vibrate(getActivity(), 200);
                 return;
             }
         }
@@ -141,7 +145,8 @@ public class MessageFragment extends BaseFragment {
         EventBus.getDefault().post(new EventConst.NewMsg(sipMessage.from,
                 sipMessage.content));
         VibratorUtils.Vibrate(getActivity(), 200);
-        chatListAdapter.notifyDataSetChanged();
+        if (isShock)
+            chatListAdapter.notifyDataSetChanged();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

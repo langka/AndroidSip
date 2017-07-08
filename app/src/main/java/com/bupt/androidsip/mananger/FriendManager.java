@@ -19,6 +19,7 @@ public class FriendManager {
     private static FriendManager instance = new FriendManager();
 
     private FriendManager() {
+        friends = null;
     }
 
     public void setFriends(List<User> friends) {
