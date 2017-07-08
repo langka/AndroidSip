@@ -10,7 +10,6 @@ import com.bupt.androidsip.entity.User;
 public class UserManager {
     private User user = new User();
     public User getUser(){
-
         return user;
     }
     private static UserManager instance = new UserManager();

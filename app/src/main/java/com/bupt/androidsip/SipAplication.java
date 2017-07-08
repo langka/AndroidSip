@@ -1,12 +1,14 @@
 package com.bupt.androidsip;
 
 import android.app.Application;
+import android.os.Handler;
 import android.text.TextUtils;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.Volley;
+import com.bupt.androidsip.sip.impl.SipManager;
 
 import static com.android.volley.VolleyLog.TAG;
 
@@ -18,7 +20,7 @@ import static com.android.volley.VolleyLog.TAG;
 public class SipAplication extends Application {
     private RequestQueue requestQueue;
     private static SipAplication sipAplication;
-
+    Handler handler;
     public static synchronized SipAplication getInstance() {
         return sipAplication;
     }
@@ -27,6 +29,8 @@ public class SipAplication extends Application {
     public void onCreate() {
         super.onCreate();
         sipAplication = this;
+        handler = new Handler();
+        SipManager.prepareManager(handler);
     }
 
     public RequestQueue getRequestQueue() {

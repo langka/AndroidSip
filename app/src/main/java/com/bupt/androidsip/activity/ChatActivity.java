@@ -47,12 +47,13 @@ import com.bupt.androidsip.R;
 import com.bupt.androidsip.entity.Chat;
 import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.entity.Message;
+<<<<<<< HEAD
 import com.bupt.androidsip.entity.sip.SipFailure;
 import com.bupt.androidsip.entity.sip.SipMessage;
 import com.bupt.androidsip.entity.sip.SipResponse;
+=======
+>>>>>>> a566f33ebeb2829185faa3d82a1e297a69cb745f
 import com.bupt.androidsip.sip.ISipService;
-import com.bupt.androidsip.sip.SipNetListener;
-import com.bupt.androidsip.sip.impl.SipManager;
 import com.bupt.androidsip.view.DropdownListView;
 import com.bupt.androidsip.view.MyEditText;
 

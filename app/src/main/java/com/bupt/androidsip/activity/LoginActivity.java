@@ -1,7 +1,6 @@
 package com.bupt.androidsip.activity;
 
 import android.animation.ValueAnimator;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -10,13 +9,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.bupt.androidsip.R;
-import com.bupt.androidsip.entity.EventConst;
+import com.bupt.androidsip.sip.ISipService;
 import com.bupt.androidsip.util.BitmapUtils;
 import com.dd.CircularProgressButton;
-
-import org.greenrobot.eventbus.EventBus;
-
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,6 +37,8 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         initView();
+        ISipService sipService;
+
     }
 
     boolean x = false;
