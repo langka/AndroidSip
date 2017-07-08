@@ -56,6 +56,7 @@ public class LoginActivity extends BaseActivity {
             public void onClick(View v) {
 
                 // showTextOnDialog("hahaha");
+                
                 TabActivity.Start(LoginActivity.this);
                 finish();
 

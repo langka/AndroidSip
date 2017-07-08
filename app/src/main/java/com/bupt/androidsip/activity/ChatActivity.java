@@ -41,11 +41,18 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bupt.androidsip.R;
 import com.bupt.androidsip.entity.Chat;
 import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.entity.Message;
+<<<<<<< HEAD
+import com.bupt.androidsip.entity.sip.SipFailure;
+import com.bupt.androidsip.entity.sip.SipMessage;
+import com.bupt.androidsip.entity.sip.SipResponse;
+=======
+>>>>>>> a566f33ebeb2829185faa3d82a1e297a69cb745f
 import com.bupt.androidsip.sip.ISipService;
 import com.bupt.androidsip.view.DropdownListView;
 import com.bupt.androidsip.view.MyEditText;
@@ -66,6 +73,8 @@ import java.util.regex.Pattern;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import q.rorbin.badgeview.Badge;
+
+import static com.bupt.androidsip.util.SipUtil.createStringMessage;
 
 /**
  * Created by vita-nove on 04/07/2017.
@@ -103,11 +112,11 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     @BindView(R.id.face_dots_container)
     LinearLayout dotsContainer;
 
-    ISipService sipService;
 
     private int myAvatar;
     private int leftAvatar;
 
+    SipManager sipManager = SipManager.getSipManager();
     private Context context;
     private List<String> staticFacesList;
     private List<View> views = new ArrayList<View>();
@@ -117,6 +126,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     private ArrayList<Message> messages = new ArrayList<Message>();
     private SimpleDateFormat simpleDateFormat;
     private String inputMsg;
+    private Chat chat;
 
     public int getID() {
         return ID;
@@ -186,6 +196,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     }
 
     public void setChat(Chat chat) {
+        this.chat = chat;
         if (messages == null)
             messages = new ArrayList<>();
         messages = chat.messages;
@@ -241,15 +252,28 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
             inputMsg = sendToMsg.getText().toString();
             if (!TextUtils.isEmpty(inputMsg)) {
                 Message msg = getChatMsgTo(inputMsg, getID());
-                messages.add(msg);
-                msgAdapter.setList(messages);
-                msgAdapter.notifyDataSetChanged();
-                msgListView.setSelection(messages.size() - 1);
-                EventBus.getDefault().post(msg);
-                EventBus.getDefault().post(new EventConst.LastMsg(getID(), inputMsg));
-                sendToMsg.setText("");
+
+                sipManager.sendMessage(createStringMessage(chat, inputMsg), new SipNetListener() {
+                    @Override
+                    public void onSuccess(SipResponse response) {
+                        messages.add(msg);
+                        msgAdapter.setList(messages);
+                        msgAdapter.notifyDataSetChanged();
+                        msgListView.setSelection(messages.size() - 1);
+                        EventBus.getDefault().post(msg);
+                        EventBus.getDefault().post(new EventConst.LastMsg(getID(), inputMsg));
+                        sendToMsg.setText("");
+                    }
+
+                    @Override
+                    public void onFailure(SipFailure failure) {
+
+                        Toast.makeText(getApplicationContext(),
+                                "因" + failure.reason + "发送失败，请稍后重试。",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
-            // TODO: 04/07/2017 成发送消息的操作
         }
     };
 
