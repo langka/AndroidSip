@@ -5,5 +5,5 @@ package com.bupt.androidsip.entity.response;
  * About:
  */
 
-public class SipDeclineResponse {
+public class SipDeclineResponse extends BaseResponse {
 }

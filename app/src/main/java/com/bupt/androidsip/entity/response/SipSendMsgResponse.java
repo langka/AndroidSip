@@ -5,7 +5,7 @@ package com.bupt.androidsip.entity.response;
  * About:
  */
 
-public class SipSendMsgResponse {
+public class SipSendMsgResponse extends BaseResponse{
 
 
 }

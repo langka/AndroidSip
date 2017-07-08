@@ -47,13 +47,10 @@ import com.bupt.androidsip.R;
 import com.bupt.androidsip.entity.Chat;
 import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.entity.Message;
-<<<<<<< HEAD
 import com.bupt.androidsip.entity.sip.SipFailure;
 import com.bupt.androidsip.entity.sip.SipMessage;
-import com.bupt.androidsip.entity.sip.SipResponse;
-=======
->>>>>>> a566f33ebeb2829185faa3d82a1e297a69cb745f
 import com.bupt.androidsip.sip.ISipService;
+import com.bupt.androidsip.sip.impl.SipManager;
 import com.bupt.androidsip.view.DropdownListView;
 import com.bupt.androidsip.view.MyEditText;
 
@@ -253,26 +250,6 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
             if (!TextUtils.isEmpty(inputMsg)) {
                 Message msg = getChatMsgTo(inputMsg, getID());
 
-                sipManager.sendMessage(createStringMessage(chat, inputMsg), new SipNetListener() {
-                    @Override
-                    public void onSuccess(SipResponse response) {
-                        messages.add(msg);
-                        msgAdapter.setList(messages);
-                        msgAdapter.notifyDataSetChanged();
-                        msgListView.setSelection(messages.size() - 1);
-                        EventBus.getDefault().post(msg);
-                        EventBus.getDefault().post(new EventConst.LastMsg(getID(), inputMsg));
-                        sendToMsg.setText("");
-                    }
-
-                    @Override
-                    public void onFailure(SipFailure failure) {
-
-                        Toast.makeText(getApplicationContext(),
-                                "因" + failure.reason + "发送失败，请稍后重试。",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
             }
         }
     };

@@ -30,7 +30,7 @@ public class SipAplication extends Application {
         super.onCreate();
         sipAplication = this;
         handler = new Handler();
-        SipManager.prepareManager(handler);
+        SipManager.prepareManager(handler,this);
     }
 
     public RequestQueue getRequestQueue() {
