@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,17 +16,28 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.bupt.androidsip.R;
+import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.fragment.FriendFragment;
 import com.bupt.androidsip.fragment.MeFragment;
 import com.bupt.androidsip.fragment.MessageFragment;
+import com.bupt.androidsip.mananger.EventManager;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import q.rorbin.badgeview.Badge;
+import q.rorbin.badgeview.QBadgeView;
+
+import static com.bupt.androidsip.fragment.MessageFragment.unreadTotal;
 
 /**
  * Created by xusong on 2017/7/2.
@@ -43,7 +55,6 @@ public class TabActivity extends BaseActivity {
     @BindView(R.id.tab_me_container)
     LinearLayout meContainer;
 
-
     List<ViewGroup> bottoms;
     List<Fragment> fragmentList;
     int currentFrag = -1;
@@ -51,6 +62,8 @@ public class TabActivity extends BaseActivity {
 
     long exitTime = 0;
 
+
+    Badge badge = null;
 
     public static void Start(Context context) {
         Intent intent = new Intent(context, TabActivity.class);
@@ -68,6 +81,34 @@ public class TabActivity extends BaseActivity {
         bottoms.add(messageContainer);
         bottoms.add(friendContainer);
         bottoms.add(meContainer);
+        EventBus.getDefault().register(TabActivity.this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(TabActivity.this);
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void showUnreadMessage(EventConst.Unread unread) {
+        Log.d("get from activity", "aaa");
+        if (badge == null) {
+            badge = new QBadgeView(TabActivity.this).bindTarget(messageContainer.
+                    findViewById(R.id.message_icon));
+            badge.setBadgeNumber(unread.getHowMany());
+            badge.setOnDragStateChangedListener(new Badge.OnDragStateChangedListener() {
+                @Override
+                public void onDragStateChanged(int dragState, Badge badge, View targetView) {
+                    if (dragState == STATE_SUCCEED)
+                        EventBus.getDefault().post(new EventConst.RemoveAll(true));
+                }
+            });
+        } else
+            badge.setBadgeNumber(unread.getHowMany());
+
+        Log.d("show how many", "" + unread.getHowMany());
     }
 
 

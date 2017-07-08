@@ -1,6 +1,7 @@
 package com.bupt.androidsip.activity;
 
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -9,8 +10,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.bupt.androidsip.R;
+import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.util.BitmapUtils;
 import com.dd.CircularProgressButton;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.Random;
 
@@ -46,16 +50,18 @@ public class LoginActivity extends BaseActivity {
         imageView.post(new Runnable() {
             @Override
             public void run() {
-                imageView.setImageBitmap(BitmapUtils.decodeSampledBitmapFromResource(getResources(), R.drawable.batman1, imageView.getWidth(), imageView.getHeight()));
+                imageView.setImageBitmap(BitmapUtils.decodeSampledBitmapFromResource(getResources(),
+                        R.drawable.batman1, imageView.getWidth(), imageView.getHeight()));
             }
         });
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-               // showTextOnDialog("hahaha");
+                // showTextOnDialog("hahaha");
                 TabActivity.Start(LoginActivity.this);
                 finish();
+
 
 //                if (checkPwdAndAccount()) {
 //                    if (confirm.getProgress() == 0) {

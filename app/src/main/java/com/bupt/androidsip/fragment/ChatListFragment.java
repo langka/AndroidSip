@@ -93,8 +93,13 @@
 //            }
 //
 //            holder.friendHead.setImageURI(null);
+
 //            holder.friendName.setText(sipChat.getName());
 //            holder.lastMessage.setText(sipChat.getLastMessage());
+
+//            holder.friendName.setText(chat.getLeftName());
+//            holder.lastChat.setText(chat.getLastChat());
+
 //
 //            return convertView;
 //

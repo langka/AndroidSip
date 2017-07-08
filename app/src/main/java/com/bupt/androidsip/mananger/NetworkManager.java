@@ -19,18 +19,21 @@ import java.util.Map;
  */
 
 public class NetworkManager {
-    final static String IP="http://10.209.8.209:8080/";
-     final static String URL_LOGIN = IP+"login";
-    final static String URL_REGISTER = IP+"register";
-    public static void login(String name,String password,BaseListener listener){
-        StringRequest stringRequest1 = new StringRequest(Request.Method.POST, URL_LOGIN,null,null){
+    final static String IP = "http://10.209.8.209:8080/";
+    final static String URL_LOGIN = IP + "login";
+    final static String URL_REGISTER = IP + "register";
+
+    public static void login(String name, String password, BaseListener listener) {
+        StringRequest stringRequest1 = new StringRequest(Request.Method.POST, URL_LOGIN, null, null) {
             // 需要重写获取参数的函数,可以向服务器提交参数
-            protected Map<String,String> getParams() throws AuthFailureError {
+            protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<String, String>();
-                map.put("name",name);
-                map.put("password",password);
+                map.put("name", name);
+                map.put("password", password);
                 return map;
-            };
+            }
+
+            ;
         };
         SipAplication.getInstance().addToRequestQueue(stringRequest1);
     }

@@ -1,64 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="60dp">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:orientation="horizontal">
 
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/item_friend_head_img"
-        android:src="@drawable/xusong"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginLeft="10dp"
         android:layout_centerVertical="true"
-        android:layout_marginTop="3dp"
         android:layout_marginBottom="3dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="3dp"
+        android:src="@drawable/xusong"
         />
+
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/item_chat_head_offline"
-        android:background="@color/TRANS_G5"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginLeft="10dp"
         android:layout_centerVertical="true"
-        android:layout_marginTop="3dp"
         android:layout_marginBottom="3dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="3dp"
+        android:background="@color/TRANS_G5"
         android:visibility="invisible"
         />
 
 
     <LinearLayout
-        android:layout_toRightOf="@+id/item_friend_head_img"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/item_friend_head_img"
+        android:orientation="vertical"
         >
+
         <TextView
             android:id="@+id/item_friend_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:text="徐松"/>
+            android:text="徐松"
+            android:textSize="18sp"/>
 
         <TextView
             android:id="@+id/item_friend_lastchat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="在么，晚上吃西瓜，我请客"
+            android:layout_marginRight="100dp"
             android:textSize="10sp"
-            android:text="在么，晚上吃西瓜，我请客"/>
+            android:maxLines="2"/>
 
     </LinearLayout>
- <TextView
-     android:layout_width="wrap_content"
-     android:layout_height="wrap_content"
-     android:layout_alignParentRight="true"
-     android:layout_alignParentEnd="true"
-     android:text="15:25"
-     android:layout_marginRight="20dp"
-     android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:id="@+id/last_chat_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:text="15:25"/>
 
 
 </RelativeLayout>
