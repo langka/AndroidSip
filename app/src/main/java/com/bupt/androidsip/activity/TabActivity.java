@@ -24,6 +24,7 @@ import com.bupt.androidsip.fragment.FriendFragment;
 import com.bupt.androidsip.fragment.MeFragment;
 import com.bupt.androidsip.fragment.MessageFragment;
 import com.bupt.androidsip.mananger.EventManager;
+import com.bupt.androidsip.sip.impl.SipManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -61,7 +62,7 @@ public class TabActivity extends BaseActivity {
     FragmentManager fragmentManager;
 
     long exitTime = 0;
-
+    SipManager sipManager = SipManager.getSipManager();
 
     Badge badge = null;
 
@@ -93,7 +94,6 @@ public class TabActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showUnreadMessage(EventConst.Unread unread) {
-        Log.d("get from activity", "aaa");
         if (badge == null) {
             badge = new QBadgeView(TabActivity.this).bindTarget(messageContainer.
                     findViewById(R.id.message_icon));
@@ -107,8 +107,6 @@ public class TabActivity extends BaseActivity {
             });
         } else
             badge.setBadgeNumber(unread.getHowMany());
-
-        Log.d("show how many", "" + unread.getHowMany());
     }
 
 
