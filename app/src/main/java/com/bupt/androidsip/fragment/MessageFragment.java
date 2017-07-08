@@ -101,7 +101,7 @@ public class MessageFragment extends BaseFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void removeAllUnread(EventConst.RemoveAll removeAll) {
         Log.d("get from fragment", "aaaa");
-        if (removeAll.isRemovaAll()) {
+        if (removeAll.isRemoveAll()) {
             for (int i = 0; i < chatList.size(); ++i)
                 chatList.get(i).removeUnread();
             chatListAdapter.notifyDataSetChanged();
@@ -142,20 +142,15 @@ public class MessageFragment extends BaseFragment {
     public void receiveNewMsg(EventConst.NewMsg newMsg) {
         for (int i = 0; i < chatList.size(); ++i) {
             if (chatList.get(i).ID == newMsg.getID()) {
-                //// TODO: 06/07/2017 根据传入的ID判断那个聊天是否在前台
-//                if (1 == 1) {
-//                    //如果在前台
-//                    chatList.get(i).setLastChat(newMsg.getMsg());
-//                } else {
-                chatList.get(i).messages.add(getChatMsgFrom(newMsg.getMsg(), 1));
+                chatList.get(i).messages.add(getChatMsgFrom(newMsg.getMsg(), newMsg.getID()));
                 chatList.get(i).setLastMsgWithUnread(newMsg.getMsg());
+                chatListAdapter.notifyDataSetChanged();
+                VibratorUtils.Vibrate(getActivity(), 200);
+                return;
             }
-            VibratorUtils.Vibrate(getActivity(), 200);
-            return;
         }
-
         chatList.add(new Chat("name", R.id.avatar_left, 1, newMsg.getMsg(), newMsg.getID()));
-        chatList.get(chatList.size() - 1).messages.add(getChatMsgFrom(newMsg.getMsg(), 1));
+        chatList.get(chatList.size() - 1).messages.add(getChatMsgFrom(newMsg.getMsg(), newMsg.getID()));
         VibratorUtils.Vibrate(getActivity(), 200);
         chatListAdapter.notifyDataSetChanged();
     }
