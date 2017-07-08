@@ -56,8 +56,6 @@
 
     <include
         android:id="@+id/loadingview"
-        layout="@layout/layout_loading"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        layout="@layout/layout_loading" />
 
 </RelativeLayout>

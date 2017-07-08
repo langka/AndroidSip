@@ -79,22 +79,22 @@
 //        @NonNull
 //        @Override
 //        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-//            Chat chat = getItem(position);
+//            Chat sipChat = getItem(position);
 //            ViewHolder holder = null;
 //            if(convertView == null){
 //                convertView = LayoutInflater.from(getContext()).inflate(resourceId,null);
 //                holder = new ViewHolder();
 //                holder.friendHead = (ImageView) convertView.findViewById(R.id.item_friend_head_img);
 //                holder.friendName = (TextView) convertView.findViewById(R.id.item_friend_name);
-//                holder.lastChat = (TextView) convertView.findViewById(R.id.item_friend_lastchat);
+//                holder.lastMessage = (TextView) convertView.findViewById(R.id.item_friend_lastchat);
 //                convertView.setTag(holder);
 //            }else{
 //                holder = (ViewHolder) convertView.getTag();
 //            }
 //
 //            holder.friendHead.setImageURI(null);
-//            holder.friendName.setText(chat.getName());
-//            holder.lastChat.setText(chat.getLastChat());
+//            holder.friendName.setText(sipChat.getName());
+//            holder.lastMessage.setText(sipChat.getLastMessage());
 //
 //            return convertView;
 //
@@ -103,7 +103,7 @@
 //        static class ViewHolder {
 //            ImageView friendHead;
 //            TextView friendName;
-//            TextView lastChat;
+//            TextView lastMessage;
 //        }
 //    }
 //

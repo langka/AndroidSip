@@ -45,9 +45,12 @@ public class DemoWifiChatActivity extends BaseActivity {
         wifiDirectManager = WifiDirectManager.getInstance(this);
         chatManager = wifiDirectManager.getChatManager();
         handler = new Handler();
-        chatManager.registerChatListener(s -> board.setText(s),handler);
+        chatManager.registerChatListener(s -> board.setText(board.getText().toString()+"\n"+s),handler);
         send.setOnClickListener(v -> {
             chatManager.sendMessage(editText.getText().toString());
+            board.setText(board.getText().toString()+"\n"+editText.getText().toString());
+            editText.setText("");
+
         });
     }
 

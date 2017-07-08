@@ -1,6 +1,6 @@
 package com.bupt.androidsip.entity;
 
-import java.util.List;
+import com.bupt.androidsip.entity.sip.SipChat;
 
 /**
  * Created by WHY on 2017/7/1.
@@ -18,14 +18,19 @@ public class Chat {
      *      0：离线
      *      1：在线
      *      2：忙碌
-     * @String lastChat
+     * @String lastMessage
      *  最后一句
+     *
+     *  注意，chat没有name这个域！！！使用sipchat 代替 name
      */
+
+    public SipChat sipChat;
     public String name;
     public String headImageURL;
     public int onlineStatue;
-    public String lastChat;
-    public List chats;
+    public String lastMessage;
+
+
 
     public Chat() {
     }
@@ -36,7 +41,7 @@ public class Chat {
         this.headImageURL = "@drawable/xusong";
 
         this.onlineStatue = onlineStatue;
-        this.lastChat = lastChat;
+        this.lastMessage = lastChat;
     }
 
     public String getName() {
@@ -51,7 +56,7 @@ public class Chat {
         return onlineStatue;
     }
 
-    public String getLastChat() {
-        return lastChat;
+    public String getLastMessage() {
+        return lastMessage;
     }
 }
