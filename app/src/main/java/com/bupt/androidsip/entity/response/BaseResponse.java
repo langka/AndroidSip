@@ -5,5 +5,5 @@ package com.bupt.androidsip.entity.response;
  * About:
  */
 
-public class SipAddResponse extends BaseResponse{
+public class BaseResponse {
 }

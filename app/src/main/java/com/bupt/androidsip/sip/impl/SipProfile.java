@@ -2,14 +2,17 @@ package com.bupt.androidsip.sip.impl;
 
 /**
  * Created by xusong on 2017/7/8.
- * About:
+ * About:sip profile,用于初始化sipmanager
  */
 
 public class SipProfile {
+
     private String localIp;
-    private  int localPort = 5080;
+    private  int localPort = 7777;
     private String transport = "udp";
 
+    // TODO: 2017/7/8
+    //替换为远神的ip
     private String remoteIp = "23.23.228.238";
     private  int remotePort = 5060;
     private String sipUserName;

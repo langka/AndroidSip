@@ -1,6 +1,8 @@
 package com.bupt.androidsip.sip;
 
 import com.bupt.androidsip.entity.response.SipLoginResponse;
+import com.bupt.androidsip.entity.response.SipRegisterResponse;
+import com.bupt.androidsip.entity.response.SipSendMsgResponse;
 import com.bupt.androidsip.entity.sip.SipMessage;
 import com.bupt.androidsip.entity.User;
 
@@ -11,7 +13,7 @@ import com.bupt.androidsip.entity.User;
 
 public interface ISipService {
 
-    void register(String name, String password, SipNetListener listener);
+    void register(String name, String password, SipNetListener<SipRegisterResponse> listener);
 
     void login(String name, String password, SipNetListener<SipLoginResponse> listener);
 
@@ -22,7 +24,7 @@ public interface ISipService {
 
     void acceptFriendInvite(int id,SipNetListener listener);//接受好友邀请
 
-    void sendMessage(SipMessage message, SipNetListener listener);//发送信息，不需要提供接收方，因为sipmessage已经包含接收方和发送方
+    void sendMessage(SipMessage message, SipNetListener<SipSendMsgResponse> listener);//发送信息，不需要提供接收方，因为sipmessage已经包含接收方和发送方
 
     void getUserInfo(int id, SipNetListener listener);//获取一个用户的信息
 
