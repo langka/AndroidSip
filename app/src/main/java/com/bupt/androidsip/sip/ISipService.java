@@ -14,7 +14,8 @@ public interface ISipService {
 
     void login(String name, String password, SipNetListener listener);
 
-    void addFriend(int id, SipNetListener listener);//不需要提供我的id，可以在usermanager获得,这个成功回调值得并非已经添加好友，而是好友请求被服务器受理
+    void addFriend(int id, SipNetListener listener);//不需要提供我的id，可以在usermanager获得,这个成功回调值得并非已经添加好友，而是好友请求被服务器受理,
+    //下面同理
 
     void declineFriendInvite(int id,SipNetListener listener);//拒绝一个用户好友邀请
 
@@ -26,6 +27,5 @@ public interface ISipService {
 
     void modifyUserInfo(User info);//将指定的用户信息更改
 
-    void setSipMessageListener(SipMessage message);
 
 }

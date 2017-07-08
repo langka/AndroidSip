@@ -61,7 +61,7 @@ public class MessageFragment extends BaseFragment {
     private SimpleDateFormat simpleDateFormat;
 
     public void setMyAvatar() {
-        // myAvatar = UserManager.getInstance().getUser().head;
+        // myAvatar = UserManager.getSipMa().getUser().head;
         myAvatar = R.drawable.xusong;
     }
 

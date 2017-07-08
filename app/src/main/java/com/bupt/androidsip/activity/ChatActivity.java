@@ -46,6 +46,11 @@ import com.bupt.androidsip.R;
 import com.bupt.androidsip.entity.Chat;
 import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.entity.Message;
+import com.bupt.androidsip.entity.sip.SipFailure;
+import com.bupt.androidsip.entity.sip.SipResponse;
+import com.bupt.androidsip.sip.ISipService;
+import com.bupt.androidsip.sip.SipNetListener;
+import com.bupt.androidsip.sip.impl.SipManager;
 import com.bupt.androidsip.view.DropdownListView;
 import com.bupt.androidsip.view.MyEditText;
 
@@ -102,6 +107,8 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     @BindView(R.id.face_dots_container)
     LinearLayout dotsContainer;
 
+    ISipService sipService;
+
     private int myAvatar;
     private int leftAvatar;
 
@@ -131,7 +138,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     }
 
     public void setMyAvatar() {
-        // myAvatar = UserManager.getInstance().getUser().head;
+        // myAvatar = UserManager.getSipMa().getUser().head;
         myAvatar = R.drawable.xusong;
     }
 
@@ -147,7 +154,6 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         simpleDateFormat = new SimpleDateFormat("MM-dd HH:mm");
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
-
         Intent intent = getIntent();
         initData(intent);
 

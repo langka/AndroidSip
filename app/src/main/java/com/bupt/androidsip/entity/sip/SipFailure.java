@@ -6,4 +6,5 @@ package com.bupt.androidsip.entity.sip;
  */
 
 public class SipFailure {
+    public String reason;
 }

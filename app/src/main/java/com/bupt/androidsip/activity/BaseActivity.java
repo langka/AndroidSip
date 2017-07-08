@@ -17,6 +17,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bupt.androidsip.R;
+import com.bupt.androidsip.entity.sip.SipFailure;
+import com.bupt.androidsip.entity.sip.SipResponse;
+import com.bupt.androidsip.sip.ISipService;
+import com.bupt.androidsip.sip.SipNetListener;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.List;

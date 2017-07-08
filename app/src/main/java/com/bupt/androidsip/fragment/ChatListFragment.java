@@ -64,7 +64,7 @@
 //    }
 //
 //    void initdata(){
-//        chatList = UserManager.getInstance().getUser().chatList;
+//        chatList = UserManager.getSipMa().getUser().chatList;
 //    }
 //
 //    static class ChatListAdapter extends ArrayAdapter<Chat> {
