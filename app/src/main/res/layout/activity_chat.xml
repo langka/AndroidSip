@@ -16,13 +16,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:overScrollMode="never"
         android:background="@color/G6"
         android:cacheColorHint="#00000000"
         android:divider="@null"
         android:dividerHeight="1dp"
         android:footerDividersEnabled="true"
         android:listSelector="@android:color/transparent"
+        android:overScrollMode="never"
         android:scrollbars="vertical"
         >
 
@@ -63,6 +63,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:hint="请输入聊天信息"
+                android:imeOptions="actionSend"
                 android:maxLines="1"/>
 
         </FrameLayout>

@@ -3,6 +3,7 @@ package com.bupt.androidsip.mananger;
 import android.content.Context;
 
 import com.bupt.androidsip.entity.Chat;
+import com.bupt.androidsip.entity.Message;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,16 +16,66 @@ import static java.lang.String.valueOf;
  */
 
 public class ChatManager {
-    private static ChatManager instance = new ChatManager();
-    private static int key = 0;
+    private ArrayList<Chat> chatList = new ArrayList<>();
 
-    private ChatManager() {
-        chatList = new ArrayList<>();
+    public ArrayList<Chat> getChatList() {
+        return chatList;
     }
 
-    public static ChatManager GetInstance() {
+    private static ChatManager instance = new ChatManager();
+
+    private ChatManager() {
+    }
+
+    public Chat getChat(int index) {
+        return chatList.get(index);
+    }
+
+    public void addChat(Chat chat) {
+        chatList.add(chat);
+    }
+
+    public void setChatList(ArrayList<Chat> chatList) {
+        this.chatList = chatList;
+    }
+
+    public static ChatManager getChatManager() {
         return instance;
     }
 
-    private ArrayList<Chat> chatList;
+    public void addMsg(int index, Message msg) {
+        chatList.get(index).messages.add(msg);
+    }
+
+    public void setLastMsgWithUnread(int index, String content) {
+        chatList.get(index).lastMessage = content;
+        chatList.get(index).unread++;
+    }
+
+    public void removeUnread(int index) {
+        chatList.get(index).unread = 0;
+    }
+
+    public int getTotalUnread() {
+        int unread = 0;
+        for (int i = 0; i < chatList.size(); ++i)
+            unread += chatList.get(i).unread;
+        return unread;
+    }
+
+    public boolean isInList(int ID) {
+        for (int i = 0; i < chatList.size(); ++i) {
+            if (chatList.get(i).ID == ID)
+                return true;
+        }
+        return false;
+    }
+
+    public Chat getChatFromID(int ID) {
+        for (int i = 0; i < chatList.size(); ++i) {
+            if (chatList.get(i).ID == ID)
+                return chatList.get(i);
+        }
+        return null;
+    }
 }

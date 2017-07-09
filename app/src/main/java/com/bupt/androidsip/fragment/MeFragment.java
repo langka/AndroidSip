@@ -13,6 +13,8 @@ import android.widget.TextView;
 import com.bupt.androidsip.R;
 import com.bupt.androidsip.activity.AccountActivity;
 import com.bupt.androidsip.activity.SettingsActivity;
+import com.bupt.androidsip.entity.User;
+import com.bupt.androidsip.mananger.UserManager;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,6 +47,8 @@ public class MeFragment extends BaseFragment {
 
     @BindView(R.id.frag_me_settings)
     RelativeLayout settingsContainer;
+
+    User user = UserManager.getInstance().getUser();
 
     //防止getActivity抛出空指针异常
     private Context context;
@@ -86,9 +90,9 @@ public class MeFragment extends BaseFragment {
 
     private void initData() {
         TextView nameView = (TextView) nameTextView.findViewById(R.id.frag_me_name);
-        nameView.setText("徐日天");
+        nameView.setText(user.name);
         TextView descriptionView = (TextView) descriptionTextView.findViewById(R.id.frag_me_description);
-        descriptionView.setText("我爱吃西瓜!!!");
+        descriptionView.setText(user.description);
         ImageView sexView = (ImageView) sexImageView.findViewById(R.id.frag_me_sex);
     }
 

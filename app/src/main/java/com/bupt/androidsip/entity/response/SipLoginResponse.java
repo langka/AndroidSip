@@ -14,5 +14,4 @@ public class SipLoginResponse extends BaseResponse{
     public User self;
     public List<User> friends;
     public List<SipChat> groups;
-
 }

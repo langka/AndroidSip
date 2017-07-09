@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
@@ -23,6 +24,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.ImageSpan;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,6 +32,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -47,9 +50,13 @@ import com.bupt.androidsip.R;
 import com.bupt.androidsip.entity.Chat;
 import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.entity.Message;
+import com.bupt.androidsip.entity.User;
+import com.bupt.androidsip.entity.response.SipSendMsgResponse;
 import com.bupt.androidsip.entity.sip.SipFailure;
 import com.bupt.androidsip.entity.sip.SipMessage;
-import com.bupt.androidsip.sip.ISipService;
+
+import com.bupt.androidsip.sip.SipNetListener;
+
 import com.bupt.androidsip.sip.impl.SipManager;
 import com.bupt.androidsip.view.DropdownListView;
 import com.bupt.androidsip.view.MyEditText;
@@ -124,6 +131,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     private SimpleDateFormat simpleDateFormat;
     private String inputMsg;
     private Chat chat;
+    boolean pushEnterToSend = true;
 
     public int getID() {
         return ID;
@@ -135,10 +143,10 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
 
     private int ID;
 
-    public void setLeftAvatarFromID(int ID) {
-        // TODO: 07/07/2017 根据ID查询头像
-        leftAvatar = R.drawable.xusong;
-    }
+//    public void setLeftAvatarFromID(int ID) {
+//        // TODO: 07/07/2017 根据ID查询头像
+//        leftAvatar = R.drawable.xusong;
+//    }
 
     public void setMyAvatar() {
         // myAvatar = UserManager.getSipMa().getUser().head;
@@ -154,7 +162,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        simpleDateFormat = new SimpleDateFormat("MM-dd HH:mm");
+        simpleDateFormat = new SimpleDateFormat("HH:mm");
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
         Intent intent = getIntent();
@@ -168,11 +176,18 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         getHeaderDivider().setVisibility(View.GONE);
         enableLeftImage(R.drawable.ic_arrow_back_24px, e -> finish());
 
+        SharedPreferences pref = getSharedPreferences("MySettings", MODE_PRIVATE);
+        pushEnterToSend = pref.getBoolean("pushEnterToSend", true);
+
+
         msgListView.setOnRefreshListenerHead(this);
         msgListView.setOnTouchListener(getOnTouchListener());
         sendToBtn.setOnClickListener(sendBtnListener);
         faceBtn.setOnClickListener(faceBtnListener);
         sendToMsg.setOnClickListener(sendToMsgListener);
+        if (pushEnterToSend)
+            sendToMsg.setOnEditorActionListener(enterToSend);
+
         initStaticFaces();
         initViewPager();
 
@@ -189,7 +204,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         setID(intent.getParcelableExtra("chat"));
         setTitle((Chat) intent.getParcelableExtra("chat"));
         setMyAvatar();
-        setLeftAvatarFromID(getID());
+//        setLeftAvatarFromID(getID());
     }
 
     public void setChat(Chat chat) {
@@ -212,12 +227,12 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         EventBus.getDefault().post(new EventConst.RemoveOne(0, getID()));
     }
 
-    private Message getChatMsgFrom(String message, int ID) {
+    private Message getChatMsgFrom(String message, User user) {
         Message msg = new Message();
         msg.content = message;
         msg.fromOrTo = 0;
         msg.rightAvatar = myAvatar;
-        msg.leftAvatar = leftAvatar;
+        msg.leftAvatar = user.head;
         msg.ID = ID;
         msg.time = simpleDateFormat.format(new Date());
         return msg;
@@ -228,7 +243,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         msg.content = message;
         msg.fromOrTo = 1;
         msg.rightAvatar = myAvatar;
-        msg.leftAvatar = leftAvatar;
+        msg.leftAvatar = ID;
         msg.ID = ID;
         msg.time = simpleDateFormat.format(new Date());
         return msg;
@@ -239,26 +254,69 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
             if (chatFaceContainer.getVisibility() == View.VISIBLE)
                 chatFaceContainer.setVisibility(View.GONE);
 
-            EventBus.getDefault().post(new EventConst.NewMsg(1, "test"));
+            //           EventBus.getDefault().post(new EventConst.NewMsg(1, "test"));
         }
     };
 
 
     Button.OnClickListener sendBtnListener = new Button.OnClickListener() {
         public void onClick(View v) {
-            inputMsg = sendToMsg.getText().toString();
-            if (!TextUtils.isEmpty(inputMsg)) {
-                Message msg = getChatMsgTo(inputMsg, getID());
-
-            }
+            sendMsg();
         }
     };
 
+    TextView.OnEditorActionListener enterToSend = new TextView.OnEditorActionListener() {
+        @Override
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            //当actionId == XX_SEND 或者 XX_DONE时都触发
+            //或者event.getKeyCode == ENTER 且 event.getAction == ACTION_DOWN时也触发
+            //注意，这是一定要判断event != null。因为在某些输入法上会返回null。
+            if (actionId == EditorInfo.IME_ACTION_SEND
+                    || actionId == EditorInfo.IME_ACTION_DONE
+                    || (event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode() &&
+                    KeyEvent.ACTION_DOWN == event.getAction())) {
+                sendMsg();
+            }
+            return false;
+        }
+    };
+
+    public void sendMsg() {
+        inputMsg = sendToMsg.getText().toString();
+        if (!TextUtils.isEmpty(inputMsg)) {
+            Message msg = getChatMsgTo(inputMsg, getID());
+
+            sipManager.sendMessage(createStringMessage(chat, inputMsg),
+                    new SipNetListener<SipSendMsgResponse>() {
+                        @Override
+                        public void onSuccess(SipSendMsgResponse response) {
+                            messages.add(msg);
+                            msgAdapter.setList(messages);
+                            msgAdapter.notifyDataSetChanged();
+                            msgListView.setSelection(messages.size() - 1);
+                            EventBus.getDefault().post(msg);
+                            EventBus.getDefault().post(new EventConst.LastMsg(getID(),
+                                    inputMsg));
+                            sendToMsg.setText("");
+                        }
+
+                        @Override
+                        public void onFailure(SipFailure failure) {
+
+                            Toast.makeText(getApplicationContext(),
+                                    failure.reason, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveNewMsg(EventConst.NewMsg newMsg) {
-        if (newMsg.getID() != getID())
+        if (newMsg.getUser().id != getID())
             return;
-        messages.add(getChatMsgFrom(newMsg.getMsg(), getID()));
+
+        messages.add(getChatMsgFrom(newMsg.getMsg(), newMsg.getUser()));
         msgAdapter.setList(messages);
         msgAdapter.notifyDataSetChanged();
         msgListView.setSelection(messages.size() - 1);
@@ -320,10 +378,13 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
 
     //隐藏软键盘
     public void hideSoftInputView() {
-        InputMethodManager manager = ((InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE));
-        if (getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
+        InputMethodManager manager = ((InputMethodManager) this.
+                getSystemService(Activity.INPUT_METHOD_SERVICE));
+        if (getWindow().getAttributes().softInputMode !=
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
             if (getCurrentFocus() != null)
-                manager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                manager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
 
@@ -776,6 +837,9 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
             popupWindow.setOutsideTouchable(true);
             // 为按钮绑定事件
             // 复制
+            String msg_left = view.findViewById(R.id.msg_left).toString();
+            String msg_right = view.findViewById(R.id.msg_right).toString();
+
             copy.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -796,6 +860,22 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
                 @Override
                 public void onClick(View v) {
                     // TODO: 06/07/2017 添加从chatlist中删除message的操作
+                    if (msg_left.equals(chat.messages.get(chat.messages.size() - 1)) &&
+                            msg_right.equals(chat.messages.get(chat.messages.size() - 1))) {
+                        EventBus.getDefault().post(new EventConst.LastMsg(getID(),
+                                chat.messages.get(chat.messages.size() - 2).content));
+                        chat.messages.remove(chat.messages.size() - 1);
+                    } else {
+                        int times = 0;
+                        for (int i = 0; i < chat.messages.size(); ++i) {
+                            if (msg_left.equals(chat.messages.get(i).content) &&
+                                    msg_right.equals(chat.messages.get(i).content) && times == 0) {
+                                chat.messages.remove(i);
+                                ++times;
+                            }
+
+                        }
+                    }
                     if (popupWindow.isShowing()) {
                         popupWindow.dismiss();
                     }

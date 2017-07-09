@@ -64,19 +64,19 @@ public class EventConst {
 
 
     public static class NewMsg {
-        private int ID;
+        private User user;
         private String msg;
 
-        public int getID() {
-            return ID;
+        public User getUser() {
+            return user;
         }
 
         public String getMsg() {
             return msg;
         }
 
-        public NewMsg(int ID, String msg) {
-            this.ID = ID;
+        public NewMsg(User user, String msg) {
+            this.user = user;
             this.msg = msg;
         }
     }

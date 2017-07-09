@@ -1,15 +1,27 @@
 package com.bupt.androidsip.activity;
 
 import android.animation.ValueAnimator;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bupt.androidsip.R;
+import com.bupt.androidsip.entity.Friend;
+import com.bupt.androidsip.entity.response.SipLoginResponse;
+import com.bupt.androidsip.entity.sip.SipFailure;
+import com.bupt.androidsip.mananger.FriendManager;
+import com.bupt.androidsip.mananger.SipChatManager;
+import com.bupt.androidsip.mananger.UserManager;
 import com.bupt.androidsip.sip.ISipService;
+import com.bupt.androidsip.sip.SipNetListener;
+import com.bupt.androidsip.sip.impl.SipManager;
 import com.bupt.androidsip.util.BitmapUtils;
 import com.dd.CircularProgressButton;
 
@@ -31,13 +43,25 @@ public class LoginActivity extends BaseActivity {
     @BindView(R.id.login_pwd_edit)
     EditText pwdEdit;
 
+    SipManager sipManager = SipManager.getSipManager();
+    UserManager userManager = UserManager.getInstance();
+    SipChatManager sipChatManager = SipChatManager.getInstance();
+    FriendManager friendManager = FriendManager.getInstance();
+
+    boolean isShock = true;
+    boolean pushEnterToSend = true;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("MySettings", 0);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putBoolean("isShock", isShock);
+        editor.putBoolean("pushEnterToSend", pushEnterToSend);
         initView();
-        ISipService sipService;
 
     }
 
@@ -55,11 +79,33 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
 
-                // showTextOnDialog("hahaha");
-                
-                TabActivity.Start(LoginActivity.this);
-                finish();
+                //调试用
 
+                if ((!TextUtils.isEmpty(accountEdit.getText())) &&
+                        (!TextUtils.isEmpty(pwdEdit.getText()))) {
+                    showLoadingView();
+                    sipManager.login(accountEdit.getText().toString(), pwdEdit.getText().toString(),
+                            new SipNetListener<SipLoginResponse>() {
+                                @Override
+                                public void onSuccess(SipLoginResponse response) {
+
+                                    userManager.setUser(response.self);
+                                    sipChatManager.setSipChat(response.groups);
+                                    friendManager.setFriends(response.friends);
+                                    hideLoadingView();
+
+                                    TabActivity.Start(LoginActivity.this);
+                                    finish();
+                                }
+
+                                @Override
+                                public void onFailure(SipFailure failure) {
+                                    Toast.makeText(getApplicationContext(),
+                                            failure.reason, Toast.LENGTH_SHORT).show();
+                                    hideLoadingView();
+                                    pwdEdit.setText("");
+                                }
+                            });
 
 //                if (checkPwdAndAccount()) {
 //                    if (confirm.getProgress() == 0) {
@@ -70,6 +116,9 @@ public class LoginActivity extends BaseActivity {
 //                    }
 //                } else showText("账户或密码有格式错误，请您检查!");
 
+                } else
+                    Toast.makeText(getApplicationContext(),
+                            "请输入账号和密码", Toast.LENGTH_SHORT).show();
             }
         });
     }

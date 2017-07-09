@@ -10,7 +10,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bupt.androidsip.R;
+import com.bupt.androidsip.entity.User;
+import com.bupt.androidsip.mananger.UserManager;
+import com.bupt.androidsip.sip.impl.SipManager;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 import butterknife.BindView;
@@ -51,6 +55,12 @@ public class AccountActivity extends BaseActivity {
     RelativeLayout registrationTimeContainer;
 
 
+    SipManager sipManager = SipManager.getSipManager();
+    UserManager userManager = UserManager.getInstance();
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd'at' HH:mm:ss");
+
+    User user = userManager.getUser();
+
     private View.OnClickListener accountOnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -60,7 +70,8 @@ public class AccountActivity extends BaseActivity {
                         if (e.trim().isEmpty())
                             showText("内容为空");
                         else {
-                            // TODO: 02/07/2017 真正保存这些内容
+                            user.name = e.toString();
+                            sipManager.modifyUserInfo(user);
                             TextView tv = (TextView) v.findViewById(R.id.frag_nickname).
                                     findViewById(R.id.item_profile_righttext);
                             tv.setText(e);
@@ -73,7 +84,8 @@ public class AccountActivity extends BaseActivity {
                         if (e.trim().isEmpty())
                             showText("保存成功！");
                         else {
-                            // TODO: 02/07/2017 真正保存这些内容
+                            user.description = e.toString();
+                            sipManager.modifyUserInfo(user);
                             TextView tv = (TextView) v.findViewById(R.id.frag_description).
                                     findViewById(R.id.item_profile_righttext);
                             tv.setText(e);
@@ -85,7 +97,8 @@ public class AccountActivity extends BaseActivity {
                     showBottomDialog(Arrays.asList("男", "女"), Arrays.asList(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            // TODO: 02/07/2017 添加更改性别的操作
+                            user.sex = "男";
+                            sipManager.modifyUserInfo(user);
                             TextView tv = (TextView) v.findViewById(R.id.frag_sex).
                                     findViewById(R.id.item_profile_righttext);
                             tv.setText("男");
@@ -94,6 +107,8 @@ public class AccountActivity extends BaseActivity {
                     }, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            user.sex = "女";
+                            sipManager.modifyUserInfo(user);
                             TextView tv = (TextView) v.findViewById(R.id.frag_sex).
                                     findViewById(R.id.item_profile_righttext);
                             tv.setText("女");
@@ -129,32 +144,33 @@ public class AccountActivity extends BaseActivity {
         getHeaderDivider().setVisibility(View.GONE);
         enableLeftImage(R.drawable.ic_arrow_back_24px, e -> finish());
         initView();
-        initData();
+//        initData();
     }
 
-    private void initData() {
-        TextView nameView = (TextView) nicknameContainer.findViewById(R.id.frag_nickname).
-                findViewById(R.id.item_profile_righttext);
-        nameView.setText("徐日天");
-        TextView descriptionView = (TextView) descriptionContainer.
-                findViewById(R.id.frag_description).findViewById(R.id.item_profile_righttext);
-        descriptionView.setText("我爱吃西瓜!!!");
-        TextView sexView = (TextView) sexContainer.findViewById(frag_sex).
-                findViewById(R.id.item_profile_righttext);
-        sexView.setText("女");
-        TextView accountIdView = (TextView) accountIdContainer.findViewById(frag_account_id).
-                findViewById(R.id.item_profile_righttext);
-        accountIdView.setText("233");
-        TextView emailView = (TextView) emailContainer.findViewById(frag_email).
-                findViewById(R.id.item_profile_righttext);
-        emailView.setText("songxu@bupt.edu.cn");
-        TextView registrationView = (TextView) registrationTimeContainer.
-                findViewById(frag_registration_time).
-                findViewById(R.id.item_profile_righttext);
-        registrationView.setText("2017.2.2");
-
-        setTitle("账号信息");
-    }
+//    private void initData() {
+//
+//        TextView nameView = (TextView) nicknameContainer.findViewById(R.id.frag_nickname).
+//                findViewById(R.id.item_profile_righttext);
+//        nameView.setText("徐日天");
+//        TextView descriptionView = (TextView) descriptionContainer.
+//                findViewById(R.id.frag_description).findViewById(R.id.item_profile_righttext);
+//        descriptionView.setText("我爱吃西瓜!!!");
+//        TextView sexView = (TextView) sexContainer.findViewById(frag_sex).
+//                findViewById(R.id.item_profile_righttext);
+//        sexView.setText("女");
+//        TextView accountIdView = (TextView) accountIdContainer.findViewById(frag_account_id).
+//                findViewById(R.id.item_profile_righttext);
+//        accountIdView.setText("233");
+//        TextView emailView = (TextView) emailContainer.findViewById(frag_email).
+//                findViewById(R.id.item_profile_righttext);
+//        emailView.setText("songxu@bupt.edu.cn");
+//        TextView registrationView = (TextView) registrationTimeContainer.
+//                findViewById(frag_registration_time).
+//                findViewById(R.id.item_profile_righttext);
+//        registrationView.setText("2017.2.2");
+//
+//        setTitle("账号信息");
+//    }
 
     private void initRowView(View v, int imgId, String text, String detail) {
         ImageView icon = (ImageView) v.findViewById(R.id.item_profile_icon);
@@ -173,14 +189,15 @@ public class AccountActivity extends BaseActivity {
         emailContainer.setOnClickListener(accountOnClick);
         registrationTimeContainer.setOnClickListener(accountOnClick);
 
-        initRowView(nicknameContainer, R.drawable.ic_exposure_plus_1_black_30dp, "昵称", "徐日天");
+        initRowView(nicknameContainer, R.drawable.ic_exposure_plus_1_black_30dp, "昵称", user.name);
         initRowView(descriptionContainer, R.drawable.ic_wb_incandescent_black_30dp, "个性签名",
-                "我爱吃西瓜");
-        initRowView(sexContainer, R.drawable.ic_face_black_30dp, "性别", "男");
-        initRowView(accountIdContainer, R.drawable.ic_perm_identity_black_30dp, "账号ID", "233");
+                user.description);
+        initRowView(sexContainer, R.drawable.ic_face_black_30dp, "性别", user.sex);
+        initRowView(accountIdContainer, R.drawable.ic_perm_identity_black_30dp, "账号ID", "" + user.id);
         initRowView(emailContainer, R.drawable.ic_email_black_30dp, "注册邮箱",
-                "songxu@bupt.edu.cn");
+                user.email);
         initRowView(registrationTimeContainer, R.drawable.ic_access_time_black_30dp,
-                "注册时间", "2017.1.1");
+                "注册时间", simpleDateFormat.format(user.registerTime));
+        setTitle("账号信息");
     }
 }
