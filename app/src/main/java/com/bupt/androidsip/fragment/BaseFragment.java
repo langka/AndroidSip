@@ -2,6 +2,7 @@ package com.bupt.androidsip.fragment;
 
 import android.support.v4.app.Fragment;
 import android.view.View;
+import android.widget.Toast;
 
 import com.bupt.androidsip.R;
 import com.wang.avi.AVLoadingIndicatorView;
@@ -24,6 +25,9 @@ public class BaseFragment extends Fragment {
         v.setVisibility(View.INVISIBLE);
         AVLoadingIndicatorView loadingIndicatorView = (AVLoadingIndicatorView) v.findViewById(R.id.loading_loader);
         loadingIndicatorView.hide();
+    }
+    public void showText(String text){
+        Toast.makeText(getActivity(),text,Toast.LENGTH_SHORT).show();
     }
 
 }

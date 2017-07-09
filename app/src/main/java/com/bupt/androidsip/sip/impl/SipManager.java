@@ -53,10 +53,12 @@ import java.util.TooManyListenersException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by xusong on 2017/7/8.
@@ -86,7 +88,7 @@ public class SipManager implements ISipService {
 
     private boolean isInitialised = false;
 
-    Semaphore initLock;
+    CountDownLatch initLock;
     SipMessageListener messageListener;
     SipSystemListener systemListener;
 
@@ -107,6 +109,8 @@ public class SipManager implements ISipService {
 
     //对于一个序号message线程，要阻塞至它的response成功返回
     ConcurrentHashMap<Long, TaskListener> taskListeners;
+    AtomicLong seq = new AtomicLong(0);
+
 
     private SipListener sipListener = new SipListener() {
 
@@ -121,6 +125,7 @@ public class SipManager implements ISipService {
         public void processResponse(ResponseEvent responseEvent) {
             long local = responseEvent.getDialog().getLocalSeqNumber();
             TaskListener listener = taskListeners.get(local);
+            //responseEvent.getResponse()
             int status = responseEvent.getResponse().getStatusCode();
             if (status == 200) {
                 // TODO: 2017/7/8  完善response
@@ -183,7 +188,7 @@ public class SipManager implements ISipService {
      */
     private SipManager(Handler handler, Context context) {
         this.handler = handler;
-        initLock = new Semaphore(0);
+        initLock = new CountDownLatch(1);
         taskListeners = new ConcurrentHashMap<>();
         executor = Executors.newFixedThreadPool(5);//因为我们的消息不够密集，5个线程应该足够处理了
         taskQueue = new ArrayBlockingQueue<>(20, false);
@@ -196,7 +201,8 @@ public class SipManager implements ISipService {
             if (stackState == StackState.READY) {
                 runner = () -> {
                     try {
-                        initLock.acquire();
+                        initLock.await();
+                        Log.d(TAG,"executor ready to work");
                         for (; !isWorkEnd; ) {
                             try {
                                 SipTask sipTask = taskQueue.poll(2000, TimeUnit.MILLISECONDS);
@@ -225,9 +231,10 @@ public class SipManager implements ISipService {
             }
             isInitialised = true;
             handler.post(()->{
+                Log.d(TAG,"HANDLER SUCCESS");
                 Toast.makeText(context,"sip stack successfully init",Toast.LENGTH_SHORT).show();
             });
-            initLock.release();
+            initLock.countDown();
         }).start();
     }
 
@@ -296,7 +303,8 @@ public class SipManager implements ISipService {
 
     @Override
     public void login(String name, String password, SipNetListener listener) {
-
+        long current = seq.getAndIncrement();
+        Request request = requestBuilder.buildLogin(message, current);
     }
 
     @Override
@@ -318,9 +326,9 @@ public class SipManager implements ISipService {
     @Override
     public void sendMessage(SipMessage message, SipNetListener<SipSendMsgResponse> listener) {
         try {
-            long seq = System.currentTimeMillis();
-            Request request = requestBuilder.buildMessage(message, seq);
-            taskListeners.put(seq, new TaskListener(listener, SipTaskType.MESSAGE));
+            long current = seq.getAndIncrement();
+            Request request = requestBuilder.buildMessage(message, current);
+            taskListeners.put(current, new TaskListener(listener, SipTaskType.MESSAGE));
             final ClientTransaction transaction = this.sipProvider.getNewClientTransaction(request);
             try {
                 taskQueue.put(new SipTask(() -> {

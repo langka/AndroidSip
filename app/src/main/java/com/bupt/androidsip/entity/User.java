@@ -12,7 +12,6 @@ public class User {
     public String headUrl;
     public int head;
     public String name;
-    public List<Chat> chatList;
     public int id;
 
     public List<Friend> friends = Friend.fakeFriends;

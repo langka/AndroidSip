@@ -132,12 +132,9 @@ public class BaseActivity extends FragmentActivity {
             TextView textView = (TextView) item.findViewById(R.id.dialog_bottom_text);
             textView.setText(tips.get(i));
             final View.OnClickListener listener = listeners.get(i);
-            textView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.onClick(v);
-                    dialog.dismiss();
-                }
+            textView.setOnClickListener(v -> {
+                listener.onClick(v);
+                dialog.dismiss();
             });
             if (divide != null) {
                 linearLayout.addView(divide);
