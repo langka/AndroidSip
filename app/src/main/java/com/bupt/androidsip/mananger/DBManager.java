@@ -80,6 +80,15 @@ public class DBManager {
         cursor.close();
         return messages;
     }
+    public  void save(List<SipMessage> messages){
 
+    }
 
+    public void save(SipMessage message){
+
+    }
+
+    public void delete(int with){
+        
+    }
 }
