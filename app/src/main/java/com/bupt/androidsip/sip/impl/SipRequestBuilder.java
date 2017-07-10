@@ -23,6 +23,7 @@ import android.util.Log;
 
 import com.bupt.androidsip.entity.sip.SipMessage;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -37,14 +38,15 @@ import java.util.ArrayList;
 public class SipRequestBuilder {
     final String TAG = "siprequestbuilder";
 
-    final String SERVER_ADD="";
+    final String SERVER_ADD = "";
     AddressFactory addressFactory;
     SipProvider sipProvider;
     MessageFactory messageFactory;
     HeaderFactory headerFactory;
     SipProfile sipProfile;
+
     public SipRequestBuilder(AddressFactory addressFactory, SipProvider sipProvider, MessageFactory messageFactory,
-                             HeaderFactory headerFactory,SipProfile sipProfile) {
+                             HeaderFactory headerFactory, SipProfile sipProfile) {
         this.addressFactory = addressFactory;
         this.sipProvider = sipProvider;
         this.messageFactory = messageFactory;
@@ -79,7 +81,7 @@ public class SipRequestBuilder {
 
     }
 
-    public Request buildMessage(SipMessage message,long seq) throws ParseException, InvalidArgumentException {
+    public Request buildMessage(SipMessage message, long seq) throws ParseException, InvalidArgumentException {
         SipURI from = addressFactory.createSipURI(sipProfile.getSipUserName(), sipProfile.getLocalEndpoint());
         Address fromNameAddress = addressFactory.createAddress(from);
         // fromNameAddress.setDisplayName(sipUsername);
@@ -89,7 +91,7 @@ public class SipRequestBuilder {
         URI toAddress = addressFactory.createURI(SERVER_ADD);
         Address toNameAddress = addressFactory.createAddress(toAddress);
         // toNameAddress.setDisplayName(username);
-        ToHeader toHeader =headerFactory.createToHeader(toNameAddress, null);
+        ToHeader toHeader = headerFactory.createToHeader(toNameAddress, null);
 
         URI requestURI = addressFactory.createURI(SERVER_ADD);
         // requestURI.setTransportParam("udp");
@@ -107,7 +109,7 @@ public class SipRequestBuilder {
         Request request = messageFactory.createRequest(requestURI,
                 Request.MESSAGE, callIdHeader, cSeqHeader, fromHeader,
                 toHeader, viaHeaders, maxForwards);
-        SupportedHeader supportedHeader =headerFactory
+        SupportedHeader supportedHeader = headerFactory
                 .createSupportedHeader("replaces, outbound");
         request.addHeader(supportedHeader);
 
@@ -131,7 +133,7 @@ public class SipRequestBuilder {
     }
 
 
-    public Request buildLogin(String name ,String pwd,long seq) throws ParseException, InvalidArgumentException {
+    public Request buildLogin(String name, String pwd, long seq) throws ParseException, InvalidArgumentException {
         SipURI from = addressFactory.createSipURI(sipProfile.getSipUserName(), sipProfile.getLocalEndpoint());
         Address fromNameAddress = addressFactory.createAddress(from);
         // fromNameAddress.setDisplayName(sipUsername);
@@ -141,7 +143,7 @@ public class SipRequestBuilder {
         URI toAddress = addressFactory.createURI(SERVER_ADD);
         Address toNameAddress = addressFactory.createAddress(toAddress);
         // toNameAddress.setDisplayName(username);
-        ToHeader toHeader =headerFactory.createToHeader(toNameAddress, null);
+        ToHeader toHeader = headerFactory.createToHeader(toNameAddress, null);
 
         URI requestURI = addressFactory.createURI(SERVER_ADD);
         // requestURI.setTransportParam("udp");
@@ -159,7 +161,7 @@ public class SipRequestBuilder {
         Request request = messageFactory.createRequest(requestURI,
                 Request.MESSAGE, callIdHeader, cSeqHeader, fromHeader,
                 toHeader, viaHeaders, maxForwards);
-        SupportedHeader supportedHeader =headerFactory
+        SupportedHeader supportedHeader = headerFactory
                 .createSupportedHeader("replaces, outbound");
         request.addHeader(supportedHeader);
 
@@ -175,10 +177,10 @@ public class SipRequestBuilder {
                 .createContentTypeHeader("text", "plain");
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("name",name);
-            jsonObject.put("password",pwd);
+            jsonObject.put("name", name);
+            jsonObject.put("password", pwd);
         } catch (JSONException e) {
-            Log.d(TAG,"json pwd name异常");
+            Log.d(TAG, "json pwd name异常");
             e.printStackTrace();
         }
         request.setContent(jsonObject.toString(), contentTypeHeader);
@@ -313,7 +315,6 @@ public class SipRequestBuilder {
 //    }
 
 
-
     public ArrayList<ViaHeader> createViaHeader() {
         ArrayList<ViaHeader> viaHeaders = new ArrayList<ViaHeader>();
         ViaHeader myViaHeader;
@@ -341,8 +342,24 @@ public class SipRequestBuilder {
     }
 
     // TODO: 2017/7/8
-    private String MessageToString(SipMessage sipMessage){
-        return "";
+    private String MessageToString(SipMessage sipMessage) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("fid", sipMessage.from);
+            JSONArray array = new JSONArray();
+            for (int i = 0; i < sipMessage.to.size(); i++) {
+                array.put(sipMessage.to.get(i));
+            }
+            object.put("tids", array);
+            object.put("createTime", sipMessage.createTime);
+            object.put("belong", sipMessage.belong);
+            object.put("type", sipMessage.type);
+            object.put("content", sipMessage.content);
+        } catch (JSONException e) {
+            Log.d(TAG,"error message trans to json ");
+            e.printStackTrace();
+        }
+        return object.toString();
     }
 
 }

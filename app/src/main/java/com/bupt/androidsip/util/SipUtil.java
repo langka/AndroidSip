@@ -36,10 +36,10 @@ public class SipUtil {
     public static SipMessage createStringMessage(Chat chat, String message) {
         SipMessage sipMessage = new SipMessage();
         sipMessage.type = 0;
-        sipMessage.belong = chat.sipChat;
-        sipMessage.to = sipMessage.belong.users;
+        sipMessage.belong = chat.sipChat.id;
+        sipMessage.to = chat.sipChat.users;
         sipMessage.content = message;
-        sipMessage.startTime = System.currentTimeMillis();
+        sipMessage.createTime = System.currentTimeMillis();
         return sipMessage;
     }
 

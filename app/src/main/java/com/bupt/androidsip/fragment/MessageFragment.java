@@ -62,6 +62,7 @@ public class MessageFragment extends BaseFragment {
     ListView listView;
 
     User user = UserManager.getInstance().getUser();
+    UserManager userManager = UserManager.getInstance();
     public static int unreadTotal;
     public static SimpleDateFormat simpleDateFormat;
 
@@ -125,14 +126,14 @@ public class MessageFragment extends BaseFragment {
 
     public void createChatFromSipMessage(SipMessage sipMessage) {
         for (int i = 0; i < chatList.size(); ++i) {
-            if (sipMessage.from.id == chatList.get(i).ID) {
+            if (sipMessage.from == chatList.get(i).ID) {
 //                chatList.get(i).messages.add(getChatMsgFrom(sipMessage.content,
 //                        sipMessage.from));
-                chatManager.addMsg(i, getChatMsgFrom(sipMessage.content, sipMessage.from));
+                chatManager.addMsg(i, getChatMsgFrom(sipMessage.content, userManager.searchUser(sipMessage.from)));
 //                chatList.get(i).setLastMsgWithUnread(sipMessage.content);
                 chatManager.setLastMsgWithUnread(i, sipMessage.content);
                 chatListAdapter.notifyDataSetChanged();
-                EventBus.getDefault().post(new EventConst.NewMsg(sipMessage.from,
+                EventBus.getDefault().post(new EventConst.NewMsg(userManager.searchUser(sipMessage.from),
                         sipMessage.content));
                 if (isShock)
                     VibratorUtils.Vibrate(getActivity(), 200);
@@ -142,14 +143,14 @@ public class MessageFragment extends BaseFragment {
 
 //        chatList.add(new Chat(sipMessage.from.name, sipMessage.from.head, 1,
 //                sipMessage.content, sipMessage.from.id));
-        chatManager.addChat(new Chat(sipMessage.from.name, sipMessage.from.head, 1,
-                sipMessage.content, sipMessage.from.id));
+        chatManager.addChat(new Chat(userManager.searchUser(sipMessage.from).name, userManager.searchUser(sipMessage.from).head, 1,
+                sipMessage.content, userManager.searchUser(sipMessage.from).id));
 //        chatList.get(chatList.size() - 1).messages.add(getChatMsgFrom(sipMessage.content,
 //                sipMessage.from));
         chatManager.addMsg(chatManager.getChatList().size() - 1, getChatMsgFrom(sipMessage.content,
-                sipMessage.from));
+                userManager.searchUser(sipMessage.from)));
 
-        EventBus.getDefault().post(new EventConst.NewMsg(sipMessage.from,
+        EventBus.getDefault().post(new EventConst.NewMsg(userManager.searchUser(sipMessage.from),
                 sipMessage.content));
         VibratorUtils.Vibrate(getActivity(), 200);
         if (isShock)
@@ -231,8 +232,8 @@ public class MessageFragment extends BaseFragment {
             chat.onlineStatue = 1;
             chat.ID = sipChat.id;
         } else {
-            chat.leftAvatar = sipChat.users.get(0).head;
-            chat.leftName = sipChat.users.get(0).name;
+            chat.leftAvatar = userManager.searchUser(sipChat.users.get(0)).head;
+            chat.leftName = userManager.searchUser(sipChat.users.get(0)).name;
             chat.latestTime = sipChat.latestTime;
             chat.lastMessage = "本地存储方案还没实现";
             chat.onlineStatue = 1;

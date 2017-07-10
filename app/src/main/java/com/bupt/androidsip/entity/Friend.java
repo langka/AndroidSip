@@ -12,10 +12,11 @@ import demo.Pinyin4jAppletDemo;
 
 /**
  * Created by xusong on 2017/7/3.
- * About:
+ * About:这个类没有用了！！
  */
 
 public class Friend {
+
     public String getSortLetters() {
         if (sortLetters == null)
             sortLetters = PinyinUtils.getPingYin(name).toUpperCase();
@@ -30,22 +31,21 @@ public class Friend {
 
     public int head;
     public String headUrl;
-
     public String desc;
 
-    public static List<Friend> fakeFriends;
+    public static List<User> fakeFriends;
 
     static {
         int j = 0;
         Random random = new Random();
         fakeFriends = new ArrayList<>();
         for (int i = 0; i < 99; i++) {
-            Friend friend = new Friend();
+            User friend = new User();
             friend.name = "FakeUser" + i;
             int x = random.nextInt(100) % 25;
             friend.name = ((char) (x + 'A')) + friend.name;
             friend.state = random.nextInt() % 2;
-            friend.desc = "fake user desc " + i;
+            friend.description = "fake user desc " + i;
             friend.headUrl = null;
             friend.head = random.nextInt() % 2;
             fakeFriends.add(friend);

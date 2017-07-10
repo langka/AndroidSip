@@ -177,11 +177,11 @@ public class FriendFragment extends BaseFragment {
 
     static class SortAdapter extends BaseAdapter implements SectionIndexer {
 
-        private Comparator<Friend> comparator;
-        private List<Friend> list = null;
+        private Comparator<User> comparator;
+        private List<User> list = null;
         private Context mContext;
 
-        public SortAdapter(Context mContext, List<Friend> list, Comparator<Friend> comparator) {
+        public SortAdapter(Context mContext, List<User> list, Comparator<User> comparator) {
             this.mContext = mContext;
             this.list = list;
             this.comparator = comparator;
@@ -193,7 +193,7 @@ public class FriendFragment extends BaseFragment {
          *
          * @param list
          */
-        public void updateListView(List<Friend> list) {
+        public void updateListView(List<User> list) {
             this.list = list;
             Collections.sort(this.list, comparator);
             notifyDataSetChanged();
@@ -213,7 +213,7 @@ public class FriendFragment extends BaseFragment {
 
         public View getView(final int position, View view, ViewGroup arg2) {
             ViewHolder holder = null;
-            final Friend friend = list.get(position);
+            final User friend = list.get(position);
             if (view == null) {
                 holder = new ViewHolder();
                 view = LayoutInflater.from(mContext).inflate(R.layout.item_friend_list, null);
@@ -246,7 +246,7 @@ public class FriendFragment extends BaseFragment {
             holder.maskView.setVisibility(friend.state == 0 ? View.VISIBLE : View.INVISIBLE);
             holder.stateTextView.setText(friend.state == 0 ? "[离线]" : "[在线]");
             holder.nameTextView.setText(friend.name);
-            holder.desc.setText(friend.desc);
+            holder.desc.setText(friend.description);
             return view;
 
         }
@@ -322,10 +322,10 @@ public class FriendFragment extends BaseFragment {
 
     }
 
-    public List<String> getLetterList(List<Friend> friends) {
+    public List<String> getLetterList(List<User> friends) {
         List<String> indexes = new ArrayList<>();
         indexes.add("好");
-        for (Friend f : friends) {
+        for (User f : friends) {
             String letter = f.getSortLetters().substring(0, 1).toUpperCase();
             if (!indexes.contains(letter))
                 indexes.add(letter);

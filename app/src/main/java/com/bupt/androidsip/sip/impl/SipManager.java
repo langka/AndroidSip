@@ -33,6 +33,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.bupt.androidsip.entity.User;
+import com.bupt.androidsip.entity.response.SipLoginResponse;
 import com.bupt.androidsip.entity.response.SipSendMsgResponse;
 import com.bupt.androidsip.entity.sip.SipFailure;
 import com.bupt.androidsip.entity.sip.SipMessage;
@@ -42,12 +43,18 @@ import com.bupt.androidsip.sip.SipNetListener;
 import com.bupt.androidsip.sip.SipSystemListener;
 import com.bupt.androidsip.util.IpUtil;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -111,6 +118,37 @@ public class SipManager implements ISipService {
     ConcurrentHashMap<Long, TaskListener> taskListeners;
     AtomicLong seq = new AtomicLong(0);
 
+    private void processMessageResponse(ResponseEvent event, SipNetListener<SipSendMsgResponse> listener) {
+        if(event.getResponse().getStatusCode() == 200){
+            try {
+                JSONArray array = new JSONArray(event.getResponse().getContent());
+            } catch (JSONException e) {
+                handler.post(()->listener.onFailure(new SipFailure("无法解析的json串!")));
+                e.printStackTrace();
+            }
+        }else handler.post(()->listener.onFailure(new SipFailure("status code != 200")));;
+
+    }
+
+    private void processLoginResponse(ResponseEvent event, SipNetListener<SipLoginResponse> listener) {
+        if(event.getResponse().getStatusCode() == 200){
+            try {
+                JSONArray array = new JSONArray(event.getResponse().getContent());
+                SipLoginResponse response = new SipLoginResponse();
+                JSONObject me = array.getJSONObject(0);
+                response.self = User.createFromJson(me);
+                List<User> friends = new ArrayList<>();
+                for(int i=1;i<array.length();i++){
+                    friends.add(User.createFromJson(array.getJSONObject(i)));
+                }
+                response.friends = friends;
+                handler.post(()->listener.onSuccess(response));
+            } catch (JSONException e) {
+                handler.post(()->listener.onFailure(new SipFailure("无法解析的json串!")));
+                e.printStackTrace();
+            }
+        }else handler.post(()->listener.onFailure(new SipFailure("status code != 200!")));
+    }
 
     private SipListener sipListener = new SipListener() {
 
@@ -127,20 +165,14 @@ public class SipManager implements ISipService {
             TaskListener listener = taskListeners.get(local);
             //responseEvent.getResponse()
             int status = responseEvent.getResponse().getStatusCode();
-            if (status == 200) {
-                // TODO: 2017/7/8  完善response
-                if (listener != null) {
-                    if (listener.type == SipTaskType.MESSAGE)
-                        handler.post(() -> {
-                            listener.listener.onSuccess(new SipSendMsgResponse());
-                        });
-                }
-            } else {
-                if (listener != null) {
-                    if (listener.type == SipTaskType.MESSAGE)
-                        handler.post(() -> {
-                            listener.listener.onFailure(new SipFailure("response不为OK，什么情况？" + status));
-                        });
+            if (listener != null) {
+                switch (listener.type) {
+                    case MESSAGE:
+                        processMessageResponse(responseEvent, listener.listener);
+                        break;
+                    case LOGIN:
+                        processLoginResponse(responseEvent, listener.listener);
+                        break;
                 }
             }
         }
@@ -202,7 +234,7 @@ public class SipManager implements ISipService {
                 runner = () -> {
                     try {
                         initLock.await();
-                        Log.d(TAG,"executor ready to work");
+                        Log.d(TAG, "executor ready to work");
                         for (; !isWorkEnd; ) {
                             try {
                                 SipTask sipTask = taskQueue.poll(2000, TimeUnit.MILLISECONDS);
@@ -230,9 +262,9 @@ public class SipManager implements ISipService {
                 executor.submit(exeTask5);
             }
             isInitialised = true;
-            handler.post(()->{
-                Log.d(TAG,"HANDLER SUCCESS");
-                Toast.makeText(context,"sip stack successfully init",Toast.LENGTH_SHORT).show();
+            handler.post(() -> {
+                Log.d(TAG, "HANDLER SUCCESS");
+                Toast.makeText(context, "sip stack successfully init", Toast.LENGTH_SHORT).show();
             });
             initLock.countDown();
         }).start();
@@ -304,7 +336,13 @@ public class SipManager implements ISipService {
     @Override
     public void login(String name, String password, SipNetListener listener) {
         long current = seq.getAndIncrement();
-        Request request = requestBuilder.buildLogin(message, current);
+        try {
+            Request request = requestBuilder.buildLogin(name, password, current);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (InvalidArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -372,7 +410,7 @@ public class SipManager implements ISipService {
     }
 
     enum SipTaskType {
-        MESSAGE;
+        MESSAGE, LOGIN
     }
 
     static class TaskListener {
