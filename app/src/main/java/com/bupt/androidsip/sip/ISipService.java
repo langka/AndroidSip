@@ -2,6 +2,7 @@ package com.bupt.androidsip.sip;
 
 import com.bupt.androidsip.entity.response.SipLoginResponse;
 import com.bupt.androidsip.entity.response.SipRegisterResponse;
+import com.bupt.androidsip.entity.response.SipSearchResponse;
 import com.bupt.androidsip.entity.response.SipSendMsgResponse;
 import com.bupt.androidsip.entity.sip.SipMessage;
 import com.bupt.androidsip.entity.User;
@@ -29,6 +30,8 @@ public interface ISipService {
     void getUserInfo(int id, SipNetListener listener);//获取一个用户的信息
 
     void modifyUserInfo(User info);//将指定的用户信息更改
+
+    void searchUsers(String key, SipNetListener<SipSearchResponse> listener);
 
 
 }

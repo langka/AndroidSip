@@ -35,6 +35,7 @@ import android.widget.Toast;
 
 import com.bupt.androidsip.entity.User;
 import com.bupt.androidsip.entity.response.SipLoginResponse;
+import com.bupt.androidsip.entity.response.SipSearchResponse;
 import com.bupt.androidsip.entity.response.SipSendMsgResponse;
 import com.bupt.androidsip.entity.sip.SipFailure;
 import com.bupt.androidsip.entity.sip.SipMessage;
@@ -294,14 +295,20 @@ public class SipManager implements ISipService {
             headerFactory = sipFactory.createHeaderFactory();
             addressFactory = sipFactory.createAddressFactory();
             messageFactory = sipFactory.createMessageFactory();
-            sipProfile.setLocalIp(IpUtil.getIPAddress(context));
-            udpListeningPoint = sipStack.createListeningPoint(
-                    sipProfile.getLocalIp(), sipProfile.getLocalPort(), sipProfile.getTransport());
-            sipProvider = sipStack.createSipProvider(udpListeningPoint);
-            sipProvider.addSipListener(sipListener);
-            stackState = StackState.READY;
-            requestBuilder = new SipRequestBuilder(addressFactory, sipProvider, messageFactory,
-                    headerFactory, sipProfile);
+            String localIp = IpUtil.getIPAddress(context);
+            sipProfile.setLocalIp(localIp);
+            if (localIp != null) {
+                udpListeningPoint = sipStack.createListeningPoint(
+                        sipProfile.getLocalIp(), sipProfile.getLocalPort(), sipProfile.getTransport());
+                sipProvider = sipStack.createSipProvider(udpListeningPoint);
+                sipProvider.addSipListener(sipListener);
+                stackState = StackState.READY;
+                requestBuilder = new SipRequestBuilder(addressFactory, sipProvider, messageFactory,
+                        headerFactory, sipProfile);
+            } else {
+                Toast.makeText(context, "没有网", Toast.LENGTH_SHORT).show();
+                stackState = StackState.ERROR;
+            }
         } catch (PeerUnavailableException | ObjectInUseException | TooManyListenersException |
                 TransportNotSupportedException |
                 InvalidArgumentException e) {
@@ -347,6 +354,7 @@ public class SipManager implements ISipService {
         }
         taskListeners.put(current, new TaskListener(listener, SipTaskType.LOGIN));
         dealRequest(request, SipTaskType.LOGIN, listener);
+
     }
 
     @Override
@@ -386,6 +394,11 @@ public class SipManager implements ISipService {
 
     @Override
     public void modifyUserInfo(User info) {
+
+    }
+
+    @Override
+    public void searchUsers(String key, SipNetListener<SipSearchResponse> listener) {
 
     }
 

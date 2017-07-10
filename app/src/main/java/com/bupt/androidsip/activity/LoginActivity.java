@@ -66,6 +66,7 @@ public class LoginActivity extends BaseActivity {
     boolean x = false;
 
     private void initView() {
+
         imageView.post(() -> imageView.setImageBitmap(BitmapUtils.decodeSampledBitmapFromResource(getResources(),
                 R.drawable.batman1, imageView.getWidth(), imageView.getHeight())));
         confirm.setOnClickListener(v -> {
@@ -95,6 +96,7 @@ public class LoginActivity extends BaseActivity {
                                 pwdEdit.setText("");
                             }
                         });
+
 
 //                if (checkPwdAndAccount()) {
 //                    if (confirm.getProgress() == 0) {

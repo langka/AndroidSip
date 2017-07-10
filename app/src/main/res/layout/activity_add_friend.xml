@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/root">
+
+    <RelativeLayout
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:layout_marginLeft="10dp"
+            android:id="@+id/add_search_friend_input"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_toStartOf="@+id/add_search_friend_btn"
+            android:maxLines="1"
+            android:paddingLeft="10dp"
+            android:hint="搜索"
+            android:imeOptions="actionSearch"
+
+            android:background="@drawable/text_gray"
+            />
+
+        <TextView
+            android:id="@+id/add_search_friend_btn"
+            android:layout_width="60dp"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:layout_alignParentRight="true"
+            android:background="@color/white"
+            android:textSize="18sp"
+            android:text="取消" />
+
+        <ListView
+            android:id="@+id/add_search_friend_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/add_search_friend_input"
+            android:layout_marginTop="15dp" />
+
+
+    </RelativeLayout>
+
+    <include layout="@layout/layout_loading"
+        android:id="@+id/loadingview"/>
+</RelativeLayout>

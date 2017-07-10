@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/item_add_friend_list_head"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="8dp"
+        android:scaleType="centerCrop" />
+
+    <View
+        android:id="@+id/item_add_friend_list_mask"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/mask" />
+
+    <TextView
+        android:id="@+id/item_add_friend_list_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/item_add_friend_list_head"
+        android:layout_marginLeft="15dp"
+        android:layout_toRightOf="@+id/item_add_friend_list_head"
+        android:text="栾迎凯"
+        android:textColor="@color/G1"
+        android:textSize="17sp" />
+
+    <TextView
+        android:id="@+id/item_add_friend_list_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/item_add_friend_list_name"
+        android:layout_marginLeft="15dp"
+        android:layout_toRightOf="@+id/item_add_friend_list_head"
+        android:text="[在线]"
+        android:textColor="@color/G3"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/item_add_friend_list_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/item_add_friend_list_state"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/item_add_friend_list_state"
+        android:text="我是坎坎坷坷扩"
+        android:textColor="@color/G3"
+        android:textSize="14sp" />
+</RelativeLayout>
+

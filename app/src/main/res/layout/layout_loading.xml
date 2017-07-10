@@ -5,7 +5,7 @@
                 android:layout_height="match_parent"
                 android:background="@color/TRANSP_W2"
                 android:clickable="true"
-                android:visibility="gone">
+                android:visibility="invisible">
 
     <com.wang.avi.AVLoadingIndicatorView
         android:id="@+id/loading_loader"

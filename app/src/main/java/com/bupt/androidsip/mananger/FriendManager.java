@@ -29,4 +29,7 @@ public class FriendManager {
     public static FriendManager getInstance() {
         return instance;
     }
+
+    //加好友
+    //删好友
 }

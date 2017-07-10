@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bupt.androidsip.R;
+import com.bupt.androidsip.activity.AddFriendActivity;
 import com.bupt.androidsip.activity.BaseActivity;
 import com.bupt.androidsip.activity.ChatActivity;
 import com.bupt.androidsip.activity.DemoWifiChatActivity;
@@ -75,6 +76,8 @@ public class FriendFragment extends BaseFragment {
     ListView listView;
     @BindView(R.id.frag_friend_slidebar)
     SlideBar slideBar;
+    @BindView(R.id.frag_friend_append_add_btn)
+    ImageView addFriendBtn;
 
     HotFriendGridAdapter gridAdapter;
     SortAdapter sortAdapter;
@@ -108,6 +111,18 @@ public class FriendFragment extends BaseFragment {
                 listView.setSelection(sortAdapter.getPositionOfSection(s.charAt(0)) + listView.getHeaderViewsCount());
             }
         });
+
+        addFriendBtn.setOnClickListener(new ImageView.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), AddFriendActivity.class);
+                startActivity(intent);
+
+            }
+
+
+        });
+
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -124,7 +139,7 @@ public class FriendFragment extends BaseFragment {
         });
         listView.setAdapter(sortAdapter);
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
-            // TODO: 08/07/2017 添加识别好友并且创建对应chat对象的操作
+            //  08/07/2017 添加识别好友并且创建对应chat对象的操作
             Intent intent = new Intent(getActivity(), ChatActivity.class);
             Bundle bundle = new Bundle();
 //            bundle.putParcelable("chat", );
@@ -333,6 +348,8 @@ public class FriendFragment extends BaseFragment {
         return indexes;
     }
 
+
+    //Wifi 相关
     public void popWifiDialog() {
         final Dialog dialog = new Dialog(getActivity(), R.style.ActionSheetDialogStyle);
         RelativeLayout root = (RelativeLayout) LayoutInflater.from(getActivity()).
