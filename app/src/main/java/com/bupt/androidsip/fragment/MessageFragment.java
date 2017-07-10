@@ -214,6 +214,7 @@ public class MessageFragment extends BaseFragment {
         user = UserManager.getInstance().getUser();
         groups = SipChatManager.getInstance().getSipChat();
 
+
         for (int i = 0; i < groups.size(); ++i) {
 //            chatList.add(fromSipChatToChat(groups.get(i)));
             chatManager.addChat(fromSipChatToChat(groups.get(i)));

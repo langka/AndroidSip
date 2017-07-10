@@ -100,4 +100,5 @@
                 app:indicatorName="BallScaleMultipleIndicator" />
         </LinearLayout>
     </RelativeLayout>
+
 </RelativeLayout>

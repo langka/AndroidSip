@@ -80,6 +80,9 @@ public class LoginActivity extends BaseActivity {
             public void onClick(View v) {
 
                 //调试用
+//                TabActivity.Start(LoginActivity.this);
+//                finish();
+
 
                 if ((!TextUtils.isEmpty(accountEdit.getText())) &&
                         (!TextUtils.isEmpty(pwdEdit.getText()))) {

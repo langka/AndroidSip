@@ -202,7 +202,7 @@ public class SipManager implements ISipService {
                 runner = () -> {
                     try {
                         initLock.await();
-                        Log.d(TAG,"executor ready to work");
+                        Log.d(TAG, "executor ready to work");
                         for (; !isWorkEnd; ) {
                             try {
                                 SipTask sipTask = taskQueue.poll(2000, TimeUnit.MILLISECONDS);
@@ -230,9 +230,9 @@ public class SipManager implements ISipService {
                 executor.submit(exeTask5);
             }
             isInitialised = true;
-            handler.post(()->{
-                Log.d(TAG,"HANDLER SUCCESS");
-                Toast.makeText(context,"sip stack successfully init",Toast.LENGTH_SHORT).show();
+            handler.post(() -> {
+                Log.d(TAG, "HANDLER SUCCESS");
+                Toast.makeText(context, "sip stack successfully init", Toast.LENGTH_SHORT).show();
             });
             initLock.countDown();
         }).start();
@@ -260,14 +260,20 @@ public class SipManager implements ISipService {
             headerFactory = sipFactory.createHeaderFactory();
             addressFactory = sipFactory.createAddressFactory();
             messageFactory = sipFactory.createMessageFactory();
-            sipProfile.setLocalIp(IpUtil.getIPAddress(context));
-            udpListeningPoint = sipStack.createListeningPoint(
-                    sipProfile.getLocalIp(), sipProfile.getLocalPort(), sipProfile.getTransport());
-            sipProvider = sipStack.createSipProvider(udpListeningPoint);
-            sipProvider.addSipListener(sipListener);
-            stackState = StackState.READY;
-            requestBuilder = new SipRequestBuilder(addressFactory, sipProvider, messageFactory,
-                    headerFactory, sipProfile);
+            String localIp = IpUtil.getIPAddress(context);
+            sipProfile.setLocalIp(localIp);
+            if (localIp != null) {
+                udpListeningPoint = sipStack.createListeningPoint(
+                        sipProfile.getLocalIp(), sipProfile.getLocalPort(), sipProfile.getTransport());
+                sipProvider = sipStack.createSipProvider(udpListeningPoint);
+                sipProvider.addSipListener(sipListener);
+                stackState = StackState.READY;
+                requestBuilder = new SipRequestBuilder(addressFactory, sipProvider, messageFactory,
+                        headerFactory, sipProfile);
+            } else {
+                Toast.makeText(context, "没有网", Toast.LENGTH_SHORT).show();
+                stackState = StackState.ERROR;
+            }
         } catch (PeerUnavailableException | ObjectInUseException | TooManyListenersException |
                 TransportNotSupportedException |
                 InvalidArgumentException e) {
@@ -304,7 +310,7 @@ public class SipManager implements ISipService {
     @Override
     public void login(String name, String password, SipNetListener listener) {
         long current = seq.getAndIncrement();
-        Request request = requestBuilder.buildLogin(message, current);
+        // Request request = requestBuilder.buildLogin(message, current);
     }
 
     @Override
