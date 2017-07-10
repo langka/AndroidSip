@@ -43,7 +43,7 @@ public class Chat implements Parcelable {
 
     public SipChat sipChat;
     public String name;
-//    public String headImageURL;
+    //    public String headImageURL;
     public String lastMessage;
     public String leftName;
     public int leftAvatar;

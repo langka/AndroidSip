@@ -28,6 +28,7 @@ import com.bupt.androidsip.entity.User;
 import com.bupt.androidsip.entity.sip.SipChat;
 import com.bupt.androidsip.entity.sip.SipMessage;
 import com.bupt.androidsip.mananger.ChatManager;
+import com.bupt.androidsip.mananger.DBManager;
 import com.bupt.androidsip.mananger.SipChatManager;
 import com.bupt.androidsip.mananger.UserManager;
 import com.bupt.androidsip.sip.SipMessageListener;
@@ -70,7 +71,7 @@ public class MessageFragment extends BaseFragment {
     private List<SipChat> groups;
 
     public int getUserAvatarFromID(int ID) {
-        return R.drawable.xusong;
+        return userManager.searchUser(ID).head;
     }
 
     ChatManager chatManager = ChatManager.getChatManager();
@@ -93,6 +94,7 @@ public class MessageFragment extends BaseFragment {
 
         simpleDateFormat = new SimpleDateFormat("HH:mm");
         initData();
+        loadLocalMessage(DBManager.getInstance(getActivity()).loadAllMessages());
 
         chatListAdapter = new ChatListAdapter(getActivity(), R.layout.item_frag_chat_list,
                 chatManager.getChatList());
@@ -120,6 +122,44 @@ public class MessageFragment extends BaseFragment {
 
     }
 
+    public void loadLocalMessage(List<SipMessage> sipMessages) {
+        chatManager.removeAllChat();
+        for (int i = 0; i < sipMessages.size(); ++i) {
+            if (sipMessages.get(i).from == userManager.getUser().id) {
+                //我发给别人的
+                if (!chatManager.isInList(sipMessages.get(i).to.get(0))) {
+                    //不在list中，新建chat 添加到list中
+                    chatManager.addChat(new Chat(userManager.searchUser(sipMessages.get(i).to.get(0)).name,
+                            userManager.searchUser(sipMessages.get(i).to.get(0)).head, 1,
+                            sipMessages.get(i).content, sipMessages.get(i).to.get(0)));
+                    //添加此条message
+                    chatManager.addMsg(chatManager.getChatList().size() - 1,
+                            getChatMsgFrom(sipMessages.get(i).content, sipMessages.get(i).to.get(0),
+                                    sipMessages.get(i).comeTime));
+                } else {
+                    chatManager.addMsg(i, getChatMsgFrom(sipMessages.get(i).content,
+                            sipMessages.get(i).to.get(0), sipMessages.get(i).comeTime));
+                    //直接向list中添加这个message
+                }
+            } else if (sipMessages.get(i).from != userManager.getUser().id) {
+                //别人发给我的
+                if (!chatManager.isInList(sipMessages.get(i).from)) {
+                    //不在list中，新建chat
+                    chatManager.addChat(new Chat(userManager.searchUser(sipMessages.get(i).from).name,
+                            userManager.searchUser(sipMessages.get(i).from).head, 1,
+                            sipMessages.get(i).content, sipMessages.get(i).from));
+                    chatManager.addMsg(chatManager.getChatList().size() - 1,
+                            getChatMsgTo(sipMessages.get(i).content, sipMessages.get(i).from,
+                                    sipMessages.get(i).comeTime));
+                } else {
+                    chatManager.addMsg(i, getChatMsgTo(sipMessages.get(i).content,
+                            sipMessages.get(i).from, sipMessages.get(i).comeTime));
+                }
+            }
+        }
+        chatManager.sortChatMessages();
+    }
+
     public void setMyAvatar() {
         myAvatar = user.head;
     }
@@ -129,12 +169,13 @@ public class MessageFragment extends BaseFragment {
             if (sipMessage.from == chatList.get(i).ID) {
 //                chatList.get(i).messages.add(getChatMsgFrom(sipMessage.content,
 //                        sipMessage.from));
-                chatManager.addMsg(i, getChatMsgFrom(sipMessage.content, userManager.searchUser(sipMessage.from)));
+                chatManager.addMsg(i, getChatMsgFrom(sipMessage.content, sipMessage.from,
+                        sipMessage.comeTime));
 //                chatList.get(i).setLastMsgWithUnread(sipMessage.content);
                 chatManager.setLastMsgWithUnread(i, sipMessage.content);
                 chatListAdapter.notifyDataSetChanged();
                 EventBus.getDefault().post(new EventConst.NewMsg(userManager.searchUser(sipMessage.from),
-                        sipMessage.content));
+                        sipMessage.content, sipMessage.comeTime));
                 if (isShock)
                     VibratorUtils.Vibrate(getActivity(), 200);
                 return;
@@ -148,10 +189,10 @@ public class MessageFragment extends BaseFragment {
 //        chatList.get(chatList.size() - 1).messages.add(getChatMsgFrom(sipMessage.content,
 //                sipMessage.from));
         chatManager.addMsg(chatManager.getChatList().size() - 1, getChatMsgFrom(sipMessage.content,
-                userManager.searchUser(sipMessage.from)));
+                sipMessage.from, sipMessage.comeTime));
 
         EventBus.getDefault().post(new EventConst.NewMsg(userManager.searchUser(sipMessage.from),
-                sipMessage.content));
+                sipMessage.content, sipMessage.comeTime));
         VibratorUtils.Vibrate(getActivity(), 200);
         if (isShock)
             chatListAdapter.notifyDataSetChanged();
@@ -355,23 +396,23 @@ public class MessageFragment extends BaseFragment {
         }
     }
 
-    private Message getChatMsgFrom(String message, User user) {
+    private Message getChatMsgFrom(String message, int ID, long time) {
         Message msg = new Message();
         msg.content = message;
         msg.fromOrTo = 0;
         msg.rightAvatar = myAvatar;
-        msg.leftAvatar = user.head;
-        msg.time = simpleDateFormat.format(new Date());
+        msg.leftAvatar = getUserAvatarFromID(ID);
+        msg.time = time;
         return msg;
     }
 
-    private Message getChatMsgTo(String message, int ID) {
+    private Message getChatMsgTo(String message, int ID, long time) {
         Message msg = new Message();
         msg.content = message;
         msg.fromOrTo = 1;
         msg.rightAvatar = myAvatar;
         msg.leftAvatar = getUserAvatarFromID(ID);
-        msg.time = simpleDateFormat.format(new Date());
+        msg.time = time;
         return msg;
     }
 }

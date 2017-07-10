@@ -55,6 +55,9 @@ import com.bupt.androidsip.entity.response.SipSendMsgResponse;
 import com.bupt.androidsip.entity.sip.SipFailure;
 import com.bupt.androidsip.entity.sip.SipMessage;
 
+import com.bupt.androidsip.mananger.ChatManager;
+import com.bupt.androidsip.mananger.DBManager;
+import com.bupt.androidsip.mananger.UserManager;
 import com.bupt.androidsip.sip.SipNetListener;
 
 import com.bupt.androidsip.sip.impl.SipManager;
@@ -132,6 +135,8 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     private String inputMsg;
     private Chat chat;
     boolean pushEnterToSend = true;
+    ChatManager chatManager = ChatManager.getChatManager();
+    DBManager dbManager = DBManager.getInstance(getApplicationContext());
 
     public int getID() {
         return ID;
@@ -225,27 +230,55 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     public void onPause() {
         super.onPause();
         EventBus.getDefault().post(new EventConst.RemoveOne(0, getID()));
+        saveMsgToLocalDB();
     }
 
-    private Message getChatMsgFrom(String message, User user) {
+    public void saveMsgToLocalDB() {
+        List<SipMessage> list = null;
+        for (int i = 0; i < chatManager.getChatList().size() - 1; ++i) {
+            for (int j = 0; j < chatManager.getChat(i).messages.size() - 1; ++j) {
+                list.add(fromMsgToSipMsg(messages.get(j)));
+            }
+        }
+        dbManager.save(list);
+    }
+
+
+    public SipMessage fromMsgToSipMsg(Message msg) {
+        SipMessage sipMessage = new SipMessage();
+        sipMessage.type = 0;
+        sipMessage.comeTime = msg.time;
+        sipMessage.createTime = msg.time;
+        sipMessage.content = msg.content;
+        if (msg.fromOrTo == 0) {
+            sipMessage.from = msg.ID;
+            sipMessage.to.add(UserManager.getInstance().getUser().id);
+        } else {
+            sipMessage.from = UserManager.getInstance().getUser().id;
+            sipMessage.to.add(msg.ID);
+        }
+        return sipMessage;
+    }
+
+    private Message getChatMsgFrom(String message, User user, long time) {
         Message msg = new Message();
         msg.content = message;
         msg.fromOrTo = 0;
         msg.rightAvatar = myAvatar;
         msg.leftAvatar = user.head;
         msg.ID = ID;
-        msg.time = simpleDateFormat.format(new Date());
+        msg.time = time;
         return msg;
     }
 
-    private Message getChatMsgTo(String message, int ID) {
+    private Message getChatMsgTo(String message, int ID, long time) {
         Message msg = new Message();
         msg.content = message;
         msg.fromOrTo = 1;
         msg.rightAvatar = myAvatar;
         msg.leftAvatar = ID;
         msg.ID = ID;
-        msg.time = simpleDateFormat.format(new Date());
+        msg.time = time;
         return msg;
     }
 
@@ -284,7 +317,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     public void sendMsg() {
         inputMsg = sendToMsg.getText().toString();
         if (!TextUtils.isEmpty(inputMsg)) {
-            Message msg = getChatMsgTo(inputMsg, getID());
+            Message msg = getChatMsgTo(inputMsg, getID(), System.currentTimeMillis());
 
             sipManager.sendMessage(createStringMessage(chat, inputMsg),
                     new SipNetListener<SipSendMsgResponse>() {
@@ -316,7 +349,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         if (newMsg.getUser().id != getID())
             return;
 
-        messages.add(getChatMsgFrom(newMsg.getMsg(), newMsg.getUser()));
+        messages.add(getChatMsgFrom(newMsg.getMsg(), newMsg.getUser(), newMsg.getTime()));
         msgAdapter.setList(messages);
         msgAdapter.notifyDataSetChanged();
         msgListView.setSelection(messages.size() - 1);
@@ -724,7 +757,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
                 SpannableStringBuilder sb = handler(holder.leftContent,
                         list.get(position).content);
                 holder.leftContent.setText(sb);
-                holder.time.setText(list.get(position).time);
+                holder.time.setText(simpleDateFormat.format(list.get(position).time));
 //                holder.leftAvatar.setImageResource(list.get(position).leftAvatar);
 //                holder.rightAvatar.setImageResource(list.get(position).rightAvatar);
             } else {
@@ -735,7 +768,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
                 SpannableStringBuilder sb = handler(holder.rightContent,
                         list.get(position).content);
                 holder.rightContent.setText(sb);
-                holder.time.setText(list.get(position).time);
+                holder.time.setText(simpleDateFormat.format(list.get(position).time));
                 //               holder.leftAvatar.setImageResource(list.get(position).leftAvatar);
                 //               holder.rightAvatar.setImageResource(list.get(position).rightAvatar);
             }

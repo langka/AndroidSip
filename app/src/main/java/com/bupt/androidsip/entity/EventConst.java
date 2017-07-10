@@ -66,6 +66,7 @@ public class EventConst {
     public static class NewMsg {
         private User user;
         private String msg;
+        private long time;
 
         public User getUser() {
             return user;
@@ -75,9 +76,14 @@ public class EventConst {
             return msg;
         }
 
-        public NewMsg(User user, String msg) {
+        public long getTime() {
+            return time;
+        }
+
+        public NewMsg(User user, String msg, long time) {
             this.user = user;
             this.msg = msg;
+            this.time = time;
         }
     }
 
