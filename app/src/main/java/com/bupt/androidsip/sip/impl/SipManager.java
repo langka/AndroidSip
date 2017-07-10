@@ -30,6 +30,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.util.Log;
+import android.webkit.ClientCertRequest;
 import android.widget.Toast;
 
 import com.bupt.androidsip.entity.User;
@@ -119,35 +120,36 @@ public class SipManager implements ISipService {
     AtomicLong seq = new AtomicLong(0);
 
     private void processMessageResponse(ResponseEvent event, SipNetListener<SipSendMsgResponse> listener) {
-        if(event.getResponse().getStatusCode() == 200){
+        if (event.getResponse().getStatusCode() == 200) {
             try {
                 JSONArray array = new JSONArray(event.getResponse().getContent());
             } catch (JSONException e) {
-                handler.post(()->listener.onFailure(new SipFailure("无法解析的json串!")));
+                handler.post(() -> listener.onFailure(new SipFailure("无法解析的json串!")));
                 e.printStackTrace();
             }
-        }else handler.post(()->listener.onFailure(new SipFailure("status code != 200")));;
+        } else handler.post(() -> listener.onFailure(new SipFailure("status code != 200")));
+        ;
 
     }
 
     private void processLoginResponse(ResponseEvent event, SipNetListener<SipLoginResponse> listener) {
-        if(event.getResponse().getStatusCode() == 200){
+        if (event.getResponse().getStatusCode() == 200) {
             try {
                 JSONArray array = new JSONArray(event.getResponse().getContent());
                 SipLoginResponse response = new SipLoginResponse();
                 JSONObject me = array.getJSONObject(0);
                 response.self = User.createFromJson(me);
                 List<User> friends = new ArrayList<>();
-                for(int i=1;i<array.length();i++){
+                for (int i = 0; i < array.length(); i++) {//每个人它自己也会是自己的好友
                     friends.add(User.createFromJson(array.getJSONObject(i)));
                 }
                 response.friends = friends;
-                handler.post(()->listener.onSuccess(response));
+                handler.post(() -> listener.onSuccess(response));
             } catch (JSONException e) {
-                handler.post(()->listener.onFailure(new SipFailure("无法解析的json串!")));
+                handler.post(() -> listener.onFailure(new SipFailure("无法解析的json串!")));
                 e.printStackTrace();
             }
-        }else handler.post(()->listener.onFailure(new SipFailure("status code != 200!")));
+        } else handler.post(() -> listener.onFailure(new SipFailure("status code != 200!")));
     }
 
     private SipListener sipListener = new SipListener() {
@@ -162,7 +164,7 @@ public class SipManager implements ISipService {
         @Override
         public void processResponse(ResponseEvent responseEvent) {
             long local = responseEvent.getDialog().getLocalSeqNumber();
-            TaskListener listener = taskListeners.get(local);
+            TaskListener listener = taskListeners.remove(local);
             //responseEvent.getResponse()
             int status = responseEvent.getResponse().getStatusCode();
             if (listener != null) {
@@ -336,13 +338,15 @@ public class SipManager implements ISipService {
     @Override
     public void login(String name, String password, SipNetListener listener) {
         long current = seq.getAndIncrement();
+        Request request = null;
         try {
-            Request request = requestBuilder.buildLogin(name, password, current);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } catch (InvalidArgumentException e) {
+            request = requestBuilder.buildLogin(name, password, current);
+        } catch (ParseException | InvalidArgumentException e) {
+            listener.onFailure(new SipFailure("无法解析sip message格式"));
             e.printStackTrace();
         }
+        taskListeners.put(current, new TaskListener(listener, SipTaskType.LOGIN));
+        dealRequest(request, SipTaskType.LOGIN, listener);
     }
 
     @Override
@@ -363,29 +367,17 @@ public class SipManager implements ISipService {
     //将普通message放入队列
     @Override
     public void sendMessage(SipMessage message, SipNetListener<SipSendMsgResponse> listener) {
+        long current = seq.getAndIncrement();
         try {
-            long current = seq.getAndIncrement();
             Request request = requestBuilder.buildMessage(message, current);
             taskListeners.put(current, new TaskListener(listener, SipTaskType.MESSAGE));
-            final ClientTransaction transaction = this.sipProvider.getNewClientTransaction(request);
-            try {
-                taskQueue.put(new SipTask(() -> {
-                    try {
-                        transaction.sendRequest();
-                    } catch (SipException e) {
-                        listener.onFailure(new SipFailure("Sip访问出现异常"));
-                        e.printStackTrace();
-                    }
-                }, SipTaskType.MESSAGE));
-            } catch (InterruptedException e) {
-                listener.onFailure(new SipFailure("Sip访问出现异常"));
-                e.printStackTrace();
-            }
-
-        } catch (ParseException | InvalidArgumentException | TransactionUnavailableException e) {
-            listener.onFailure(new SipFailure("无法解析的message！"));
+            dealRequest(request, SipTaskType.MESSAGE, listener);
+        } catch (ParseException | InvalidArgumentException e) {
+            handler.post(() -> listener.onFailure(new SipFailure("sip消息格式有误")));
+            e.printStackTrace();
         }
     }
+
 
     @Override
     public void getUserInfo(int id, SipNetListener listener) {
@@ -397,6 +389,23 @@ public class SipManager implements ISipService {
 
     }
 
+    private void dealRequest(Request request, SipTaskType taskType, SipNetListener listener) {
+        try {
+            taskQueue.put(new SipTask(() -> {
+                try {
+                    ClientTransaction transaction = this.sipProvider.getNewClientTransaction(request);
+                    transaction.sendRequest();
+                } catch (SipException e) {
+                    handler.post(() -> listener.onFailure(new SipFailure("Sip访问出现异常")));
+                    e.printStackTrace();
+                }
+            }, taskType));
+        } catch (InterruptedException e) {
+            listener.onFailure(new SipFailure("无法放置入消息队列"));
+            e.printStackTrace();
+        }
+
+    }
 
     //因为不能在主线程访问网络，所以需要建造一个网络访问队列,这里是队列里每个节点
     static class SipTask {

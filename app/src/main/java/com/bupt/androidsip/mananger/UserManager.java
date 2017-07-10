@@ -1,6 +1,7 @@
 package com.bupt.androidsip.mananger;
 
 import com.bupt.androidsip.entity.User;
+import com.bupt.androidsip.entity.response.SipLoginResponse;
 
 import java.util.List;
 
@@ -22,8 +23,9 @@ public class UserManager {
     private UserManager() {
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void initUser(SipLoginResponse response) {
+        user = response.self;
+        frs = response.friends;
     }
 
     public static UserManager getInstance() {
