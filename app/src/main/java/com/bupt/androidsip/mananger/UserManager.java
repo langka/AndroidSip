@@ -1,6 +1,9 @@
 package com.bupt.androidsip.mananger;
 
 import com.bupt.androidsip.entity.User;
+import com.bupt.androidsip.entity.response.SipLoginResponse;
+
+import java.util.List;
 
 /**
  * Created by xusong on 2017/5/17.
@@ -10,6 +13,7 @@ import com.bupt.androidsip.entity.User;
 public class UserManager {
     private User user = new User();
 
+    public List<User> frs;//这是本次所知道的全部user,应当在登录成功后初始化
     public User getUser() {
         return user;
     }
@@ -19,13 +23,18 @@ public class UserManager {
     private UserManager() {
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void initUser(SipLoginResponse response) {
+        user = response.self;
+        frs = response.friends;
     }
 
     public static UserManager getInstance() {
         return instance;
     }
 
+    //根据id查询user
+    public User searchUser(int id){
+        return null;
+    }
 
 }

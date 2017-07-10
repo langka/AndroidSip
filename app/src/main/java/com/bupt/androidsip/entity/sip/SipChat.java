@@ -10,7 +10,7 @@ import java.util.List;
  */
 
 public class SipChat {
-    public List<User> users;
+    public List<Integer> users;
     public int id;
     public long latestTime;
 }

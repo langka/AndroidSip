@@ -1,7 +1,6 @@
 package com.bupt.androidsip.activity;
 
 import android.animation.ValueAnimator;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,13 +12,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bupt.androidsip.R;
-import com.bupt.androidsip.entity.Friend;
 import com.bupt.androidsip.entity.response.SipLoginResponse;
 import com.bupt.androidsip.entity.sip.SipFailure;
 import com.bupt.androidsip.mananger.FriendManager;
 import com.bupt.androidsip.mananger.SipChatManager;
 import com.bupt.androidsip.mananger.UserManager;
-import com.bupt.androidsip.sip.ISipService;
 import com.bupt.androidsip.sip.SipNetListener;
 import com.bupt.androidsip.sip.impl.SipManager;
 import com.bupt.androidsip.util.BitmapUtils;
@@ -61,6 +58,7 @@ public class LoginActivity extends BaseActivity {
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean("isShock", isShock);
         editor.putBoolean("pushEnterToSend", pushEnterToSend);
+        editor.apply();
         initView();
 
     }
@@ -68,47 +66,37 @@ public class LoginActivity extends BaseActivity {
     boolean x = false;
 
     private void initView() {
-        imageView.post(new Runnable() {
-            @Override
-            public void run() {
-                imageView.setImageBitmap(BitmapUtils.decodeSampledBitmapFromResource(getResources(),
-                        R.drawable.batman1, imageView.getWidth(), imageView.getHeight()));
-            }
-        });
-        confirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                //调试用
-//                TabActivity.Start(LoginActivity.this);
-//                finish();
+        imageView.post(() -> imageView.setImageBitmap(BitmapUtils.decodeSampledBitmapFromResource(getResources(),
+                R.drawable.batman1, imageView.getWidth(), imageView.getHeight())));
+        confirm.setOnClickListener(v -> {
 
+            //调试用
 
-                if ((!TextUtils.isEmpty(accountEdit.getText())) &&
-                        (!TextUtils.isEmpty(pwdEdit.getText()))) {
-                    showLoadingView();
-                    sipManager.login(accountEdit.getText().toString(), pwdEdit.getText().toString(),
-                            new SipNetListener<SipLoginResponse>() {
-                                @Override
-                                public void onSuccess(SipLoginResponse response) {
+            if ((!TextUtils.isEmpty(accountEdit.getText())) &&
+                    (!TextUtils.isEmpty(pwdEdit.getText()))) {
+                showLoadingView();
+                sipManager.login(accountEdit.getText().toString(), pwdEdit.getText().toString(),
+                        new SipNetListener<SipLoginResponse>() {
+                            @Override
+                            public void onSuccess(SipLoginResponse response) {
+                                userManager.initUser(response);
+                                sipChatManager.setSipChat(response.groups);
+                                friendManager.setFriends(response.friends);
+                                hideLoadingView();
+                                TabActivity.Start(LoginActivity.this);
+                                finish();
+                            }
 
-                                    userManager.setUser(response.self);
-                                    sipChatManager.setSipChat(response.groups);
-                                    friendManager.setFriends(response.friends);
-                                    hideLoadingView();
+                            @Override
+                            public void onFailure(SipFailure failure) {
+                                Toast.makeText(getApplicationContext(),
+                                        failure.reason, Toast.LENGTH_SHORT).show();
+                                hideLoadingView();
+                                pwdEdit.setText("");
+                            }
+                        });
 
-                                    TabActivity.Start(LoginActivity.this);
-                                    finish();
-                                }
-
-                                @Override
-                                public void onFailure(SipFailure failure) {
-                                    Toast.makeText(getApplicationContext(),
-                                            failure.reason, Toast.LENGTH_SHORT).show();
-                                    hideLoadingView();
-                                    pwdEdit.setText("");
-                                }
-                            });
 
 //                if (checkPwdAndAccount()) {
 //                    if (confirm.getProgress() == 0) {
@@ -119,10 +107,9 @@ public class LoginActivity extends BaseActivity {
 //                    }
 //                } else showText("账户或密码有格式错误，请您检查!");
 
-                } else
-                    Toast.makeText(getApplicationContext(),
-                            "请输入账号和密码", Toast.LENGTH_SHORT).show();
-            }
+            } else
+                Toast.makeText(getApplicationContext(),
+                        "请输入账号和密码", Toast.LENGTH_SHORT).show();
         });
     }
 
