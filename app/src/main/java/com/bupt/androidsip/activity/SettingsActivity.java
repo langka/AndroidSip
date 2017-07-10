@@ -11,6 +11,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bupt.androidsip.R;
+import com.bupt.androidsip.entity.Chat;
+import com.bupt.androidsip.mananger.ChatManager;
+import com.bupt.androidsip.mananger.DBManager;
 
 import java.util.Arrays;
 
@@ -42,8 +45,12 @@ public class SettingsActivity extends BaseActivity {
 
     @BindView(R.id.frag_logout)
     RelativeLayout logoutContainer;
+    //这里有问题
+    ChatManager chatManager = ChatManager.getChatManager();
+    DBManager dbManager = DBManager.getInstance(getApplicationContext());
+    SharedPreferences pref = null;
+    SharedPreferences.Editor editor = null;
 
-    SharedPreferences.Editor editor = getSharedPreferences("MySettings", MODE_PRIVATE).edit();
     boolean isShock = true;
     boolean pushEnterToSend = true;
 
@@ -87,6 +94,12 @@ public class SettingsActivity extends BaseActivity {
                     }));
                     break;
                 case R.id.frag_clear_chat_history:
+                    //删除内存中的缓存消息
+                    chatManager.removeAllChat();
+                    //删除本地服务器上的缓存消息
+                    for (int i = 0; i < chatManager.getChatList().size() - 1; ++i) {
+                        dbManager.delete(chatManager.getChatList().get(i).ID);
+                    }
                     showText("清理成功！");
                     // TODO: 08/07/2017 清空本地聊天信息缓存
                     break;
@@ -119,6 +132,9 @@ public class SettingsActivity extends BaseActivity {
         getHeaderDivider().setVisibility(View.GONE);
         enableLeftImage(R.drawable.ic_arrow_back_24px, e -> finish());
         setTitle("设置");
+        pref = getSharedPreferences("MySettings", MODE_PRIVATE);
+        editor = pref.edit();
+
         initView();
     }
 
