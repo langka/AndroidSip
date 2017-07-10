@@ -1,6 +1,7 @@
 package com.bupt.androidsip.activity;
 
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -72,44 +73,36 @@ public class LoginActivity extends BaseActivity {
         confirm.setOnClickListener(v -> {
 
             //调试用
+            startActivity(new Intent(LoginActivity.this,SipChatDemoActivity.class));
 
-            if ((!TextUtils.isEmpty(accountEdit.getText())) &&
-                    (!TextUtils.isEmpty(pwdEdit.getText()))) {
-                showLoadingView();
-                sipManager.login(accountEdit.getText().toString(), pwdEdit.getText().toString(),
-                        new SipNetListener<SipLoginResponse>() {
-                            @Override
-                            public void onSuccess(SipLoginResponse response) {
-                                userManager.initUser(response);
-                                sipChatManager.setSipChat(response.groups);
-                                friendManager.setFriends(response.friends);
-                                hideLoadingView();
-                                TabActivity.Start(LoginActivity.this);
-                                finish();
-                            }
+//            if ((!TextUtils.isEmpty(accountEdit.getText())) &&
+//                    (!TextUtils.isEmpty(pwdEdit.getText()))) {
+//                showLoadingView();
+//                sipManager.login(accountEdit.getText().toString(), pwdEdit.getText().toString(),
+//                        new SipNetListener<SipLoginResponse>() {
+//                            @Override
+//                            public void onSuccess(SipLoginResponse response) {
+//                                userManager.initUser(response);
+//                                sipChatManager.setSipChat(response.groups);
+//                                friendManager.setFriends(response.friends);
+//                                hideLoadingView();
+//                                TabActivity.Start(LoginActivity.this);
+//                                finish();
+//                            }
+//
+//                            @Override
+//                            public void onFailure(SipFailure failure) {
+//                                Toast.makeText(getApplicationContext(),
+//                                        failure.reason, Toast.LENGTH_SHORT).show();
+//                                hideLoadingView();
+//                                pwdEdit.setText("");
+//                            }
+//                        });
 
-                            @Override
-                            public void onFailure(SipFailure failure) {
-                                Toast.makeText(getApplicationContext(),
-                                        failure.reason, Toast.LENGTH_SHORT).show();
-                                hideLoadingView();
-                                pwdEdit.setText("");
-                            }
-                        });
 
-
-//                if (checkPwdAndAccount()) {
-//                    if (confirm.getProgress() == 0) {
-//                        simulateSuccessProgress(confirm, x); // 如果是初始状态就开始进入进度条动画
-//                        x = !x;
-//                    } else {
-//                        confirm.setProgress(0); // 如果不是初始状态，那么就回到初始状态
-//                    }
-//                } else showText("账户或密码有格式错误，请您检查!");
-
-            } else
-                Toast.makeText(getApplicationContext(),
-                        "请输入账号和密码", Toast.LENGTH_SHORT).show();
+//            } else
+//                Toast.makeText(getApplicationContext(),
+//                        "请输入账号和密码", Toast.LENGTH_SHORT).show();
         });
     }
 

@@ -15,7 +15,7 @@ public class SipProfile {
     //替换为远神的ip
     private String remoteIp = "23.23.228.238";
     private  int remotePort = 5060;
-    private String sipUserName;
+    private String sipUserName ="hhh";
     private String sipPassword;
 
     public String getLocalIp() {
