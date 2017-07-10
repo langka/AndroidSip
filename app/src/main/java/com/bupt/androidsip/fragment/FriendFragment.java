@@ -117,10 +117,7 @@ public class FriendFragment extends BaseFragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AddFriendActivity.class);
                 startActivity(intent);
-
             }
-
-
         });
 
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
