@@ -20,8 +20,20 @@ import android.javax.sip.TimeoutEvent;
 import android.javax.sip.TransactionTerminatedEvent;
 import android.javax.sip.TransactionUnavailableException;
 import android.javax.sip.TransportNotSupportedException;
+import android.javax.sip.address.Address;
 import android.javax.sip.address.AddressFactory;
+import android.javax.sip.address.SipURI;
+import android.javax.sip.address.URI;
+import android.javax.sip.header.CSeqHeader;
+import android.javax.sip.header.CallIdHeader;
+import android.javax.sip.header.ContentTypeHeader;
+import android.javax.sip.header.FromHeader;
 import android.javax.sip.header.HeaderFactory;
+import android.javax.sip.header.MaxForwardsHeader;
+import android.javax.sip.header.RouteHeader;
+import android.javax.sip.header.SupportedHeader;
+import android.javax.sip.header.ToHeader;
+import android.javax.sip.header.ViaHeader;
 import android.javax.sip.message.MessageFactory;
 import android.javax.sip.message.Request;
 import android.net.ConnectivityManager;
@@ -101,6 +113,10 @@ public class SipManager implements ISipService {
     SipMessageListener messageListener;
     SipSystemListener systemListener;
 
+    public SipProfile getSipProfile() {
+        return sipProfile;
+    }
+    Context context;
 
     //以下为sip变量
     private SipProvider sipProvider;
@@ -158,12 +174,16 @@ public class SipManager implements ISipService {
 
         @Override
         public void processRequest(RequestEvent requestEvent) {
-
+            handler.post(()->Toast.makeText(context,"收到request",Toast.LENGTH_SHORT).show());
+            SipMessage sipMessage = new SipMessage();
+            sipMessage.content = (String) requestEvent.getRequest().getContent();
+            messageListener.onNewMessage(sipMessage);
         }
 
         //对于发送消息，回调走这里，应当发送回主线程
         @Override
         public void processResponse(ResponseEvent responseEvent) {
+            handler.post(()->Toast.makeText(context,"收到response",Toast.LENGTH_SHORT).show());
             long local = responseEvent.getDialog().getLocalSeqNumber();
             TaskListener listener = taskListeners.remove(local);
             //responseEvent.getResponse()
@@ -182,7 +202,7 @@ public class SipManager implements ISipService {
 
         @Override
         public void processTimeout(TimeoutEvent timeoutEvent) {
-
+            handler.post(()->Toast.makeText(context,"sip超时",Toast.LENGTH_SHORT).show());
         }
 
         @Override
@@ -223,6 +243,7 @@ public class SipManager implements ISipService {
      */
     private SipManager(Handler handler, Context context) {
         this.handler = handler;
+        this.context = context;
         initLock = new CountDownLatch(1);
         taskListeners = new ConcurrentHashMap<>();
         executor = Executors.newFixedThreadPool(5);//因为我们的消息不够密集，5个线程应该足够处理了
@@ -298,8 +319,7 @@ public class SipManager implements ISipService {
             String localIp = IpUtil.getIPAddress(context);
             sipProfile.setLocalIp(localIp);
             if (localIp != null) {
-                udpListeningPoint = sipStack.createListeningPoint(
-                        sipProfile.getLocalIp(), sipProfile.getLocalPort(), sipProfile.getTransport());
+                udpListeningPoint = sipStack.createListeningPoint(sipProfile.getLocalIp(), sipProfile.getLocalPort(), sipProfile.getTransport());
                 sipProvider = sipStack.createSipProvider(udpListeningPoint);
                 sipProvider.addSipListener(sipListener);
                 stackState = StackState.READY;
@@ -332,6 +352,69 @@ public class SipManager implements ISipService {
 
     public void setSystemListener(SipSystemListener systemListener) {
         this.systemListener = systemListener;
+    }
+
+
+    public void sendMessageL(String target,String msg){
+        new Thread(()->{
+            try {
+                SipURI from = addressFactory.createSipURI(sipProfile.getSipUserName(), sipProfile.getLocalEndpoint());
+                Address fromNameAddress = addressFactory.createAddress(from);
+                // fromNameAddress.setDisplayName(sipUsername);
+                FromHeader fromHeader = headerFactory.createFromHeader(fromNameAddress,
+                        "Tzt0ZEP92");
+
+                URI toAddress = addressFactory.createURI(target);
+                Address toNameAddress = addressFactory.createAddress(toAddress);
+                // toNameAddress.setDisplayName(username);
+                ToHeader toHeader = headerFactory.createToHeader(toNameAddress, null);
+
+                URI requestURI = addressFactory.createURI(target);
+                // requestURI.setTransportParam("udp");
+
+                ArrayList<ViaHeader> viaHeaders = requestBuilder.createViaHeader();
+
+                CallIdHeader callIdHeader = sipProvider.getNewCallId();
+
+                CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(3,
+                        Request.MESSAGE);
+
+                MaxForwardsHeader maxForwards = headerFactory
+                        .createMaxForwardsHeader(70);
+
+                Request request = messageFactory.createRequest(requestURI,
+                        Request.MESSAGE, callIdHeader, cSeqHeader, fromHeader,
+                        toHeader, viaHeaders, maxForwards);
+                SupportedHeader supportedHeader = headerFactory
+                        .createSupportedHeader("replaces, outbound");
+                request.addHeader(supportedHeader);
+
+                SipURI routeUri = addressFactory.createSipURI(null, sipProfile.getRemoteIp());
+                routeUri.setTransportParam(sipProfile.getTransport());
+                routeUri.setLrParam();
+                routeUri.setPort(sipProfile.getRemotePort());
+                Address routeAddress = addressFactory.createAddress(routeUri);
+                RouteHeader route = headerFactory.createRouteHeader(routeAddress);
+                //request.addHeader(route);
+                ContentTypeHeader contentTypeHeader = headerFactory
+                        .createContentTypeHeader("text", "plain");
+                request.setContent(msg, contentTypeHeader);
+                System.out.println(request);
+                try {
+                    ClientTransaction transaction = this.sipProvider.getNewClientTransaction(request);
+                    transaction.sendRequest();
+                } catch (SipException e) {
+                    e.printStackTrace();
+                }
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } catch (InvalidArgumentException e) {
+                e.printStackTrace();
+            }
+
+
+        }).start();
     }
 
     /**

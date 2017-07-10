@@ -51,6 +51,7 @@ public class SipRequestBuilder {
         this.sipProvider = sipProvider;
         this.messageFactory = messageFactory;
         this.headerFactory = headerFactory;
+        this.sipProfile = sipProfile;
     }
 
     public Request buildRegister(SipManager sipManager) throws ParseException, InvalidArgumentException {

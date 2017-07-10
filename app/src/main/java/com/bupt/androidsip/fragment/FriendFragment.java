@@ -36,6 +36,7 @@ import com.bupt.androidsip.activity.AddFriendActivity;
 import com.bupt.androidsip.activity.BaseActivity;
 import com.bupt.androidsip.activity.ChatActivity;
 import com.bupt.androidsip.activity.DemoWifiChatActivity;
+import com.bupt.androidsip.activity.SipChatDemoActivity;
 import com.bupt.androidsip.customview.SlideBar;
 import com.bupt.androidsip.entity.Chat;
 import com.bupt.androidsip.entity.Friend;
@@ -96,7 +97,7 @@ public class FriendFragment extends BaseFragment {
 
         ButterKnife.bind(this, v);
         wifiDirectManager = WifiDirectManager.getInstance(getActivity());
-        append.setOnClickListener(e -> popWifiDialog());
+        append.setOnClickListener(e -> startActivity(new Intent(getActivity(), SipChatDemoActivity.class)));
 
         //listView.addHeaderView(headerView);
         sortAdapter = new SortAdapter(getActivity(), UserManager.getInstance().getUser().friends, (o1, o2) ->

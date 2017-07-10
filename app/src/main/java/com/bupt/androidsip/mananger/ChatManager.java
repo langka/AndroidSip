@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.bupt.androidsip.entity.Chat;
 import com.bupt.androidsip.entity.Message;
+import com.bupt.androidsip.util.SortListUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,4 +79,15 @@ public class ChatManager {
         }
         return null;
     }
+
+    public void removeAllChat() {
+        chatList.clear();
+    }
+
+    public void sortChatMessages() {
+        for (int i = 0; i < chatList.size(); ++i) {
+            SortListUtil.sort(chatList.get(i).messages, "time", SortListUtil.ASC);
+        }
+    }
+
 }

@@ -13,7 +13,7 @@ public class Message implements Serializable {
     public int rightAvatar;
     public int leftAvatar;
     public String content;
-    public String time;
+    public long time;
     public int fromOrTo;// 0 是收到的消息，1是发送的消息
     public int ID;
 
