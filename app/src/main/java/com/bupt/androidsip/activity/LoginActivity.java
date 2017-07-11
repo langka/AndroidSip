@@ -72,37 +72,42 @@ public class LoginActivity extends BaseActivity {
                 R.drawable.batman1, imageView.getWidth(), imageView.getHeight())));
         confirm.setOnClickListener(v -> {
 
-            //调试用
-            startActivity(new Intent(LoginActivity.this,SipChatDemoActivity.class));
 
-//            if ((!TextUtils.isEmpty(accountEdit.getText())) &&
-//                    (!TextUtils.isEmpty(pwdEdit.getText()))) {
-//                showLoadingView();
-//                sipManager.login(accountEdit.getText().toString(), pwdEdit.getText().toString(),
-//                        new SipNetListener<SipLoginResponse>() {
-//                            @Override
-//                            public void onSuccess(SipLoginResponse response) {
-//                                userManager.initUser(response);
-//                                sipChatManager.setSipChat(response.groups);
-//                                friendManager.setFriends(response.friends);
-//                                hideLoadingView();
-//                                TabActivity.Start(LoginActivity.this);
-//                                finish();
-//                            }
-//
-//                            @Override
-//                            public void onFailure(SipFailure failure) {
-//                                Toast.makeText(getApplicationContext(),
-//                                        failure.reason, Toast.LENGTH_SHORT).show();
-//                                hideLoadingView();
-//                                pwdEdit.setText("");
-//                            }
-//                        });
+            if ((!TextUtils.isEmpty(accountEdit.getText())) &&
+                    (!TextUtils.isEmpty(pwdEdit.getText()))) {
+                showLoadingView();
+
+                //调试用
+                hideLoadingView();
+                TabActivity.Start(LoginActivity.this);
+                finish();
 
 
-//            } else
-//                Toast.makeText(getApplicationContext(),
-//                        "请输入账号和密码", Toast.LENGTH_SHORT).show();
+                sipManager.login(accountEdit.getText().toString(), pwdEdit.getText().toString(),
+                        new SipNetListener<SipLoginResponse>() {
+                            @Override
+                            public void onSuccess(SipLoginResponse response) {
+                                userManager.initUser(response);
+                                sipChatManager.setSipChat(response.groups);
+                                friendManager.setFriends(response.friends);
+                                hideLoadingView();
+                                TabActivity.Start(LoginActivity.this);
+                                finish();
+                            }
+
+                            @Override
+                            public void onFailure(SipFailure failure) {
+                                Toast.makeText(getApplicationContext(),
+                                        failure.reason, Toast.LENGTH_SHORT).show();
+                                hideLoadingView();
+                                pwdEdit.setText("");
+                            }
+                        });
+
+
+            } else
+                Toast.makeText(getApplicationContext(),
+                        "请输入账号和密码", Toast.LENGTH_SHORT).show();
         });
     }
 

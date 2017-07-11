@@ -37,6 +37,8 @@ public class ChatManager {
     }
 
     public void setChatList(ArrayList<Chat> chatList) {
+        if (chatList == null || chatList.size() == 0)
+            return;
         this.chatList = chatList;
     }
 
