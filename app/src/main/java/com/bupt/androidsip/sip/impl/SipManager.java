@@ -176,9 +176,13 @@ public class SipManager implements ISipService {
                 }
                 response.friends = friends;
                 List<SipMessage> messages = new ArrayList<>();
-                JSONArray msgs = object.getJSONArray("msg");
-                for (int i = 0; i < msgs.length(); i++) {
-                    messages.add(SipMessage.createFromJson(msgs.getJSONObject(i)));
+                try {
+                    JSONArray msgs = object.getJSONArray("msg");
+                    for (int i = 0; i < msgs.length(); i++) {
+                        messages.add(SipMessage.createFromJson(msgs.getJSONObject(i)));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
                 response.offlineMessages = messages;
                 handler.post(() -> listener.onSuccess(response));

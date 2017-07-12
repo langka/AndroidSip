@@ -135,8 +135,9 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     private String inputMsg;
     private Chat chat;
     boolean pushEnterToSend = true;
-    ChatManager chatManager = ChatManager.getChatManager();
-    DBManager dbManager = DBManager.getInstance(this);
+
+    SharedPreferences pref = null;
+    SharedPreferences.Editor editor = null;
 
     public int getID() {
         return ID;
@@ -172,6 +173,9 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         ButterKnife.bind(this);
         Intent intent = getIntent();
         initData(intent);
+
+        pref = getSharedPreferences("MySettings", MODE_PRIVATE);
+        editor = pref.edit();
 
         context = ChatActivity.this;
         msgAdapter = new MessageAdapter(this, messages);
@@ -232,37 +236,8 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
         EventBus.getDefault().post(new EventConst.RemoveOne(0, getID()));
         if (chat.messages == null)
             return;
-        saveMsgToLocalDB();
     }
 
-    public void saveMsgToLocalDB() {
-        List<SipMessage> list = null;
-        for (int i = 0; i < chatManager.getChatList().size() - 1; ++i) {
-            for (int j = 0; j < chatManager.getChat(i).messages.size() - 1; ++j) {
-                list.add(fromMsgToSipMsg(messages.get(j)));
-            }
-        }
-        if (list == null)
-            return;
-        dbManager.save(list);
-    }
-
-
-    public SipMessage fromMsgToSipMsg(Message msg) {
-        SipMessage sipMessage = new SipMessage();
-        sipMessage.type = 0;
-        sipMessage.comeTime = msg.time;
-        sipMessage.createTime = msg.time;
-        sipMessage.content = msg.content;
-        if (msg.fromOrTo == 0) {
-            sipMessage.from = msg.ID;
-            sipMessage.to.add(UserManager.getInstance().getUser().id);
-        } else {
-            sipMessage.from = UserManager.getInstance().getUser().id;
-            sipMessage.to.add(msg.ID);
-        }
-        return sipMessage;
-    }
 
     private Message getChatMsgFrom(String message, User user, long time) {
         Message msg = new Message();

@@ -19,12 +19,18 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bupt.androidsip.R;
+import com.bupt.androidsip.entity.Chat;
 import com.bupt.androidsip.entity.EventConst;
+import com.bupt.androidsip.entity.Message;
+import com.bupt.androidsip.entity.sip.SipMessage;
 import com.bupt.androidsip.fragment.FriendFragment;
 import com.bupt.androidsip.fragment.MeFragment;
 import com.bupt.androidsip.fragment.MessageFragment;
 import com.bupt.androidsip.mananger.ActivityManager;
+import com.bupt.androidsip.mananger.ChatManager;
+import com.bupt.androidsip.mananger.DBManager;
 import com.bupt.androidsip.mananger.EventManager;
+import com.bupt.androidsip.mananger.UserManager;
 import com.bupt.androidsip.sip.impl.SipManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -61,6 +67,8 @@ public class TabActivity extends BaseActivity {
     List<Fragment> fragmentList;
     int currentFrag = -1;
     FragmentManager fragmentManager;
+    ChatManager chatManager = ChatManager.getChatManager();
+    DBManager dbManager = DBManager.getInstance(this);
 
     long exitTime = 0;
     SipManager sipManager = SipManager.getSipManager();
@@ -89,8 +97,38 @@ public class TabActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
+        saveMsgToLocalDB();
         super.onDestroy();
         EventBus.getDefault().unregister(TabActivity.this);
+    }
+
+    public void saveMsgToLocalDB() {
+        List<SipMessage> list = null;
+        for (int i = 0; i < chatManager.getChatList().size() - 1; ++i) {
+            Chat chat = chatManager.getChatList().get(i);
+            for (int j = 0; j < chat.messages.size() - 1; ++j) {
+                list.add(fromMsgToSipMsg(chat.messages.get(j)));
+            }
+        }
+        if (list == null)
+            return;
+        dbManager.save(list);
+    }
+
+    public SipMessage fromMsgToSipMsg(Message msg) {
+        SipMessage sipMessage = new SipMessage();
+        sipMessage.type = 0;
+        sipMessage.comeTime = msg.time;
+        sipMessage.createTime = msg.time;
+        sipMessage.content = msg.content;
+        if (msg.fromOrTo == 0) {
+            sipMessage.from = msg.ID;
+            sipMessage.to.add(UserManager.getInstance().getUser().id);
+        } else {
+            sipMessage.from = UserManager.getInstance().getUser().id;
+            sipMessage.to.add(msg.ID);
+        }
+        return sipMessage;
     }
 
 
