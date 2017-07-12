@@ -168,9 +168,14 @@ public class SipManager implements ISipService {
                     friends.add(User.createFromJson(array.getJSONObject(i)));
                 }
                 response.friends = friends;
+//                List<SipMessage> messages = new ArrayList<>();
+//                JSONArray msgs = object.getJSONArray("msg");
+//                for (int i = 0; i < msgs.length(); i++) {
+//                    messages.add(SipMessage.createFromJson(msgs.getJSONObject(i)));
+//                }
+//                response.offlineMessages = messages;
                 handler.post(() -> listener.onSuccess(response));
                 sendSubScribeForFriendState();
-
             } catch (JSONException e) {
                 handler.post(() -> listener.onFailure(new SipFailure("无法解析的json串!")));
                 e.printStackTrace();

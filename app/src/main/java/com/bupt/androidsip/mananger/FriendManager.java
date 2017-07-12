@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * Created by vita-nove on 08/07/2017.
+ * 这个没有用了！
  */
 //弃疗
 public class FriendManager {

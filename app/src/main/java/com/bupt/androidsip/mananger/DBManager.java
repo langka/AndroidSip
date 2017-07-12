@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.bupt.androidsip.mananger.DBManager.SipDBHelper.INIT_SQL;
+
 /**
  * Created by xusong on 2017/7/10.
  * About:
@@ -25,7 +27,7 @@ public class DBManager {
     public static class SipDBHelper extends SQLiteOpenHelper {
 
         private static final String TAG = "SipDBHelper";
-        private static final String INIT_SQL = "create table message (_id integer primary key autoincrement,type integer," +
+         static final String INIT_SQL = "create table message (_id integer primary key autoincrement,type integer," +
                 "createTime long,comeTime long,content text,belong integer,fromid integer,toid integer)";
         private static final String DBNAME = "androidsip.db";
         private static final int VERSION = 1;

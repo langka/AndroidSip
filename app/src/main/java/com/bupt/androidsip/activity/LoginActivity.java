@@ -72,12 +72,9 @@ public class LoginActivity extends BaseActivity {
         imageView.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, DatabaseTestActivity.class)));
         confirm.setOnClickListener(v -> {
 
-
-
             if ((!TextUtils.isEmpty(accountEdit.getText())) &&
                     (!TextUtils.isEmpty(pwdEdit.getText()))) {
                 showLoadingView();
-
                 //调试用
 //                hideLoadingView();
 //                TabActivity.Start(LoginActivity.this);
@@ -90,7 +87,6 @@ public class LoginActivity extends BaseActivity {
                             public void onSuccess(SipLoginResponse response) {
                                 userManager.initUser(response);
                                 sipChatManager.setSipChat(response.groups);
-                                userManager.setFrs(response.friends);
                                 hideLoadingView();
                                 TabActivity.Start(LoginActivity.this);
                                 finish();
