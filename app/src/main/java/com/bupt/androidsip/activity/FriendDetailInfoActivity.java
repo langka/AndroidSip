@@ -1,5 +1,6 @@
 package com.bupt.androidsip.activity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -104,9 +105,10 @@ public class FriendDetailInfoActivity extends BaseActivity  {
         deleteFriend.setOnClickListener((v)->{
             // TODO: 2017/7/12  删除好友业务逻辑
             showTextOnDialog("确认删除？", view -> {
-
                 UserManager.getInstance().deleteFriend(friend.id);
+                finish();
             });
+
         });
         chatFriend.setOnClickListener(view -> {
             Intent intent = new Intent(this, ChatActivity.class);

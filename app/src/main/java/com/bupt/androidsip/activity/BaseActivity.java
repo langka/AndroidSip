@@ -1,6 +1,7 @@
 package com.bupt.androidsip.activity;
 
 import android.app.Dialog;
+import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -194,9 +195,19 @@ public class BaseActivity extends FragmentActivity {
         TextView infoView = (TextView) relativeLayout.findViewById(R.id.dialog_info_text);
         TextView cancelView = (TextView) relativeLayout.findViewById(R.id.dialog_info_cancel);
         TextView confirmView = (TextView) relativeLayout.findViewById(R.id.dialog_info_confirm);
-
+        confirmView.setBackground(getResources().getDrawable(R.drawable.friend_delete));
+        confirmView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (listener != null)
+                    listener.onClick(view);
+                dialog.dismiss();
+            }
+        });
+        confirmView.setText("确认删除");
+        confirmView.setTextColor(Color.WHITE);
         cancelView.setOnClickListener(e -> dialog.dismiss());
-        confirmView.setOnClickListener(listener);
+
         infoView.setText(text);
 
         dialog.setContentView(relativeLayout);
