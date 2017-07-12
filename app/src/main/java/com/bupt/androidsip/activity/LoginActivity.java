@@ -100,8 +100,6 @@ public class LoginActivity extends BaseActivity {
                                 pwdEdit.setText("");
                             }
                         });
-
-
             } else
                 Toast.makeText(getApplicationContext(),
                         "请输入账号和密码", Toast.LENGTH_SHORT).show();
