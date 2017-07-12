@@ -132,4 +132,6 @@ public class LoginActivity extends BaseActivity {
         widthAnimation.start(); // 开始动画的计算工作
     }
 
+    
+
 }

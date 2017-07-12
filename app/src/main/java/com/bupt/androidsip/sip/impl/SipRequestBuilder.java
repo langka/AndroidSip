@@ -92,13 +92,13 @@ public class SipRequestBuilder {
     public Request buildMessage(SipMessage message, long seq) throws ParseException, InvalidArgumentException {
         SipURI from = addressFactory.createSipURI(sipProfile.getSipUserName(), sipProfile.getLocalEndpoint());
         Address fromNameAddress = addressFactory.createAddress(from);
-        fromNameAddress.setDisplayName(sipProfile.getSipUserName());
+        fromNameAddress.setDisplayName(UserManager.getInstance().getUser().id+"");
         FromHeader fromHeader = headerFactory.createFromHeader(fromNameAddress,
                 "Tzt0ZEP92");
 
-        User toUser = UserManager.getInstance().searchUser(message.to.get(0));
-        String to = "sip:" + toUser.name + "@" + SipServerEndPoint;
-        String username = toUser.name;
+        //User toUser = UserManager.getInstance().searchUser(message.to.get(0));
+        String to = "sip:" + message.to.get(0)+ "@" + SipServerEndPoint;
+        String username = message.to.get(0)+"";
         String address = SipServerEndPoint;
 
         URI toAddress = addressFactory.createURI(to);

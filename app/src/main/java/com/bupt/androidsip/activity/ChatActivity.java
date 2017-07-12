@@ -240,6 +240,8 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
                 list.add(fromMsgToSipMsg(messages.get(j)));
             }
         }
+        if (list == null)
+            return;
         dbManager.save(list);
     }
 
