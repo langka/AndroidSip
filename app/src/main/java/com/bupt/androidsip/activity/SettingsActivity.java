@@ -47,7 +47,7 @@ public class SettingsActivity extends BaseActivity {
     RelativeLayout logoutContainer;
     //这里有问题
     ChatManager chatManager = ChatManager.getChatManager();
-    DBManager dbManager = DBManager.getInstance(getApplicationContext());
+    DBManager dbManager = DBManager.getInstance(this);
     SharedPreferences pref = null;
     SharedPreferences.Editor editor = null;
 

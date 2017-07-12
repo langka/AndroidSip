@@ -44,7 +44,6 @@ public class LoginActivity extends BaseActivity {
     SipManager sipManager = SipManager.getSipManager();
     UserManager userManager = UserManager.getInstance();
     SipChatManager sipChatManager = SipChatManager.getInstance();
-    FriendManager friendManager = FriendManager.getInstance();
 
     boolean isShock = true;
     boolean pushEnterToSend = true;
@@ -72,13 +71,14 @@ public class LoginActivity extends BaseActivity {
                 R.drawable.batman1, imageView.getWidth(), imageView.getHeight())));
         imageView.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, DatabaseTestActivity.class)));
         confirm.setOnClickListener(v -> {
+
             if ((!TextUtils.isEmpty(accountEdit.getText())) &&
                     (!TextUtils.isEmpty(pwdEdit.getText()))) {
                 showLoadingView();
                 //调试用
-                hideLoadingView();
-                TabActivity.Start(LoginActivity.this);
-                finish();
+//                hideLoadingView();
+//                TabActivity.Start(LoginActivity.this);
+//                finish();
 
 
                 sipManager.login(Integer.valueOf(accountEdit.getText().toString()), pwdEdit.getText().toString(),
@@ -87,7 +87,6 @@ public class LoginActivity extends BaseActivity {
                             public void onSuccess(SipLoginResponse response) {
                                 userManager.initUser(response);
                                 sipChatManager.setSipChat(response.groups);
-                                //friendManager.setFriends(response.friends);
                                 hideLoadingView();
                                 TabActivity.Start(LoginActivity.this);
                                 finish();

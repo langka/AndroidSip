@@ -42,10 +42,17 @@ public class UserManager {
         }
         return null;
     }
+
     // TODO: 2017/7/12 删除好友
-    public boolean deleteFriend(int id){
+    public boolean deleteFriend(int id) {
         user.friends.remove(user.friends.get(id));
         return false;
+    }
+
+    public void setFrs(List<User> frs) {
+        if (frs == null || frs.size() == 0)
+            return;
+        this.frs = frs;
     }
 
 }
