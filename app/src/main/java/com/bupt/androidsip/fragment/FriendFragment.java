@@ -168,6 +168,12 @@ public class FriendFragment extends BaseFragment {
         return v;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        sortAdapter.notifyDataSetChanged();
+    }
+
     private void initListHeader(View header) {
         searchText = (EditText) header.findViewById(R.id.frag_friend_search_edit);
         searchSubmit = (TextView) header.findViewById(R.id.frag_friend_search_confirm);

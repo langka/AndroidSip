@@ -23,6 +23,7 @@ import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.fragment.FriendFragment;
 import com.bupt.androidsip.fragment.MeFragment;
 import com.bupt.androidsip.fragment.MessageFragment;
+import com.bupt.androidsip.mananger.ActivityManager;
 import com.bupt.androidsip.mananger.EventManager;
 import com.bupt.androidsip.sip.impl.SipManager;
 
@@ -83,6 +84,7 @@ public class TabActivity extends BaseActivity {
         bottoms.add(friendContainer);
         bottoms.add(meContainer);
         EventBus.getDefault().register(TabActivity.this);
+        ActivityManager.getActivityManager().addActivity(this);
     }
 
     @Override
