@@ -75,10 +75,6 @@ public class LoginActivity extends BaseActivity {
             if ((!TextUtils.isEmpty(accountEdit.getText())) &&
                     (!TextUtils.isEmpty(pwdEdit.getText()))) {
                 showLoadingView();
-                //调试用
-//                hideLoadingView();
-//                TabActivity.Start(LoginActivity.this);
-//                finish();
 
 
                 sipManager.login(Integer.valueOf(accountEdit.getText().toString()), pwdEdit.getText().toString(),

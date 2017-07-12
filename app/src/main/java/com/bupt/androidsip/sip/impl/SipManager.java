@@ -48,6 +48,9 @@ import android.webkit.ClientCertRequest;
 import android.widget.Toast;
 
 import com.bupt.androidsip.entity.User;
+import com.bupt.androidsip.entity.response.SipAcceptResponse;
+import com.bupt.androidsip.entity.response.SipAddResponse;
+import com.bupt.androidsip.entity.response.SipDeclineResponse;
 import com.bupt.androidsip.entity.response.SipLoginResponse;
 import com.bupt.androidsip.entity.response.SipSearchResponse;
 import com.bupt.androidsip.entity.response.SipSendMsgResponse;
@@ -164,8 +167,12 @@ public class SipManager implements ISipService {
                 JSONObject me = array.getJSONObject(0);
                 response.self = User.createFromJson(me);
                 List<User> friends = new ArrayList<>();
-                for (int i = 0; i < array.length(); i++) {//每个人它自己也会是自己的好友
-                    friends.add(User.createFromJson(array.getJSONObject(i)));
+                try {
+                    for (int i = 0; i < array.length(); i++) {//每个人它自己也会是自己的好友
+                        friends.add(User.createFromJson(array.getJSONObject(i)));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
                 response.friends = friends;
                 List<SipMessage> messages = new ArrayList<>();
@@ -184,6 +191,60 @@ public class SipManager implements ISipService {
             byte[] reasonb = (byte[]) event.getResponse().getContent();
             String reason = new String(reasonb);
             handler.post(() -> listener.onFailure(new SipFailure(reason)));
+        }
+    }
+
+    private void processAddFriendResponse(ResponseEvent event, SipNetListener<SipAddResponse> listener) {
+        if (event.getResponse().getStatusCode() == 200) {
+            handler.post(() -> listener.onSuccess(new SipAddResponse()));
+        } else {
+            byte[] dd = event.getResponse().getRawContent();
+            String x = new String(dd);
+            try {
+                JSONObject jsonObject = new JSONObject(x);
+                String reason = jsonObject.getString("reason");
+                handler.post(() -> listener.onFailure(new SipFailure(reason)));
+            } catch (JSONException e) {
+                handler.post(() -> listener.onFailure(new SipFailure("异常故障，请稍后重试")));
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    private void processDeclineFriendResponse(ResponseEvent event, SipNetListener<SipDeclineResponse> listener) {
+        if (event.getResponse().getStatusCode() == 200) {
+            handler.post(() -> listener.onSuccess(new SipDeclineResponse()));
+        } else {
+            byte[] dd = event.getResponse().getRawContent();
+            String x = new String(dd);
+            try {
+                JSONObject jsonObject = new JSONObject(x);
+                String reason = jsonObject.getString("reason");
+                handler.post(() -> listener.onFailure(new SipFailure(reason)));
+            } catch (JSONException e) {
+                handler.post(() -> listener.onFailure(new SipFailure("异常故障，请稍后重试")));
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    private void processAcceptFriendResponse(ResponseEvent event, SipNetListener<SipAcceptResponse> listener) {
+        if (event.getResponse().getStatusCode() == 200) {
+            handler.post(() -> listener.onSuccess(new SipAcceptResponse()));
+        } else {
+            byte[] dd = event.getResponse().getRawContent();
+            String x = new String(dd);
+            try {
+                JSONObject jsonObject = new JSONObject(x);
+                String reason = jsonObject.getString("reason");
+                handler.post(() -> listener.onFailure(new SipFailure(reason)));
+            } catch (JSONException e) {
+                handler.post(() -> listener.onFailure(new SipFailure("异常故障，请稍后重试")));
+                e.printStackTrace();
+            }
+
         }
     }
 
@@ -219,6 +280,12 @@ public class SipManager implements ISipService {
                             if (status == 200)
                                 handler.post(() -> listener.listener.onSuccess(null));
                             else handler.post(() -> listener.listener.onFailure(null));
+                        case ADDFRIEND:
+                            processAddFriendResponse(responseEvent, listener.listener);
+                        case DECLINEFRIEND:
+                            processDeclineFriendResponse(responseEvent, listener.listener);
+                        case ACCFRIEND:
+                            processAcceptFriendResponse(responseEvent, listener.listener);
                     }
                 }
             } else {
@@ -491,27 +558,54 @@ public class SipManager implements ISipService {
         Request request = null;
         try {
             request = requestBuilder.buildLogin(id, password, current);
+            taskListeners.put(current, new TaskListener(listener, SipTaskType.LOGIN));
+            dealRequest(request, SipTaskType.LOGIN, listener);
         } catch (ParseException | InvalidArgumentException e) {
             listener.onFailure(new SipFailure("无法解析sip message格式"));
             e.printStackTrace();
         }
-        taskListeners.put(current, new TaskListener(listener, SipTaskType.LOGIN));
-        dealRequest(request, SipTaskType.LOGIN, listener);
-
     }
 
     @Override
     public void addFriend(int id, SipNetListener listener) {
-
+        long current = seq.getAndIncrement();
+        Request request = null;
+        try {
+            request = requestBuilder.buildAddFriend(id, current);
+            taskListeners.put(current, new TaskListener(listener, SipTaskType.ADDFRIEND));
+            dealRequest(request, SipTaskType.ADDFRIEND, listener);
+        } catch (ParseException | InvalidArgumentException | JSONException e) {
+            listener.onFailure(new SipFailure("无法解析sip message格式"));
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void declineFriendInvite(int id, SipNetListener listener) {
-
+        long current = seq.getAndIncrement();
+        Request request = null;
+        try {
+            request = requestBuilder.buildAddFriend(id, current);
+            taskListeners.put(current, new TaskListener(listener, SipTaskType.DECLINEFRIEND));
+            dealRequest(request, SipTaskType.DECLINEFRIEND, listener);
+        } catch (ParseException | InvalidArgumentException | JSONException e) {
+            listener.onFailure(new SipFailure("无法解析sip message格式"));
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void acceptFriendInvite(int id, SipNetListener listener) {
+        long current = seq.getAndIncrement();
+        Request request = null;
+        try {
+            request = requestBuilder.buildAccFriend(id, current);
+            taskListeners.put(current, new TaskListener(listener, SipTaskType.ACCFRIEND));
+            dealRequest(request, SipTaskType.ACCFRIEND, listener);
+        } catch (ParseException | InvalidArgumentException | JSONException e) {
+            listener.onFailure(new SipFailure("无法解析sip message格式"));
+            e.printStackTrace();
+        }
 
     }
 
@@ -575,7 +669,7 @@ public class SipManager implements ISipService {
     }
 
     enum SipTaskType {
-        MESSAGE, LOGIN, SUBFRIEND
+        MESSAGE, LOGIN, SUBFRIEND, ADDFRIEND, DECLINEFRIEND, ACCFRIEND
     }
 
     static class TaskListener {
