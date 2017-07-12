@@ -69,7 +69,9 @@ public class LoginActivity extends BaseActivity {
 
         imageView.post(() -> imageView.setImageBitmap(BitmapUtils.decodeSampledBitmapFromResource(getResources(),
                 R.drawable.batman1, imageView.getWidth(), imageView.getHeight())));
+        imageView.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, DatabaseTestActivity.class)));
         confirm.setOnClickListener(v -> {
+
 
 
             if ((!TextUtils.isEmpty(accountEdit.getText())) &&
@@ -82,7 +84,7 @@ public class LoginActivity extends BaseActivity {
 //                finish();
 
 
-                sipManager.login(accountEdit.getText().toString(), pwdEdit.getText().toString(),
+                sipManager.login(Integer.valueOf(accountEdit.getText().toString()), pwdEdit.getText().toString(),
                         new SipNetListener<SipLoginResponse>() {
                             @Override
                             public void onSuccess(SipLoginResponse response) {

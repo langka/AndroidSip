@@ -40,6 +40,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -257,7 +258,8 @@ public class MessageFragment extends BaseFragment {
     void initData() {
         user = UserManager.getInstance().getUser();
         groups = SipChatManager.getInstance().getSipChat();
-
+        if (groups == null)
+            groups = new ArrayList<>();
 
         for (int i = 0; i < groups.size(); ++i) {
 //            chatList.add(fromSipChatToChat(groups.get(i)));

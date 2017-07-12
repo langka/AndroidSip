@@ -14,6 +14,7 @@ import java.util.List;
 public class UserManager {
     private User user = new User();
 
+
     public List<User> frs = new ArrayList<>();//这是本次所知道的全部user,应当在登录成功后初始化
 
     public User getUser() {
@@ -36,6 +37,10 @@ public class UserManager {
 
     //根据id查询user
     public User searchUser(int id) {
+        for (User u : frs) {
+            if (u.id == id)
+                return u;
+        }
         return null;
     }
 

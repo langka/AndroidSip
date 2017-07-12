@@ -2,6 +2,7 @@ package com.bupt.androidsip;
 
 import android.app.Application;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 
 import com.android.volley.Request;
