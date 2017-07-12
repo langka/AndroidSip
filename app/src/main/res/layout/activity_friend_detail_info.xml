@@ -42,8 +42,9 @@
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:orientation="vertical"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/friend_name_header"
+        >
 
         <include
             android:id="@+id/frag_age"
@@ -66,8 +67,11 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:background="@color/G7"/>
+            android:layout_height="2dp"
+            android:background="@color/G7"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            />
 
         <include
             android:id="@+id/frag_constellation"
@@ -76,21 +80,42 @@
             android:layout_height="50dp"/>
 
         <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:background="@color/G7"/>
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/G7"/>
 
-        <include
-            android:id="@+id/frag_location"
-            layout="@layout/item_frag_me"
+        <TextView
+            android:id="@+id/activity_friend_chat"
+            android:background="@drawable/friend_chat"
             android:layout_width="match_parent"
-            android:layout_height="50dp"/>
+            android:text="聊天"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:layout_height="40dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"/>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="10dp"
+            android:background="@color/G7"/>
+
+        <TextView
+            android:id="@+id/activity_friend_delete"
+            android:background="@drawable/friend_delete"
+            android:layout_width="match_parent"
+            android:text="删除好友"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:layout_height="40dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
             android:background="@color/G7"/>
 
     </LinearLayout>
@@ -98,7 +123,7 @@
     <RelativeLayout
         android:id="@+id/friend_name_header"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/relativeLayout"
         android:background="#FFFFFF">
@@ -107,7 +132,8 @@
             android:id="@+id/frag_friend_nickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="0dp"
             android:text="徐日天"
             android:textColor="#000000"
             android:textSize="27sp" />
@@ -122,18 +148,19 @@
             android:src="@drawable/profile_icon_male"
              />
 
+        <TextView
+            android:id="@+id/frag_friend_personalize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="我徐日天第一个不服吃西瓜!!!"
+            android:textColor="@color/G3"
+            android:textSize="18sp"
+            android:layout_below="@+id/frag_friend_nickname"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="0dp" />
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/frag_friend_personalize"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="我徐日天第一个不服吃西瓜!!!"
-        android:textColor="@color/G3"
-        android:textSize="18sp"
-        android:layout_below="@+id/friend_name_header"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="2dp" />
+
 
 
 </RelativeLayout>

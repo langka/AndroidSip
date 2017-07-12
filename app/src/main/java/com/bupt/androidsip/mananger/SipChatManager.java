@@ -2,6 +2,7 @@ package com.bupt.androidsip.mananger;
 
 import com.bupt.androidsip.entity.sip.SipChat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,7 +10,7 @@ import java.util.List;
  */
 
 public class SipChatManager {
-    private List<SipChat> groups;
+    private List<SipChat> groups = new ArrayList<>();
 
     public List<SipChat> getSipChat() {
         return groups;
@@ -18,10 +19,11 @@ public class SipChatManager {
     private static SipChatManager instance = new SipChatManager();
 
     private SipChatManager() {
-        groups = null;
     }
 
     public void setSipChat(List<SipChat> groups) {
+        if (groups == null || groups.size() == 0)
+            return;
         this.groups = groups;
     }
 

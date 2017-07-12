@@ -1,5 +1,6 @@
 package com.bupt.androidsip.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -8,6 +9,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bupt.androidsip.R;
+import com.bupt.androidsip.entity.Chat;
+import com.bupt.androidsip.entity.User;
+import com.bupt.androidsip.mananger.ChatManager;
+import com.bupt.androidsip.mananger.UserManager;
 
 import java.util.Arrays;
 
@@ -32,9 +37,6 @@ public class FriendDetailInfoActivity extends BaseActivity  {
     @BindView(R.id.frag_friend_personalize)
     RelativeLayout personalizeContainer;
 
-    @BindView(R.id.frag_sex)
-    RelativeLayout sexContainer;
-
     @BindView(R.id.frag_age)
     RelativeLayout ageContainer;
 
@@ -44,17 +46,29 @@ public class FriendDetailInfoActivity extends BaseActivity  {
     @BindView(R.id.frag_constellation)
     RelativeLayout constellationContainer;
 
-    @BindView(R.id.frag_location)
-    RelativeLayout locationContainer;
+    @BindView(R.id.activity_friend_delete)
+    TextView deleteFriend;
+
+    @BindView(R.id.activity_friend_chat)
+    TextView chatFriend;
 
     @BindView(R.id.frag_friend_detail_info_goback)
     RelativeLayout gobackContainer;
+
+    User me = UserManager.getInstance().getUser();
+    User friend;
+
+    Intent intent;
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_detail_info);
         ButterKnife.bind(this);
+        intent = getIntent();
+        int friendID = intent.getIntExtra("FriendId",-1);
+        friend = UserManager.getInstance().searchUser(friendID);
         initView();
+
     }
 
     private View.OnClickListener accountOnClick = new View.OnClickListener() {
@@ -68,9 +82,6 @@ public class FriendDetailInfoActivity extends BaseActivity  {
                     showText("您无法更改好友的个人资料！");
                     break;
                 case R.id.frag_constellation:
-                    showText("您无法更改好友的个人资料！");
-                    break;
-                case R.id.frag_location:
                     showText("您无法更改好友的个人资料！");
                     break;
                 case R.id.frag_friend_detail_info_goback:
@@ -93,27 +104,48 @@ public class FriendDetailInfoActivity extends BaseActivity  {
         ageContainer.setOnClickListener(accountOnClick);
         birthdayContainer.setOnClickListener(accountOnClick);
         constellationContainer.setOnClickListener(accountOnClick);
-        locationContainer.setOnClickListener(accountOnClick);
+        deleteFriend.setOnClickListener((v)->{
+            // TODO: 2017/7/12  删除好友业务逻辑
+            showTextOnDialog("确认删除？", view -> {
+
+                UserManager.getInstance().deleteFriend(friend.id);
+            });
+        });
+        chatFriend.setOnClickListener(view -> {
+            Intent intent = new Intent(this, ChatActivity.class);
+            Bundle bundle = new Bundle();
+//            bundle.putParcelable("chat", );
+            User user = friend;
+            if (ChatManager.getChatManager().isInList(user.id))
+                bundle.putParcelable("chat", ChatManager.getChatManager().getChatFromID(user.id));
+            else {
+                Chat chat = new Chat(user.name, user.head, 1, "", user.id);
+                ChatManager.getChatManager().addChat(chat);
+                bundle.putParcelable("chat", chat);
+            }
+            intent.putExtras(bundle);
+            startActivity(intent);
+        });
         gobackContainer.setOnClickListener(accountOnClick);
 
         TextView nameView = (TextView) nicknameContainer.findViewById(R.id.frag_friend_nickname);
-        nameView.setText("徐日天天");
+        nameView.setText(friend.name);
 
         TextView personalizeView = (TextView) personalizeContainer.findViewById(R.id.frag_friend_personalize);
-        personalizeView.setText("我不爱吃西瓜!!!");
+        personalizeView.setText(friend.description);
 
-        ImageView sexView = (ImageView) sexContainer.findViewById(R.id.frag_friend_sex);
+        //ImageView sexView = (ImageView) sexContainer.findViewById(R.id.frag_friend_sex);
         //sexView.setImageDrawable("drawable/profile_icon_male.png");设置性别的图片
 
         ImageView headimageView = (ImageView) headimageContainer.findViewById(R.id.frag_head_image);
         //sexView.setImageDrawable("drawable/profile_icon_male.png");设置头像的图片
 
-        initRowView(ageContainer, R.drawable.ic_access_time_black_30dp, "年龄", "21");
-        initRowView(birthdayContainer, R.drawable.ic_cake_black_30dp, "生日",
-                "2月3日");
-        initRowView(constellationContainer, R.drawable.ic_star_border_black_30dp,
-                "星座", "双鱼座");
-        initRowView(locationContainer, R.drawable.ic_business_black_30dp, "所在地", "北京-海淀区");
+        initRowView(ageContainer, R.drawable.ic_access_time_black_30dp, "性别", friend.sex);
+        initRowView(birthdayContainer, R.drawable.ic_email_black_30dp, "邮箱", friend.email);
+        initRowView(constellationContainer, R.drawable.ic_star_border_black_30dp, "星座", "狮子座");
+        //initRowView(deleteFriend, R.drawable.ic_delete_forever_red_30dp, "删除", "");
+
+
     }
 
 }

@@ -72,11 +72,19 @@ public class LoginActivity extends BaseActivity {
                 R.drawable.batman1, imageView.getWidth(), imageView.getHeight())));
         imageView.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, DatabaseTestActivity.class)));
         confirm.setOnClickListener(v -> {
-            //调试用
-            //startActivity(new Intent(LoginActivity.this, SipChatDemoActivity.class));
+
+
+
             if ((!TextUtils.isEmpty(accountEdit.getText())) &&
                     (!TextUtils.isEmpty(pwdEdit.getText()))) {
                 showLoadingView();
+
+                //调试用
+                hideLoadingView();
+                TabActivity.Start(LoginActivity.this);
+                finish();
+
+
                 sipManager.login(Integer.valueOf(accountEdit.getText().toString()), pwdEdit.getText().toString(),
                         new SipNetListener<SipLoginResponse>() {
                             @Override

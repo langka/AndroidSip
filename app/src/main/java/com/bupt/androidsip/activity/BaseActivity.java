@@ -186,6 +186,31 @@ public class BaseActivity extends FragmentActivity {
         dialog.show();
     }
 
+    public void showTextOnDialog(String text, View.OnClickListener listener) {
+        final Dialog dialog = new Dialog(this, R.style.ActionSheetDialogStyle);
+        RelativeLayout relativeLayout = (RelativeLayout) LayoutInflater.from(this).
+                inflate(R.layout.dialog_info, null);
+
+        TextView infoView = (TextView) relativeLayout.findViewById(R.id.dialog_info_text);
+        TextView cancelView = (TextView) relativeLayout.findViewById(R.id.dialog_info_cancel);
+        TextView confirmView = (TextView) relativeLayout.findViewById(R.id.dialog_info_confirm);
+
+        cancelView.setOnClickListener(e -> dialog.dismiss());
+        confirmView.setOnClickListener(listener);
+        infoView.setText(text);
+
+        dialog.setContentView(relativeLayout);
+        dialog.setCancelable(true);
+        Window dialogWindow = dialog.getWindow();
+        dialogWindow.setGravity(Gravity.CENTER_HORIZONTAL);
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        dialogWindow.setAttributes(lp);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.show();
+    }
+
+
     public void showInputDialog(String confirm, String hint, OnTextConfirmListener listener) {
         final Dialog dialog = new Dialog(this, R.style.ActionSheetDialogStyle);
         RelativeLayout relativeLayout = (RelativeLayout) LayoutInflater.from(this).

@@ -124,6 +124,8 @@ public class MessageFragment extends BaseFragment {
     }
 
     public void loadLocalMessage(List<SipMessage> sipMessages) {
+        if (sipMessages == null)
+            return;
         chatManager.removeAllChat();
         for (int i = 0; i < sipMessages.size(); ++i) {
             if (sipMessages.get(i).from == userManager.getUser().id) {
@@ -282,7 +284,7 @@ public class MessageFragment extends BaseFragment {
             chat.lastMessage = "本地存储方案还没实现";
             chat.onlineStatue = 1;
             chat.ID = sipChat.id;
-            // TODO: 08/07/2017 聊天记录本地储存读取
+            //  08/07/2017 聊天记录本地储存读取
         }
 
         return chat;

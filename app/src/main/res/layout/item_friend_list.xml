@@ -14,6 +14,7 @@
         android:textColor="@color/G1" />
 
     <RelativeLayout
+        android:id="@+id/item_friend_total"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/item_friend_list_section">

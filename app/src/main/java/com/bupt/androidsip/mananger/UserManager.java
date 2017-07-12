@@ -3,6 +3,7 @@ package com.bupt.androidsip.mananger;
 import com.bupt.androidsip.entity.User;
 import com.bupt.androidsip.entity.response.SipLoginResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,7 +14,8 @@ import java.util.List;
 public class UserManager {
     private User user = new User();
 
-    public List<User> frs;//这是本次所知道的全部user,应当在登录成功后初始化
+
+    public List<User> frs = new ArrayList<>();//这是本次所知道的全部user,应当在登录成功后初始化
 
     public User getUser() {
         return user;
@@ -40,6 +42,11 @@ public class UserManager {
                 return u;
         }
         return null;
+    }
+    // TODO: 2017/7/12 删除好友
+    public boolean deleteFriend(int id){
+        user.friends.remove(user.friends.get(id));
+        return false;
     }
 
 }
