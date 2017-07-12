@@ -2,6 +2,8 @@ package com.bupt.androidsip.entity.sip;
 
 import com.bupt.androidsip.entity.User;
 
+import org.json.JSONObject;
+
 import java.util.List;
 
 /**
@@ -17,5 +19,9 @@ public class SipMessage {
     public int belong;//所属的chat,没有群聊就不管这个域
     public int from;//发送方
     public List<Integer> to;//目标成员，如果是单聊就是那个人id，群聊时，belong和to应当都有值
+
+    public static SipMessage createFromJson(JSONObject object){
+        return null;
+    }
 
 }
