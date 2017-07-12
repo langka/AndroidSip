@@ -44,7 +44,6 @@ public class LoginActivity extends BaseActivity {
     SipManager sipManager = SipManager.getSipManager();
     UserManager userManager = UserManager.getInstance();
     SipChatManager sipChatManager = SipChatManager.getInstance();
-    FriendManager friendManager = FriendManager.getInstance();
 
     boolean isShock = true;
     boolean pushEnterToSend = true;
@@ -78,9 +77,9 @@ public class LoginActivity extends BaseActivity {
                 showLoadingView();
 
                 //调试用
-                hideLoadingView();
-                TabActivity.Start(LoginActivity.this);
-                finish();
+//                hideLoadingView();
+//                TabActivity.Start(LoginActivity.this);
+//                finish();
 
 
                 sipManager.login(accountEdit.getText().toString(), pwdEdit.getText().toString(),
@@ -89,7 +88,7 @@ public class LoginActivity extends BaseActivity {
                             public void onSuccess(SipLoginResponse response) {
                                 userManager.initUser(response);
                                 sipChatManager.setSipChat(response.groups);
-                                friendManager.setFriends(response.friends);
+                                userManager.setFrs(response.friends);
                                 hideLoadingView();
                                 TabActivity.Start(LoginActivity.this);
                                 finish();
