@@ -15,10 +15,12 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_toStartOf="@+id/add_search_friend_btn"
-            android:maxLines="1"
             android:paddingLeft="10dp"
             android:hint="搜索"
+
             android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
 
             android:background="@drawable/text_gray"
             />

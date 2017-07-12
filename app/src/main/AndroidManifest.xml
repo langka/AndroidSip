@@ -49,6 +49,9 @@
         <activity
             android:name=".activity.DatabaseTestActivity"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.AddFriendActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
