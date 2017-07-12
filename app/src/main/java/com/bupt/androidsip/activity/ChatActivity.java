@@ -136,7 +136,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     private Chat chat;
     boolean pushEnterToSend = true;
     ChatManager chatManager = ChatManager.getChatManager();
-    DBManager dbManager = DBManager.getInstance(getApplicationContext());
+    DBManager dbManager = DBManager.getInstance(this);
 
     public int getID() {
         return ID;

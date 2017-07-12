@@ -47,7 +47,7 @@
         >
 
         <include
-            android:id="@+id/frag_age"
+            android:id="@+id/frag_sex"
             layout="@layout/item_frag_me"
             android:layout_width="match_parent"
             android:layout_height="50dp"/>

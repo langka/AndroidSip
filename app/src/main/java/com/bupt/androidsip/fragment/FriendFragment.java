@@ -156,7 +156,9 @@ public class FriendFragment extends BaseFragment {
             User user = (User) sortAdapter.getItem(i);
             if (UserManager.getInstance().searchUser(user.id) != null) {
                 Intent intent = new Intent(getActivity(), FriendDetailInfoActivity.class);
-                intent.getIntExtra("FriendId", user.id);
+                Bundle bundle = new Bundle();
+                bundle.putInt("FriendId", user.id);
+                intent.putExtras(bundle);
                 startActivity(intent);
             } else
                 showText("这是一个假好友！");

@@ -52,7 +52,7 @@ public class UserManager {
     public void setFrs(List<User> frs) {
         if (frs == null || frs.size() == 0)
             return;
-        this.frs = frs;
+        this.allPeople = frs;
     }
 
 }
