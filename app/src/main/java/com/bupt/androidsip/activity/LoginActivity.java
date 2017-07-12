@@ -155,7 +155,7 @@ public class LoginActivity extends BaseActivity {
 
         }
         Log.d("添加了chat", chatManager.getChatList().size() + "");
-        Log.d("添加了message", chatManager.getChatList().get(0).messages.size() + "");
+        //Log.d("添加了message", chatManager.getChatList().get(0).messages.size() + "");
         chatManager.sortChatMessages();
     }
 
