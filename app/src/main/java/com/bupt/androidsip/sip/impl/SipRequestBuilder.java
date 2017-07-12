@@ -274,13 +274,13 @@ public class SipRequestBuilder {
     private String MessageToString(SipMessage sipMessage) {
         JSONObject object = new JSONObject();
         try {
-            object.put("fid", sipMessage.from);
+            object.put("from", sipMessage.from);
             JSONArray array = new JSONArray();
             for (int i = 0; i < sipMessage.to.size(); i++) {
                 array.put(sipMessage.to.get(i));
             }
-            object.put("tids", array);
-            object.put("createTime", sipMessage.createTime);
+            object.put("to", array.get(0));
+            object.put("create_time", sipMessage.createTime);
             object.put("belong", sipMessage.belong);
             object.put("type", sipMessage.type);
             object.put("content", sipMessage.content);

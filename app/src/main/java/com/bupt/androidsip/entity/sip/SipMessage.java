@@ -1,6 +1,7 @@
 package com.bupt.androidsip.entity.sip;
 
 import com.bupt.androidsip.entity.User;
+import com.bupt.androidsip.mananger.UserManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,7 +32,7 @@ public class SipMessage {
             message.type = 0;
         }
         try {
-            message.createTime = object.getLong("createTime");
+            message.createTime = object.getLong("create_time");
         } catch (JSONException e) {
             e.printStackTrace();
             message.createTime = -1;
@@ -55,13 +56,9 @@ public class SipMessage {
             e.printStackTrace();
             message.from = -1;
         }
-        try {
-            List<Integer> toids = new ArrayList<>();
-            toids.add(object.getInt("to"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
+        List<Integer> toids = new ArrayList<>();
+        toids.add(UserManager.getInstance().getUser().id);
+        message.to = toids;
         return message;
     }
 
