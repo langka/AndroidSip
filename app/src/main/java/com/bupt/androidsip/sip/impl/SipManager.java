@@ -26,6 +26,7 @@ import android.javax.sip.address.SipURI;
 import android.javax.sip.address.URI;
 import android.javax.sip.header.CSeqHeader;
 import android.javax.sip.header.CallIdHeader;
+import android.javax.sip.header.ContactHeader;
 import android.javax.sip.header.ContentTypeHeader;
 import android.javax.sip.header.FromHeader;
 import android.javax.sip.header.HeaderFactory;
@@ -36,6 +37,7 @@ import android.javax.sip.header.ToHeader;
 import android.javax.sip.header.ViaHeader;
 import android.javax.sip.message.MessageFactory;
 import android.javax.sip.message.Request;
+import android.javax.sip.message.Response;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
@@ -116,6 +118,7 @@ public class SipManager implements ISipService {
     public SipProfile getSipProfile() {
         return sipProfile;
     }
+
     Context context;
 
     //以下为sip变量
@@ -150,9 +153,13 @@ public class SipManager implements ISipService {
     }
 
     private void processLoginResponse(ResponseEvent event, SipNetListener<SipLoginResponse> listener) {
-        if (event.getResponse().getStatusCode() == 200) {
+        int status = event.getResponse().getStatusCode();
+        if (status == 200) {
             try {
-                JSONArray array = new JSONArray(event.getResponse().getContent());
+                byte[] dd = event.getResponse().getRawContent();
+                String x = new String(dd);
+                JSONObject object = new JSONObject(x);
+                JSONArray array = object.getJSONArray("users");
                 SipLoginResponse response = new SipLoginResponse();
                 JSONObject me = array.getJSONObject(0);
                 response.self = User.createFromJson(me);
@@ -162,11 +169,17 @@ public class SipManager implements ISipService {
                 }
                 response.friends = friends;
                 handler.post(() -> listener.onSuccess(response));
+                sendSubScribeForFriendState();
+
             } catch (JSONException e) {
                 handler.post(() -> listener.onFailure(new SipFailure("无法解析的json串!")));
                 e.printStackTrace();
             }
-        } else handler.post(() -> listener.onFailure(new SipFailure("status code != 200!")));
+        } else if (status == 404) {
+            byte[] reasonb = (byte[]) event.getResponse().getContent();
+            String reason = new String(reasonb);
+            handler.post(() -> listener.onFailure(new SipFailure(reason)));
+        }
     }
 
     private SipListener sipListener = new SipListener() {
@@ -174,35 +187,46 @@ public class SipManager implements ISipService {
 
         @Override
         public void processRequest(RequestEvent requestEvent) {
-            handler.post(()->Toast.makeText(context,"收到request",Toast.LENGTH_SHORT).show());
+            handler.post(() -> Toast.makeText(context, "收到request", Toast.LENGTH_SHORT).show());
             SipMessage sipMessage = new SipMessage();
-            sipMessage.content = (String) requestEvent.getRequest().getContent();
-            messageListener.onNewMessage(sipMessage);
+            sipMessage.content = requestEvent.getRequest().getContent().toString();
+            handler.post(() -> messageListener.onNewMessage(sipMessage));
         }
 
         //对于发送消息，回调走这里，应当发送回主线程
         @Override
         public void processResponse(ResponseEvent responseEvent) {
-            handler.post(()->Toast.makeText(context,"收到response",Toast.LENGTH_SHORT).show());
-            long local = responseEvent.getDialog().getLocalSeqNumber();
-            TaskListener listener = taskListeners.remove(local);
-            //responseEvent.getResponse()
+            Log.d(TAG, "收到response");
             int status = responseEvent.getResponse().getStatusCode();
-            if (listener != null) {
-                switch (listener.type) {
-                    case MESSAGE:
-                        processMessageResponse(responseEvent, listener.listener);
-                        break;
-                    case LOGIN:
-                        processLoginResponse(responseEvent, listener.listener);
-                        break;
+            if (status >= 200) {
+                CSeqHeader header = (CSeqHeader) responseEvent.getResponse().getHeader("CSeq");
+                long local = header.getSeqNumber();
+                TaskListener listener = taskListeners.remove(local);
+                if (listener != null) {
+                    switch (listener.type) {
+                        case MESSAGE:
+                            processMessageResponse(responseEvent, listener.listener);
+                            break;
+                        case LOGIN:
+                            processLoginResponse(responseEvent, listener.listener);
+                            break;
+                        case SUBFRIEND:
+                            if (status == 200)
+                                handler.post(() -> listener.listener.onSuccess(null));
+                            else handler.post(() -> listener.listener.onFailure(null));
+                    }
                 }
+            } else {
+                handler.post(() -> Toast.makeText(context, "正在处理", Toast.LENGTH_SHORT).show());
             }
         }
 
         @Override
         public void processTimeout(TimeoutEvent timeoutEvent) {
-            handler.post(()->Toast.makeText(context,"sip超时",Toast.LENGTH_SHORT).show());
+            long local = timeoutEvent.getClientTransaction().getDialog().getLocalSeqNumber();
+            TaskListener listener = taskListeners.remove(local);
+            if (listener != null)
+                handler.post(() -> listener.listener.onFailure(new SipFailure("消息超时！")));
         }
 
         @Override
@@ -302,8 +326,8 @@ public class SipManager implements ISipService {
         sipFactory.setPathName("android.gov.nist");
         Properties properties = new Properties();
         sipProfile = new SipProfile();
-        properties.setProperty("android.javax.sip.OUTBOUND_PROXY", sipProfile.getRemoteEndpoint()
-                + "/" + sipProfile.getTransport());
+//        properties.setProperty("android.javax.sip.OUTBOUND_PROXY", sipProfile.getRemoteEndpoint()
+//                + "/" + sipProfile.getTransport());
         properties.setProperty("android.javax.sip.STACK_NAME", "AndroidSip");
         try {
             //清理出端口来，免得重复登录
@@ -343,6 +367,31 @@ public class SipManager implements ISipService {
     }
 
 
+    private void sendSubScribeForFriendState() {
+        SipNetListener listener = new SipNetListener() {
+            @Override
+            public void onSuccess(Object response) {
+                handler.post(() -> Toast.makeText(context, "订阅好友动态成功", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onFailure(SipFailure failure) {
+                handler.post(() -> Toast.makeText(context, "订阅好友动态失败", Toast.LENGTH_SHORT).show());
+            }
+        };
+        long current = seq.getAndIncrement();
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("type", 0);
+            Request request = requestBuilder.buildSubscribe(jsonObject, current);
+            taskListeners.put(current, new TaskListener(listener, SipTaskType.SUBFRIEND));
+            dealRequest(request, SipTaskType.SUBFRIEND, listener);
+        } catch (ParseException | InvalidArgumentException | JSONException e) {
+            handler.post(() -> listener.onFailure(new SipFailure("sip消息格式有误")));
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 以下为sip的响应事件
      */
@@ -355,54 +404,60 @@ public class SipManager implements ISipService {
     }
 
 
-    public void sendMessageL(String target,String msg){
-        new Thread(()->{
+    public void sendMessageL(String to, String msg) {
+        new Thread(() -> {
             try {
+
                 SipURI from = addressFactory.createSipURI(sipProfile.getSipUserName(), sipProfile.getLocalEndpoint());
                 Address fromNameAddress = addressFactory.createAddress(from);
-                // fromNameAddress.setDisplayName(sipUsername);
-                FromHeader fromHeader = headerFactory.createFromHeader(fromNameAddress,
-                        "Tzt0ZEP92");
+                fromNameAddress.setDisplayName(sipProfile.getSipUserName());
+                FromHeader fromHeader = headerFactory.createFromHeader(fromNameAddress, "androidsip");
+                String username = to.substring(to.indexOf(':') + 1, to.indexOf('@'));
+                String address = to.substring(to.indexOf('@') + 1);
 
-                URI toAddress = addressFactory.createURI(target);
+                SipURI toAddress = addressFactory.createSipURI(username, address);
                 Address toNameAddress = addressFactory.createAddress(toAddress);
-                // toNameAddress.setDisplayName(username);
-                ToHeader toHeader = headerFactory.createToHeader(toNameAddress, null);
+                toNameAddress.setDisplayName(username);
 
-                URI requestURI = addressFactory.createURI(target);
-                // requestURI.setTransportParam("udp");
+                ToHeader toHeader = headerFactory.createToHeader(toNameAddress, "he");
 
-                ArrayList<ViaHeader> viaHeaders = requestBuilder.createViaHeader();
+                SipURI requestURI = addressFactory.createSipURI(username, address);
+                requestURI.setTransportParam("udp");
+
+                ArrayList<ViaHeader> viaHeaders = new ArrayList<>();
+                ViaHeader viaHeader = headerFactory.createViaHeader(sipProfile.getLocalIp(),
+                        sipProfile.getLocalPort(), "udp", "branch1");
+                viaHeaders.add(viaHeader);
 
                 CallIdHeader callIdHeader = sipProvider.getNewCallId();
 
-                CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(3,
+                CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1,
                         Request.MESSAGE);
 
                 MaxForwardsHeader maxForwards = headerFactory
                         .createMaxForwardsHeader(70);
 
-                Request request = messageFactory.createRequest(requestURI,
-                        Request.MESSAGE, callIdHeader, cSeqHeader, fromHeader,
-                        toHeader, viaHeaders, maxForwards);
-                SupportedHeader supportedHeader = headerFactory
-                        .createSupportedHeader("replaces, outbound");
-                request.addHeader(supportedHeader);
-
-                SipURI routeUri = addressFactory.createSipURI(null, sipProfile.getRemoteIp());
-                routeUri.setTransportParam(sipProfile.getTransport());
-                routeUri.setLrParam();
-                routeUri.setPort(sipProfile.getRemotePort());
-                Address routeAddress = addressFactory.createAddress(routeUri);
-                RouteHeader route = headerFactory.createRouteHeader(routeAddress);
-                //request.addHeader(route);
                 ContentTypeHeader contentTypeHeader = headerFactory
                         .createContentTypeHeader("text", "plain");
-                request.setContent(msg, contentTypeHeader);
+
+                Request request = messageFactory.createRequest(requestURI,
+                        Request.MESSAGE, callIdHeader, cSeqHeader, fromHeader,
+                        toHeader, viaHeaders, maxForwards, contentTypeHeader, msg.getBytes());
+
+                SipURI contactURI = addressFactory.createSipURI(sipProfile.getSipUserName(),
+                        sipProfile.getLocalIp());
+                contactURI.setPort(sipProfile.getLocalPort());
+                Address contactAddress = addressFactory.createAddress(contactURI);
+                contactAddress.setDisplayName(sipProfile.getSipUserName());
+                ContactHeader contactHeader = headerFactory.createContactHeader(contactAddress);
+                request.addHeader(contactHeader);
+
+
                 System.out.println(request);
                 try {
                     ClientTransaction transaction = this.sipProvider.getNewClientTransaction(request);
                     transaction.sendRequest();
+                    //this.sipProvider.sendRequest(request);
                 } catch (SipException e) {
                     e.printStackTrace();
                 }
@@ -426,11 +481,11 @@ public class SipManager implements ISipService {
     }
 
     @Override
-    public void login(String name, String password, SipNetListener listener) {
+    public void login(int id, String password, SipNetListener listener) {
         long current = seq.getAndIncrement();
         Request request = null;
         try {
-            request = requestBuilder.buildLogin(name, password, current);
+            request = requestBuilder.buildLogin(id, password, current);
         } catch (ParseException | InvalidArgumentException e) {
             listener.onFailure(new SipFailure("无法解析sip message格式"));
             e.printStackTrace();
@@ -515,7 +570,7 @@ public class SipManager implements ISipService {
     }
 
     enum SipTaskType {
-        MESSAGE, LOGIN
+        MESSAGE, LOGIN, SUBFRIEND
     }
 
     static class TaskListener {

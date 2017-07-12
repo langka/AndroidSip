@@ -81,7 +81,7 @@ public class User {
             user.description = object.getString("description");
         } catch (JSONException e) {
             e.printStackTrace();
-            user.description="0";
+            user.description="";
         }
         try {
             user.email = object.getString("email");
