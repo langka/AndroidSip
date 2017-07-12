@@ -72,6 +72,7 @@ public class AddFriendActivity extends BaseActivity {
                 return false;
             }
         });
+
         searchCancle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -79,6 +80,8 @@ public class AddFriendActivity extends BaseActivity {
             }
         });
         searchResult.setAdapter(friendListAdapter);
+
+
     }
 
     //搜索用户信息

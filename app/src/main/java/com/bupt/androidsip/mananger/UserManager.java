@@ -49,5 +49,10 @@ public class UserManager {
         return false;
     }
 
+    public void setFrs(List<User> frs) {
+        if (frs == null || frs.size() == 0)
+            return;
+        this.allPeople = frs;
+    }
 
 }

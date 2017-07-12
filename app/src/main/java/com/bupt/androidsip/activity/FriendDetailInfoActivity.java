@@ -14,12 +14,9 @@ import com.bupt.androidsip.entity.User;
 import com.bupt.androidsip.mananger.ChatManager;
 import com.bupt.androidsip.mananger.UserManager;
 
-import java.util.Arrays;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.bupt.androidsip.R.id.frag_sex;
 import static com.bupt.androidsip.R.id.item_profile_righttext;
 import static com.bupt.androidsip.R.id.item_profile_text;
 
@@ -29,16 +26,16 @@ import static com.bupt.androidsip.R.id.item_profile_text;
 
 public class FriendDetailInfoActivity extends BaseActivity  {
     @BindView(R.id.frag_head_image)
-    RelativeLayout headimageContainer;
+    ImageView headimageContainer;
 
     @BindView(R.id.frag_friend_nickname)
-    RelativeLayout nicknameContainer;
+    TextView nicknameContainer;
 
     @BindView(R.id.frag_friend_personalize)
-    RelativeLayout personalizeContainer;
+    TextView personalizeContainer;
 
-    @BindView(R.id.frag_age)
-    RelativeLayout ageContainer;
+    @BindView(R.id.frag_sex)
+    RelativeLayout sexContainer;
 
     @BindView(R.id.frag_birthday)
     RelativeLayout birthdayContainer;
@@ -53,7 +50,7 @@ public class FriendDetailInfoActivity extends BaseActivity  {
     TextView chatFriend;
 
     @BindView(R.id.frag_friend_detail_info_goback)
-    RelativeLayout gobackContainer;
+    ImageView gobackContainer;
 
     User me = UserManager.getInstance().getUser();
     User friend;
@@ -65,7 +62,7 @@ public class FriendDetailInfoActivity extends BaseActivity  {
         setContentView(R.layout.activity_friend_detail_info);
         ButterKnife.bind(this);
         intent = getIntent();
-        int friendID = intent.getIntExtra("FriendId",-1);
+        int friendID = intent.getExtras().getInt("FriendId");
         friend = UserManager.getInstance().searchUser(friendID);
         initView();
 
@@ -75,7 +72,7 @@ public class FriendDetailInfoActivity extends BaseActivity  {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.frag_age:
+                case R.id.frag_sex:
                     showText("您无法更改好友的个人资料！");
                     break;
                 case R.id.frag_birthday:
@@ -101,7 +98,7 @@ public class FriendDetailInfoActivity extends BaseActivity  {
     }
 
     private void initView() {
-        ageContainer.setOnClickListener(accountOnClick);
+        sexContainer.setOnClickListener(accountOnClick);
         birthdayContainer.setOnClickListener(accountOnClick);
         constellationContainer.setOnClickListener(accountOnClick);
         deleteFriend.setOnClickListener((v)->{
@@ -140,7 +137,12 @@ public class FriendDetailInfoActivity extends BaseActivity  {
         ImageView headimageView = (ImageView) headimageContainer.findViewById(R.id.frag_head_image);
         //sexView.setImageDrawable("drawable/profile_icon_male.png");设置头像的图片
 
-        initRowView(ageContainer, R.drawable.ic_access_time_black_30dp, "性别", friend.sex);
+        if (friend.sex.equals("U"))
+            initRowView(sexContainer, R.drawable.ic_face_black_30dp, "性别", "未知");
+        else if (friend.sex.equals("F"))
+            initRowView(sexContainer, R.drawable.ic_face_black_30dp, "性别", "女性");
+        else if (friend.sex.equals("M"))
+            initRowView(sexContainer, R.drawable.ic_face_black_30dp, "性别", "男性");
         initRowView(birthdayContainer, R.drawable.ic_email_black_30dp, "邮箱", friend.email);
         initRowView(constellationContainer, R.drawable.ic_star_border_black_30dp, "星座", "狮子座");
         //initRowView(deleteFriend, R.drawable.ic_delete_forever_red_30dp, "删除", "");
