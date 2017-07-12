@@ -152,10 +152,15 @@ public class FriendFragment extends BaseFragment {
 //            }
 //            intent.putExtras(bundle);
 //            startActivity(intent);
-            Intent intent = new Intent(getActivity(), FriendDetailInfoActivity.class);
+
             User user = (User) sortAdapter.getItem(i);
-            intent.getIntExtra("FriendId",user.id);
-            startActivity(intent);
+            if (UserManager.getInstance().searchUser(user.id) != null) {
+                Intent intent = new Intent(getActivity(), FriendDetailInfoActivity.class);
+                intent.getIntExtra("FriendId", user.id);
+                startActivity(intent);
+            } else
+                showText("这是一个假好友！");
+
 
         });
         return v;

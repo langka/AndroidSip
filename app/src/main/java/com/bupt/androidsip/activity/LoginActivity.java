@@ -73,7 +73,6 @@ public class LoginActivity extends BaseActivity {
         confirm.setOnClickListener(v -> {
 
 
-
             if ((!TextUtils.isEmpty(accountEdit.getText())) &&
                     (!TextUtils.isEmpty(pwdEdit.getText()))) {
                 showLoadingView();
@@ -89,8 +88,7 @@ public class LoginActivity extends BaseActivity {
                             @Override
                             public void onSuccess(SipLoginResponse response) {
                                 userManager.initUser(response);
-                                sipChatManager.setSipChat(response.groups);
-                                userManager.setFrs(response.friends);
+//                                sipChatManager.setSipChat(response.groups);
                                 hideLoadingView();
                                 TabActivity.Start(LoginActivity.this);
                                 finish();
