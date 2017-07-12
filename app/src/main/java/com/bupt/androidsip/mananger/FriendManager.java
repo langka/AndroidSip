@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by vita-nove on 08/07/2017.
  */
-
+//弃疗
 public class FriendManager {
     private List<User> friends;
 

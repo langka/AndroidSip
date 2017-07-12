@@ -36,6 +36,7 @@ import com.bupt.androidsip.activity.AddFriendActivity;
 import com.bupt.androidsip.activity.BaseActivity;
 import com.bupt.androidsip.activity.ChatActivity;
 import com.bupt.androidsip.activity.DemoWifiChatActivity;
+import com.bupt.androidsip.activity.FriendDetailInfoActivity;
 import com.bupt.androidsip.activity.SipChatDemoActivity;
 import com.bupt.androidsip.customview.SlideBar;
 import com.bupt.androidsip.entity.Chat;
@@ -138,18 +139,22 @@ public class FriendFragment extends BaseFragment {
         listView.setAdapter(sortAdapter);
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
             //  08/07/2017 添加识别好友并且创建对应chat对象的操作
-            Intent intent = new Intent(getActivity(), ChatActivity.class);
-            Bundle bundle = new Bundle();
-//            bundle.putParcelable("chat", );
+//            Intent intent = new Intent(getActivity(), ChatActivity.class);
+//            Bundle bundle = new Bundle();
+////            bundle.putParcelable("chat", );
+//            User user = (User) sortAdapter.getItem(i);
+//            if (ChatManager.getChatManager().isInList(user.id))
+//                bundle.putParcelable("chat", ChatManager.getChatManager().getChatFromID(user.id));
+//            else {
+//                Chat chat = new Chat(user.name, user.head, 1, "", user.id);
+//                ChatManager.getChatManager().addChat(chat);
+//                bundle.putParcelable("chat", chat);
+//            }
+//            intent.putExtras(bundle);
+//            startActivity(intent);
+            Intent intent = new Intent(getActivity(), FriendDetailInfoActivity.class);
             User user = (User) sortAdapter.getItem(i);
-            if (ChatManager.getChatManager().isInList(user.id))
-                bundle.putParcelable("chat", ChatManager.getChatManager().getChatFromID(user.id));
-            else {
-                Chat chat = new Chat(user.name, user.head, 1, "", user.id);
-                ChatManager.getChatManager().addChat(chat);
-                bundle.putParcelable("chat", chat);
-            }
-            intent.putExtras(bundle);
+            intent.getIntExtra("FriendId",user.id);
             startActivity(intent);
 
         });

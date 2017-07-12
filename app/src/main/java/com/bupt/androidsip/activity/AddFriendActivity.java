@@ -1,6 +1,7 @@
 package com.bupt.androidsip.activity;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -23,11 +24,13 @@ import com.bupt.androidsip.entity.Friend;
 import com.bupt.androidsip.entity.User;
 import com.bupt.androidsip.entity.response.SipSearchResponse;
 import com.bupt.androidsip.entity.sip.SipFailure;
+import com.bupt.androidsip.mananger.UserManager;
 import com.bupt.androidsip.sip.SipNetListener;
 import com.bupt.androidsip.sip.impl.SipManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -53,7 +56,7 @@ public class AddFriendActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_friend);
         ButterKnife.bind(this);
-        friendListAdapter = new AddFriendListAdapter(this,R.layout.item_friend_add,new ArrayList<>());
+        friendListAdapter = new AddFriendListAdapter(this, R.layout.item_friend_add, new ArrayList<>());
         searchtext.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
@@ -78,7 +81,8 @@ public class AddFriendActivity extends BaseActivity {
         searchResult.setAdapter(friendListAdapter);
     }
 
-    private void search(){
+    //搜索用户信息
+    private void search() {
         String searchString = searchtext.getText().toString();
         SipManager.getSipManager().searchUsers(searchString, new SipNetListener<SipSearchResponse>() {
             @Override
@@ -110,38 +114,55 @@ public class AddFriendActivity extends BaseActivity {
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            final User friend = getItem(position);
+            final User user = getItem(position);
             ViewHolder holder = null;
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(resourceId, null);
                 holder = new ViewHolder();
                 holder.headImg = (ImageView) convertView.findViewById(R.id.item_add_friend_list_head);
                 holder.maskView = convertView.findViewById(R.id.item_add_friend_list_mask);
-                holder.nameTextView = (TextView)convertView.findViewById(R.id.item_add_friend_list_name);
-                holder.stateTextView = (TextView)convertView.findViewById(R.id.item_add_friend_list_state);
-                holder.desc = (TextView)convertView.findViewById(R.id.item_add_friend_list_desc);
+                holder.nameTextView = (TextView) convertView.findViewById(R.id.item_add_friend_list_name);
+                holder.stateTextView = (TextView) convertView.findViewById(R.id.item_add_friend_list_state);
+                holder.desc = (TextView) convertView.findViewById(R.id.item_add_friend_list_desc);
+                holder.addButton = (ImageView) convertView.findViewById(R.id.item_add_friend_list_btn);
 
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            holder.headImg.setImageDrawable((friend.head == 1) ? convertView.getResources().getDrawable(R.drawable.xusong) :
+            holder.headImg.setImageDrawable((user.head == 1) ? convertView.getResources().getDrawable(R.drawable.xusong) :
                     convertView.getResources().getDrawable(R.drawable.ic_perm_data_setting_30px));
-            holder.maskView.setVisibility(friend.state == 0 ? View.VISIBLE : View.INVISIBLE);
-            holder.stateTextView.setText(friend.state == 0 ? "[离线]" : "[在线]");
-            holder.nameTextView.setText(friend.name);
-            holder.desc.setText(friend.description);
+            holder.maskView.setVisibility(user.state == 0 ? View.VISIBLE : View.INVISIBLE);
+            holder.stateTextView.setText(user.state == 0 ? "[离线]" : "[在线]");
+            holder.nameTextView.setText(user.name);
+            holder.desc.setText(user.description);
+            if (isFriend(user)) {
+                holder.addButton.setVisibility(View.INVISIBLE);
+            } else
+                holder.addButton.setImageDrawable(convertView.getResources().getDrawable(R.drawable.ic_friend_add_blue));
             return convertView;
 
         }
 
-        static class ViewHolder{
+        // 2017/7/11 检测是否为好友
+        boolean isFriend(User user) {
+            int myID = UserManager.getInstance().getUser().id;
+            for(int i = 0; i<user.friends.size();i++){
+                if(user.friends.get(i).id == myID){
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        static class ViewHolder {
             ImageView headImg;
             View maskView;
             TextView nameTextView;
             TextView stateTextView;
             TextView desc;
+            ImageView addButton;
         }
     }
 
