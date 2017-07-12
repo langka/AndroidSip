@@ -1,5 +1,6 @@
 package com.bupt.androidsip.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,10 +13,13 @@ import android.widget.TextView;
 
 import com.bupt.androidsip.R;
 import com.bupt.androidsip.entity.Chat;
+import com.bupt.androidsip.mananger.ActivityManager;
 import com.bupt.androidsip.mananger.ChatManager;
 import com.bupt.androidsip.mananger.DBManager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -114,6 +118,7 @@ public class SettingsActivity extends BaseActivity {
                     });
                     break;
                 case R.id.frag_logout:
+//                    finish(ActivityManager.getActivityManager().getList().get(0));
                     break;
             }
         }
@@ -134,7 +139,7 @@ public class SettingsActivity extends BaseActivity {
         setTitle("设置");
         pref = getSharedPreferences("MySettings", MODE_PRIVATE);
         editor = pref.edit();
-
+        ActivityManager.getActivityManager().addActivity(this);
         initView();
     }
 

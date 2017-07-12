@@ -230,6 +230,8 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     public void onPause() {
         super.onPause();
         EventBus.getDefault().post(new EventConst.RemoveOne(0, getID()));
+        if (chat.messages == null)
+            return;
         saveMsgToLocalDB();
     }
 

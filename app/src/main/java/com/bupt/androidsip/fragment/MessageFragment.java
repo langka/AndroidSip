@@ -89,6 +89,7 @@ public class MessageFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.frag_chat_list, null);
         ButterKnife.bind(this, v);
+        Log.d("现在又有几个chat", chatManager.getChatList().size() + "");
 
         SharedPreferences pref = getActivity().getSharedPreferences("MySettings", MODE_PRIVATE);
         isShock = pref.getBoolean("isShock", true);
@@ -119,6 +120,7 @@ public class MessageFragment extends BaseFragment {
         });
 
         EventBus.getDefault().register(this);
+        chatListAdapter.notifyDataSetChanged();
         return v;
 
     }
@@ -126,7 +128,6 @@ public class MessageFragment extends BaseFragment {
     public void loadLocalMessage(List<SipMessage> sipMessages) {
         if (sipMessages == null)
             return;
-        chatManager.removeAllChat();
         for (int i = 0; i < sipMessages.size(); ++i) {
             if (sipMessages.get(i).from == userManager.getUser().id) {
                 //我发给别人的

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.EditText;
@@ -13,8 +14,12 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bupt.androidsip.R;
+import com.bupt.androidsip.entity.Chat;
+import com.bupt.androidsip.entity.Message;
 import com.bupt.androidsip.entity.response.SipLoginResponse;
 import com.bupt.androidsip.entity.sip.SipFailure;
+import com.bupt.androidsip.entity.sip.SipMessage;
+import com.bupt.androidsip.mananger.ChatManager;
 import com.bupt.androidsip.mananger.FriendManager;
 import com.bupt.androidsip.mananger.SipChatManager;
 import com.bupt.androidsip.mananger.UserManager;
@@ -22,6 +27,8 @@ import com.bupt.androidsip.sip.SipNetListener;
 import com.bupt.androidsip.sip.impl.SipManager;
 import com.bupt.androidsip.util.BitmapUtils;
 import com.dd.CircularProgressButton;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,6 +51,7 @@ public class LoginActivity extends BaseActivity {
     SipManager sipManager = SipManager.getSipManager();
     UserManager userManager = UserManager.getInstance();
     SipChatManager sipChatManager = SipChatManager.getInstance();
+    ChatManager chatManager = ChatManager.getChatManager();
 
     boolean isShock = true;
     boolean pushEnterToSend = true;
@@ -87,6 +95,7 @@ public class LoginActivity extends BaseActivity {
                             public void onSuccess(SipLoginResponse response) {
                                 userManager.initUser(response);
                                 sipChatManager.setSipChat(response.groups);
+                                loadOfflineMessage(response.offlineMessages);
                                 hideLoadingView();
                                 TabActivity.Start(LoginActivity.this);
                                 finish();
@@ -130,6 +139,52 @@ public class LoginActivity extends BaseActivity {
         widthAnimation.start(); // 开始动画的计算工作
     }
 
-    
+
+    public void loadOfflineMessage(List<SipMessage> sipMessages) {
+        if (sipMessages == null)
+            return;
+        for (int i = 0; i < sipMessages.size(); ++i) {
+            if (!chatManager.isInList(sipMessages.get(i).from)) {
+                //不在list中，新建chat
+                chatManager.addChat(new Chat(userManager.searchUser(sipMessages.get(i).from).name,
+                        userManager.searchUser(sipMessages.get(i).from).head, 1,
+                        sipMessages.get(i).content, sipMessages.get(i).from));
+                chatManager.addMsgWithUnread(chatManager.getChatList().size() - 1,
+                        getChatMsgTo(sipMessages.get(i).content, sipMessages.get(i).from,
+                                sipMessages.get(i).comeTime));
+            } else
+                chatManager.addMsgWithUnread(i, getChatMsgTo(sipMessages.get(i).content,
+                        sipMessages.get(i).from, sipMessages.get(i).comeTime));
+
+
+        }
+        Log.d("添加了chat", chatManager.getChatList().size() + "");
+        Log.d("添加了message", chatManager.getChatList().get(0).messages.size() + "");
+        chatManager.sortChatMessages();
+    }
+
+    public int getUserAvatarFromID(int ID) {
+        return userManager.searchUser(ID).head;
+    }
+
+    private Message getChatMsgFrom(String message, int ID, long time) {
+        Message msg = new Message();
+        msg.content = message;
+        msg.fromOrTo = 0;
+        msg.rightAvatar = UserManager.getInstance().getUser().head;
+        msg.leftAvatar = getUserAvatarFromID(ID);
+        msg.time = time;
+        return msg;
+    }
+
+    private Message getChatMsgTo(String message, int ID, long time) {
+        Message msg = new Message();
+        msg.content = message;
+        msg.fromOrTo = 1;
+        msg.rightAvatar = UserManager.getInstance().getUser().head;
+        msg.leftAvatar = getUserAvatarFromID(ID);
+        msg.time = time;
+        return msg;
+    }
 
 }
