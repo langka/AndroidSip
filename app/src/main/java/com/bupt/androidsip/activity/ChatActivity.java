@@ -234,6 +234,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
     public void onPause() {
         super.onPause();
         EventBus.getDefault().post(new EventConst.RemoveOne(0, getID()));
+        editor.putLong("Chat" + chat.ID, System.currentTimeMillis());
         if (chat.messages == null)
             return;
     }

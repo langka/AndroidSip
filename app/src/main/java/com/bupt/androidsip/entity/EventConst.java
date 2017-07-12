@@ -104,5 +104,4 @@ public class EventConst {
             this.msg = msg;
         }
     }
-
 }

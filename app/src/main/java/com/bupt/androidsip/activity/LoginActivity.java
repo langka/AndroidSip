@@ -56,14 +56,17 @@ public class LoginActivity extends BaseActivity {
     boolean isShock = true;
     boolean pushEnterToSend = true;
 
+    SharedPreferences pref = null;
+    SharedPreferences.Editor editor = null;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        SharedPreferences pref = getApplicationContext().getSharedPreferences("MySettings", 0);
-        SharedPreferences.Editor editor = pref.edit();
+        pref = getSharedPreferences("MySettings", MODE_PRIVATE);
+        editor = pref.edit();
         editor.putBoolean("isShock", isShock);
         editor.putBoolean("pushEnterToSend", pushEnterToSend);
         editor.apply();
@@ -156,6 +159,7 @@ public class LoginActivity extends BaseActivity {
         }
         chatManager.sortChatMessages();
     }
+
 
     public int getUserAvatarFromID(int ID) {
         return userManager.searchUser(ID).head;

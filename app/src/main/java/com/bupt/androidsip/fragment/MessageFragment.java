@@ -76,13 +76,15 @@ public class MessageFragment extends BaseFragment {
     }
 
     ChatManager chatManager = ChatManager.getChatManager();
+    SipManager sipManager = SipManager.getSipManager();
 
     private static List<Chat> chatList = ChatManager.getChatManager().getChatList();
     ChatListAdapter chatListAdapter = null;
 
+    SharedPreferences pref = null;
+    SharedPreferences.Editor editor = null;
     boolean isShock = true;
 
-    SipManager sipManager = SipManager.getSipManager();
 
     @Nullable
     @Override
@@ -91,12 +93,14 @@ public class MessageFragment extends BaseFragment {
         ButterKnife.bind(this, v);
         Log.d("现在又有几个chat", chatManager.getChatList().size() + "");
 
-        SharedPreferences pref = getActivity().getSharedPreferences("MySettings", MODE_PRIVATE);
+        pref = getActivity().getSharedPreferences("MySettings", MODE_PRIVATE);
+        editor = pref.edit();
         isShock = pref.getBoolean("isShock", true);
 
         simpleDateFormat = new SimpleDateFormat("HH:mm");
         initData();
         loadLocalMessage(DBManager.getInstance(getActivity()).loadAllMessages());
+        setUnreadByTime(chatManager.getChatList());
 
         chatListAdapter = new ChatListAdapter(getActivity(), R.layout.item_frag_chat_list,
                 chatManager.getChatList());
@@ -122,6 +126,25 @@ public class MessageFragment extends BaseFragment {
         EventBus.getDefault().register(this);
         chatListAdapter.notifyDataSetChanged();
         return v;
+
+    }
+
+    public void setUnreadByTime(List<Chat> chatList) {
+        for (int i = 0; i < chatList.size(); ++i) {
+            Chat chat = chatList.get(i);
+            long time = pref.getLong("Chat" + chat.ID, 0);
+            if (time == 0)
+                continue;
+            for (int j = 0; i < chat.messages.size(); ++j) {
+                Message msg = chat.messages.get(i);
+                if (time >= msg.time)
+                    continue;
+                else {
+                    chat.unread = chat.messages.size() - (j + 1);
+                    break;
+                }
+            }
+        }
 
     }
 
