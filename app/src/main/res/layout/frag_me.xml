@@ -92,6 +92,19 @@
                     android:background="@color/G7"/>
 
                 <include
+                    android:id="@+id/frag_me_system_message"
+                    layout="@layout/item_frag_me_with_arrow"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:background="@color/G7"/>
+
+                <include
                     android:id="@+id/frag_me_settings"
                     layout="@layout/item_frag_me_with_arrow"
                     android:layout_width="match_parent"

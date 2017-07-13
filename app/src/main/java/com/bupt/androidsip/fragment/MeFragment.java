@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.bupt.androidsip.R;
 import com.bupt.androidsip.activity.AccountActivity;
 import com.bupt.androidsip.activity.SettingsActivity;
+import com.bupt.androidsip.activity.SystemMessageActivity;
 import com.bupt.androidsip.entity.User;
 import com.bupt.androidsip.mananger.UserManager;
 
@@ -48,6 +49,9 @@ public class MeFragment extends BaseFragment {
     @BindView(R.id.frag_me_settings)
     RelativeLayout settingsContainer;
 
+    @BindView(R.id.frag_me_system_message)
+    RelativeLayout systemMessageContainer;
+
     User user = UserManager.getInstance().getUser();
 
     //防止getActivity抛出空指针异常
@@ -62,6 +66,8 @@ public class MeFragment extends BaseFragment {
                 case R.id.frag_me_settings:
                     SettingsActivity.Start(context);
                     break;
+                case R.id.frag_me_system_message:
+                    SystemMessageActivity.Start(context);
             }
         }
     };
@@ -114,7 +120,9 @@ public class MeFragment extends BaseFragment {
     private void initView() {
         accountContainer.setOnClickListener(fragMeOnClick);
         settingsContainer.setOnClickListener(fragMeOnClick);
+        systemMessageContainer.setOnClickListener(fragMeOnClick);
         initRowView(accountContainer, R.drawable.ic_account_box_30px, "账号信息", "");
         initRowView(settingsContainer, R.drawable.ic_perm_data_setting_30px, "设置", "");
+        initRowView(systemMessageContainer,R.drawable.ic_email_black_30dp,"系统消息","");
     }
 }

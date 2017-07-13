@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/item_system_message_head"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/xusong"
+            android:scaleType="centerCrop"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="8dp"
+            />
+
+        <TextView
+            android:id="@+id/item_system_message_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/item_system_message_head"
+            android:layout_marginLeft="15dp"
+            android:layout_toRightOf="@+id/item_system_message_head"
+            android:text="系统消息"
+            android:textColor="@color/G1"
+            android:textSize="17sp" />
+
+
+        <TextView
+            android:id="@+id/item_system_message_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/item_system_message_name"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/item_system_message_head"
+            android:text="请求添加你为好友"
+            android:textColor="@color/G3"
+            android:textSize="14sp" />
+        <ImageView
+            android:id="@+id/item_system_message_refuse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_clear_red_30dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:layout_centerVertical="true"
+
+            />
+        <ImageView
+            android:id="@+id/item_system_message_acc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_done_green_30dp"
+            android:layout_toLeftOf="@+id/item_system_message_refuse"
+            android:layout_marginRight="10dp"
+            android:layout_centerVertical="true"/>
+</RelativeLayout>

@@ -55,6 +55,9 @@
         <activity
             android:name=".activity.FriendDetailInfoActivity"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.SystemMessageActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

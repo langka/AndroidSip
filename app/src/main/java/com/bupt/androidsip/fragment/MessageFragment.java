@@ -151,7 +151,7 @@ public class MessageFragment extends BaseFragment {
     public void loadLocalMessage(List<SipMessage> sipMessages) {
         if (sipMessages == null)
             return;
-        for (int i = 0; i < sipMessages.size(); ++i) {
+        for (int i = 0; i < sipMessages.size(); i++) {
             if (sipMessages.get(i).from == userManager.getUser().id) {
                 //我发给别人的
                 if (!chatManager.isInList(sipMessages.get(i).to.get(0))) {
@@ -178,7 +178,7 @@ public class MessageFragment extends BaseFragment {
                     chatManager.addMsg(chatManager.getChatList().size() - 1,
                             getChatMsgTo(sipMessages.get(i).content, sipMessages.get(i).from,
                                     sipMessages.get(i).comeTime));
-                } else {
+                } else {//在
                     chatManager.addMsg(i, getChatMsgTo(sipMessages.get(i).content,
                             sipMessages.get(i).from, sipMessages.get(i).comeTime));
                 }

@@ -74,7 +74,6 @@ public class LoginActivity extends BaseActivity {
 
     }
 
-    boolean x = false;
 
     private void initView() {
 

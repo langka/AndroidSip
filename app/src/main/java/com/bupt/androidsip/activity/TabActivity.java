@@ -68,7 +68,7 @@ public class TabActivity extends BaseActivity {
     int currentFrag = -1;
     FragmentManager fragmentManager;
     ChatManager chatManager = ChatManager.getChatManager();
-    DBManager dbManager = DBManager.getInstance(this);
+    DBManager dbManager;
 
     long exitTime = 0;
     SipManager sipManager = SipManager.getSipManager();
@@ -85,6 +85,7 @@ public class TabActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tab);
         ButterKnife.bind(this);
+        dbManager= DBManager.getInstance(this);
         initData();
         initView();
         bottoms = new ArrayList<>();

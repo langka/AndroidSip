@@ -33,7 +33,7 @@ public class DBManager {
                 "createTime long,comeTime long,content text,belong integer,fromid integer,toid integer)";
         static final String INIT_SQL2 = "create table event (_id integer primary key autoincrement,associated integer,name text,type integer,dealed integer)";
         private static final String DBNAME = "androidsip.db";
-        private static final int VERSION = 2;
+        private static final int VERSION = 1;
 
         public SipDBHelper(Context context) {
             super(context, DBNAME, null, VERSION);
@@ -48,8 +48,7 @@ public class DBManager {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            if(oldVersion==1)
-                db.execSQL(INIT_SQL2);
+
         }
     }
 

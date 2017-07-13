@@ -314,6 +314,7 @@ public class SipManager implements ISipService {
                         String service = object.getString("service");
                         if (service.equals(SERVICE_CHAT)) {//这是一条普通的message
                             SipMessage sipMessage = SipMessage.createFromJson(object);
+                            DBManager.getInstance(context).save(sipMessage);
                             handler.post(() -> messageListener.onNewMessage(sipMessage));
                         } else {//这是一条系统消息
                             // TODO: 2017/7/13
@@ -717,6 +718,7 @@ public class SipManager implements ISipService {
     @Override
     public void sendMessage(SipMessage message, SipNetListener<SipSendMsgResponse> listener) {
         long current = seq.getAndIncrement();
+        DBManager.getInstance(context).save(message);
         try {
             Request request = requestBuilder.buildMessage(message, current);
             taskListeners.put(current, new TaskListener(listener, SipTaskType.MESSAGE));
