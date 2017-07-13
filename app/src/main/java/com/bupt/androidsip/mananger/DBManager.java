@@ -156,9 +156,16 @@ public class DBManager {
         db.execSQL(sql);
     }
 
-    public void clear() {
+    public void clearMsg() {
         String sql = "delete from message";  //清空数据
         String sql2 = "update sqlite_sequence SET seq = 0 where name ='message'";
+        db.execSQL(sql);
+        db.execSQL(sql2);
+    }
+
+    public void clearSysMsg(){
+        String sql = "delete from event";//清除系统消息
+        String sql2 = "update sqlite_sequence SET seq = 0 where name ='event'";
         db.execSQL(sql);
         db.execSQL(sql2);
     }
