@@ -76,7 +76,7 @@ public class AddFriendActivity extends BaseActivity {
         searchCancle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                finish();
             }
         });
         searchResult.setAdapter(friendListAdapter);

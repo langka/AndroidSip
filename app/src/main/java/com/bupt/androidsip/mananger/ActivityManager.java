@@ -12,9 +12,6 @@ import java.util.List;
  */
 
 public class ActivityManager {
-    public List<Activity> getList() {
-        return list;
-    }
 
     private List<Activity> list = new ArrayList<>();
 
@@ -29,6 +26,19 @@ public class ActivityManager {
 
     public void addActivity(Activity act) {
         list.add(act);
+    }
+
+    public void exit() {
+        try {
+            for (Activity activity : list) {
+                if (activity != null)
+                    activity.finish();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            System.exit(0);
+        }
     }
 
 }

@@ -119,6 +119,7 @@ public class SettingsActivity extends BaseActivity {
                     break;
                 case R.id.frag_logout:
 //                    finish(ActivityManager.getActivityManager().getList().get(0));
+                    ActivityManager.getActivityManager().exit();
                     break;
             }
         }
