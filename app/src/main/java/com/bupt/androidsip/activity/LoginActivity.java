@@ -151,12 +151,22 @@ public class LoginActivity extends BaseActivity {
                         getChatMsgTo(sipMessages.get(i).content, sipMessages.get(i).from,
                                 sipMessages.get(i).comeTime));
             } else
-                chatManager.addMsgWithUnread(i, getChatMsgTo(sipMessages.get(i).content,
+                chatManager.addMsgWithUnread(getPosition(sipMessages.get(i).from), getChatMsgTo(sipMessages.get(i).content,
                         sipMessages.get(i).from, sipMessages.get(i).comeTime));
 
 
         }
         chatManager.sortChatMessages();
+    }
+
+
+    public int getPosition(int id) {
+        //返回所属的chat的position
+        for (int i = 0; i < chatManager.getChatList().size(); i++) {
+            if (chatManager.isInList(id))
+                return i;
+        }
+        return 0;
     }
 
 

@@ -91,6 +91,12 @@ public class EventConst {
         private int ID;
         private String msg;
 
+        public long getTime() {
+            return time;
+        }
+
+        private long time;
+
         public int getID() {
             return ID;
         }
@@ -99,9 +105,10 @@ public class EventConst {
             return msg;
         }
 
-        public LastMsg(int ID, String msg) {
+        public LastMsg(int ID, String msg, long time) {
             this.ID = ID;
             this.msg = msg;
+            this.time = time;
         }
     }
 }
