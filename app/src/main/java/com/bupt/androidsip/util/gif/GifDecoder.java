@@ -356,7 +356,7 @@ public class GifDecoder {
 			i++;
 		}
 		for (i = pi; i < npix; i++) {
-			pixels[i] = 0; // clear missing pixels
+			pixels[i] = 0; // clearMsg missing pixels
 		}
 	}
 

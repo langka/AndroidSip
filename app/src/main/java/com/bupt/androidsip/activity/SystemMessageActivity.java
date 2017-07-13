@@ -10,15 +10,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bupt.androidsip.R;
-import com.bupt.androidsip.entity.User;
+import com.bupt.androidsip.entity.sip.SipFailure;
 import com.bupt.androidsip.entity.sip.SipSystemMessage;
 import com.bupt.androidsip.mananger.DBManager;
+import com.bupt.androidsip.sip.SipNetListener;
+import com.bupt.androidsip.sip.impl.SipManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,20 +57,24 @@ public class SystemMessageActivity extends BaseActivity {
         setTitle("系统消息");
         list = new ArrayList<>();
         SipSystemMessage jiashuju1 = new SipSystemMessage();
-        jiashuju1.jiashuju(1,"1",5,0,0);
+        jiashuju1.jiashuju(0, "1", 5, 1, 0);
         SipSystemMessage jiashuju2 = new SipSystemMessage();
-        jiashuju2.jiashuju(1,"2",5,0,0);
+        jiashuju2.jiashuju(0, "2", 5, 1, 0);
         SipSystemMessage jiashuju3 = new SipSystemMessage();
-        jiashuju3.jiashuju(0,"3",5,0,0);
+        jiashuju3.jiashuju(0, "3", 5, 0, 0);
         SipSystemMessage jiashuju4 = new SipSystemMessage();
-        jiashuju4.jiashuju(0,"4",5,0,0);
-        // TODO: 2017/7/13 数据库访问有问题
-//        DBManager.getInstance(this).saveEvent(jiashuju1);
+        jiashuju4.jiashuju(0, "4", 5, 0, 0);
+
 //        DBManager.getInstance(this).saveEvent(jiashuju2);
-//        DBManager.getInstance(this).saveEvent(jiashuju3);
+//        DBManager.getInstance(this).saveEvent(jiashuju1);
 //        DBManager.getInstance(this).saveEvent(jiashuju4);
+//        DBManager.getInstance(this).clearSysMsg();
+//        DBManager.getInstance(this).saveEvent(jiashuju3);
+//        DBManager.getInstance(this).saveEvent(jiashuju1);
+//        DBManager.getInstance(this).saveEvent(jiashuju4);
+// list.add(jiashuju1);list.add(jiashuju2);list.add(jiashuju3);list.add(jiashuju4);
+
         list.addAll(DBManager.getInstance(this).getAllSystemEvents());
-        //list.add(jiashuju1);list.add(jiashuju2);list.add(jiashuju3);list.add(jiashuju4);
         messageList.setAdapter(new SystemMessageAdapter(this, R.layout.activity_system_message, list));
     }
 
@@ -90,44 +96,78 @@ public class SystemMessageActivity extends BaseActivity {
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             final SipSystemMessage sipSystemMessage = getItem(position);
-            ViewHolder holder = null;
-            if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_system_message, null);
-                holder = new ViewHolder();
-                holder.head = (ImageView) convertView.findViewById(R.id.item_system_message_head);
-                holder.type = (TextView) convertView.findViewById(R.id.item_system_message_name);
-                holder.contain = (TextView) convertView.findViewById(R.id.item_system_message_desc);
-                holder.acc = (ImageView) convertView.findViewById(R.id.item_system_message_acc);
-                holder.refuse = (ImageView) convertView.findViewById(R.id.item_system_message_refuse);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
+            if (sipSystemMessage.type == 0) {
+                ViewHolder holder = null;
+                if (convertView == null) {
+                    convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_system_message, null);
+                    holder = new ViewHolder();
+                    holder.head = (ImageView) convertView.findViewById(R.id.item_system_message_head);
+                    holder.type = (TextView) convertView.findViewById(R.id.item_system_message_name);
+                    holder.contain = (TextView) convertView.findViewById(R.id.item_system_message_desc);
+                    holder.acc = (ImageView) convertView.findViewById(R.id.item_system_message_acc);
+                    holder.refuse = (ImageView) convertView.findViewById(R.id.item_system_message_refuse);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder) convertView.getTag();
+                }
+
+
+                holder.contain.setText(sipSystemMessage.assoicatedUser.name + "请求添加你为好友");
+                if (sipSystemMessage.state == 1) {
+                    holder.type.setText("好友请求");
+                    holder.acc.setVisibility(View.VISIBLE);
+                    holder.refuse.setVisibility(View.VISIBLE);
+                    holder.acc.setOnClickListener(view -> {
+
+                        // TODO: 2017/7/13 成功的回调
+                        SipManager.getSipManager().acceptFriendInvite(sipSystemMessage.assoicatedUser.id, new SipNetListener() {
+                            @Override
+                            public void onSuccess(Object response) {
+                                sipSystemMessage.state = 0;
+                                Toast.makeText(context,"操作成功",Toast.LENGTH_SHORT).show();
+                                notifyDataSetChanged();
+                            }
+
+                            @Override
+                            public void onFailure(SipFailure failure) {
+                                Toast.makeText(context,"操作失败，请重试",Toast.LENGTH_SHORT).show();
+                                notifyDataSetChanged();
+                            }
+                        });
+
+                    });
+                    holder.refuse.setOnClickListener(view -> {
+                        // TODO: 2017/7/13 拒绝的回调
+                        SipManager.getSipManager().declineFriendInvite(sipSystemMessage.assoicatedUser.id, new SipNetListener() {
+                            @Override
+                            public void onSuccess(Object response) {
+                                sipSystemMessage.state = 0;
+                                Toast.makeText(context,"操作成功",Toast.LENGTH_SHORT).show();
+                                notifyDataSetChanged();
+                            }
+
+                            @Override
+                            public void onFailure(SipFailure failure) {
+                                Toast.makeText(context,"操作失败，请重试",Toast.LENGTH_SHORT).show();
+                                notifyDataSetChanged();
+                            }
+                        });
+
+                    });
+
+                } else {
+                    holder.type.setText("已处理");
+                    holder.acc.setVisibility(View.INVISIBLE);
+                    holder.refuse.setVisibility(View.INVISIBLE);
+                }
             }
-
-
-            holder.contain.setText(sipSystemMessage.assoicatedUser.name + "请求添加你为好友");
-            if(sipSystemMessage.state == 1) {
-                holder.type.setText("好友请求");
-                holder.acc.setVisibility(View.VISIBLE);
-                holder.refuse.setVisibility(View.VISIBLE);
-                holder.acc.setOnClickListener(view -> {
-                    sipSystemMessage.state = 0;
-                    sipSystemMessage.type = 1;
-                    // TODO: 2017/7/13 成功的回调
-                    this.notifyDataSetChanged();
-                });
-                holder.refuse.setOnClickListener(view -> {
-                    sipSystemMessage.state = 0;
-                    sipSystemMessage.type = 2;
-                    // TODO: 2017/7/13 拒绝的回调
-
-                    this.notifyDataSetChanged();
-                });
-
-            }else {
-                holder.type.setText("已处理");
-                holder.acc.setVisibility(View.INVISIBLE);
-                holder.refuse.setVisibility(View.INVISIBLE);
+            //被接受
+            else if (sipSystemMessage.type == 1) {
+                Toast.makeText(context,sipSystemMessage.assoicatedUser.name+"接受了您的好友请求",Toast.LENGTH_SHORT).show();
+            }
+            //被拒绝
+            else if (sipSystemMessage.type == 2) {
+                Toast.makeText(context,sipSystemMessage.assoicatedUser.name+"拒绝了您的好友请求",Toast.LENGTH_SHORT).show();
             }
             return convertView;
         }
