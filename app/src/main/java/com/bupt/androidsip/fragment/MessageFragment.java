@@ -164,7 +164,7 @@ public class MessageFragment extends BaseFragment {
                             getChatMsgFrom(sipMessages.get(i).content, sipMessages.get(i).to.get(0),
                                     sipMessages.get(i).comeTime));
                 } else {
-                    chatManager.addMsg(i, getChatMsgFrom(sipMessages.get(i).content,
+                    chatManager.addMsg(getPosition(sipMessages.get(i).to.get(0)), getChatMsgFrom(sipMessages.get(i).content,
                             sipMessages.get(i).to.get(0), sipMessages.get(i).comeTime));
                     //直接向list中添加这个message
                 }
@@ -179,13 +179,23 @@ public class MessageFragment extends BaseFragment {
                             getChatMsgTo(sipMessages.get(i).content, sipMessages.get(i).from,
                                     sipMessages.get(i).comeTime));
                 } else {
-                    chatManager.addMsg(i, getChatMsgTo(sipMessages.get(i).content,
+                    chatManager.addMsg(getPosition(sipMessages.get(i).from), getChatMsgTo(sipMessages.get(i).content,
                             sipMessages.get(i).from, sipMessages.get(i).comeTime));
                 }
             }
         }
         chatManager.sortChatMessages();
     }
+
+    public int getPosition(int id) {
+        //返回所属的chat的position
+        for (int i = 0; i < chatList.size(); i++) {
+            if (chatManager.isInList(id))
+                return i;
+        }
+        return 0;
+    }
+
 
     public void setMyAvatar() {
         myAvatar = user.head;
