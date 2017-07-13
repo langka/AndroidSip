@@ -1,5 +1,7 @@
 package com.bupt.androidsip.sip.impl;
 
+import com.bupt.androidsip.mananger.UserManager;
+
 /**
  * Created by xusong on 2017/7/8.
  * About:sip profile,用于初始化sipmanager
@@ -63,7 +65,7 @@ public class SipProfile {
     }
 
     public String getSipUserName() {
-        return sipUserName;
+        return UserManager.getInstance().getUser().id+"";
     }
 
     public void setSipUserName(String sipUserName) {
