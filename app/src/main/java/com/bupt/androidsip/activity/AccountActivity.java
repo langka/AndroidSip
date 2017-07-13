@@ -233,9 +233,9 @@ public class AccountActivity extends BaseActivity {
         if (user.sex.equals("U"))
             initRowView(sexContainer, R.drawable.ic_face_black_30dp, "性别", "未知");
         else if (user.sex.equals("F"))
-            initRowView(sexContainer, R.drawable.ic_face_black_30dp, "性别", "女性");
+            initRowView(sexContainer, R.drawable.ic_face_black_30dp, "性别", "女");
         else if (user.sex.equals("M"))
-            initRowView(sexContainer, R.drawable.ic_face_black_30dp, "性别", "男性");
+            initRowView(sexContainer, R.drawable.ic_face_black_30dp, "性别", "男");
         initRowView(accountIdContainer, R.drawable.ic_perm_identity_black_30dp, "账号ID", "" + user.id);
         initRowView(emailContainer, R.drawable.ic_email_black_30dp, "注册邮箱",
                 user.email);
