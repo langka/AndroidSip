@@ -43,6 +43,7 @@ public class SipUtil {
         //因为现在只有私聊 所以直接add sipChat对象暂时不用
         sipMessage.to.add(chat.ID);
         sipMessage.content = message;
+        sipMessage.from = UserManager.getInstance().getUser().id;
         sipMessage.createTime = System.currentTimeMillis();
         return sipMessage;
     }

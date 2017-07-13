@@ -79,6 +79,7 @@ public class DBManager {
             sipMessage.id = cursor.getInt(cursor.getColumnIndex("_id"));
             user.name = cursor.getString(cursor.getColumnIndex("name"));
             user.id = cursor.getInt(cursor.getColumnIndex("associated"));
+            sipMessage.assoicatedUser = user;
             sipMessage.type = cursor.getInt(cursor.getColumnIndex("type"));
             sipMessage.state = cursor.getInt(cursor.getColumnIndex("dealed"));
             messages.add(sipMessage);
@@ -132,7 +133,7 @@ public class DBManager {
             contentValues.put("belong", -1);
             contentValues.put("content", "hello,world");
             contentValues.put("fromid", 3);
-            contentValues.put("toid", "5");
+            contentValues.put("toid", 5);
             db.insert("message", null, contentValues);
         }
 
@@ -141,12 +142,12 @@ public class DBManager {
     public void save(SipMessage message) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("type", 0);
-        contentValues.put("createTime", System.currentTimeMillis());
-        contentValues.put("comeTime", System.currentTimeMillis());
+        contentValues.put("createTime", message.createTime);
+        contentValues.put("comeTime", -1);
         contentValues.put("belong", -1);
-        contentValues.put("content", "hello,world");
-        contentValues.put("fromid", 3);
-        contentValues.put("toid", 5);
+        contentValues.put("content", message.content);
+        contentValues.put("fromid", message.from);
+        contentValues.put("toid",message.to.get(0));
         db.insert("message", null, contentValues);
     }
 

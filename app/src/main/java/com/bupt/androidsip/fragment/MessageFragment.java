@@ -172,12 +172,16 @@ public class MessageFragment extends BaseFragment {
                 //别人发给我的
                 if (!chatManager.isInList(sipMessages.get(i).from)) {
                     //不在list中，新建chat
-                    chatManager.addChat(new Chat(userManager.searchUser(sipMessages.get(i).from).name,
-                            userManager.searchUser(sipMessages.get(i).from).head, 1,
-                            sipMessages.get(i).content, sipMessages.get(i).from));
-                    chatManager.addMsg(chatManager.getChatList().size() - 1,
-                            getChatMsgTo(sipMessages.get(i).content, sipMessages.get(i).from,
-                                    sipMessages.get(i).comeTime));
+                    try {
+                        chatManager.addChat(new Chat(userManager.searchUser(sipMessages.get(i).from).name,
+                                userManager.searchUser(sipMessages.get(i).from).head, 1,
+                                sipMessages.get(i).content, sipMessages.get(i).from));
+                        chatManager.addMsg(chatManager.getChatList().size() - 1,
+                                getChatMsgTo(sipMessages.get(i).content, sipMessages.get(i).from,
+                                        sipMessages.get(i).comeTime));
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
 
                 } else {
                     chatManager.addMsg(getPosition(sipMessages.get(i).from), getChatMsgTo(sipMessages.get(i).content,

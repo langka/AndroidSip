@@ -54,20 +54,21 @@ public class SystemMessageActivity extends BaseActivity {
         enableLeftImage(R.drawable.ic_arrow_back_24px, e -> finish());
         setTitle("系统消息");
         list = new ArrayList<>();
-        DBManager.getInstance(this).getAllSystemEvents();
         SipSystemMessage jiashuju1 = new SipSystemMessage();
-        jiashuju1.jiashuju(0,"1",5,0,0);
+        jiashuju1.jiashuju(1,"1",5,0,0);
         SipSystemMessage jiashuju2 = new SipSystemMessage();
-        jiashuju2.jiashuju(0,"2",5,0,0);
+        jiashuju2.jiashuju(1,"2",5,0,0);
         SipSystemMessage jiashuju3 = new SipSystemMessage();
         jiashuju3.jiashuju(0,"3",5,0,0);
         SipSystemMessage jiashuju4 = new SipSystemMessage();
         jiashuju4.jiashuju(0,"4",5,0,0);
-        DBManager.getInstance(this).saveEvent(jiashuju1);
-        DBManager.getInstance(this).saveEvent(jiashuju2);
-        DBManager.getInstance(this).saveEvent(jiashuju3);
-        DBManager.getInstance(this).saveEvent(jiashuju4);
+        // TODO: 2017/7/13 数据库访问有问题
+//        DBManager.getInstance(this).saveEvent(jiashuju1);
+//        DBManager.getInstance(this).saveEvent(jiashuju2);
+//        DBManager.getInstance(this).saveEvent(jiashuju3);
+//        DBManager.getInstance(this).saveEvent(jiashuju4);
         list.addAll(DBManager.getInstance(this).getAllSystemEvents());
+        //list.add(jiashuju1);list.add(jiashuju2);list.add(jiashuju3);list.add(jiashuju4);
         messageList.setAdapter(new SystemMessageAdapter(this, R.layout.activity_system_message, list));
     }
 
@@ -91,16 +92,18 @@ public class SystemMessageActivity extends BaseActivity {
             final SipSystemMessage sipSystemMessage = getItem(position);
             ViewHolder holder = null;
             if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(resourceId, null);
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_system_message, null);
                 holder = new ViewHolder();
                 holder.head = (ImageView) convertView.findViewById(R.id.item_system_message_head);
                 holder.type = (TextView) convertView.findViewById(R.id.item_system_message_name);
                 holder.contain = (TextView) convertView.findViewById(R.id.item_system_message_desc);
                 holder.acc = (ImageView) convertView.findViewById(R.id.item_system_message_acc);
                 holder.refuse = (ImageView) convertView.findViewById(R.id.item_system_message_refuse);
+                convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
+
 
             holder.contain.setText(sipSystemMessage.assoicatedUser.name + "请求添加你为好友");
             if(sipSystemMessage.state == 1) {
@@ -129,19 +132,6 @@ public class SystemMessageActivity extends BaseActivity {
             return convertView;
         }
 
-        private View.OnClickListener clickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switch (view.getId()){
-                    case R.id.item_system_message_acc:
-
-                        break;
-                    case R.id.item_system_message_refuse:
-
-                        break;
-                }
-            }
-        };
 
         static class ViewHolder {
             ImageView head;
