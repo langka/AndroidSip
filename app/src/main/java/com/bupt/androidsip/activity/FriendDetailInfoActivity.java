@@ -25,7 +25,7 @@ import static com.bupt.androidsip.R.id.item_profile_text;
  * Created by acer on 2017/7/5.
  */
 
-public class FriendDetailInfoActivity extends BaseActivity  {
+public class FriendDetailInfoActivity extends BaseActivity {
     @BindView(R.id.frag_head_image)
     ImageView headimageContainer;
 
@@ -65,6 +65,10 @@ public class FriendDetailInfoActivity extends BaseActivity  {
         intent = getIntent();
         int friendID = intent.getExtras().getInt("FriendId");
         friend = UserManager.getInstance().searchUser(friendID);
+        if (friendID == UserManager.getInstance().getUser().id) {
+            deleteFriend.setVisibility(View.GONE);
+            chatFriend.setVisibility(View.GONE);
+        }
         initView();
 
     }
@@ -102,7 +106,7 @@ public class FriendDetailInfoActivity extends BaseActivity  {
         sexContainer.setOnClickListener(accountOnClick);
         birthdayContainer.setOnClickListener(accountOnClick);
         constellationContainer.setOnClickListener(accountOnClick);
-        deleteFriend.setOnClickListener((v)->{
+        deleteFriend.setOnClickListener((v) -> {
             // TODO: 2017/7/12  删除好友业务逻辑
             showTextOnDialog("确认删除？", view -> {
                 UserManager.getInstance().deleteFriend(friend.id);
@@ -115,6 +119,7 @@ public class FriendDetailInfoActivity extends BaseActivity  {
             Bundle bundle = new Bundle();
 //            bundle.putParcelable("chat", );
             User user = friend;
+
             if (ChatManager.getChatManager().isInList(user.id))
                 bundle.putParcelable("chat", ChatManager.getChatManager().getChatFromID(user.id));
             else {
