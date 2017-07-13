@@ -88,6 +88,21 @@ public class DBManager {
         return messages;
     }
 
+    public void saveEvent(SipSystemMessage message){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("associated",message.assoicatedUser.id);
+        contentValues.put("name",message.assoicatedUser.name);
+        contentValues.put("type",message.type);
+        contentValues.put("dealed",message.state);
+        db.insert("event",null,contentValues);
+    }
+
+    public void updateState(int id,int state){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("dealed",state);
+        db.update("event",contentValues,"_id=?",new String[]{String.valueOf(id)});
+    }
+
     public List<SipMessage> loadAllMessages() {
         Cursor cursor = db.rawQuery("SELECT * FROM message", null);
         ArrayList<SipMessage> messages = new ArrayList<>();

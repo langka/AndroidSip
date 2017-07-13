@@ -58,6 +58,7 @@ import com.bupt.androidsip.entity.response.SipSendMsgResponse;
 import com.bupt.androidsip.entity.sip.SipFailure;
 import com.bupt.androidsip.entity.sip.SipMessage;
 import com.bupt.androidsip.entity.sip.SipSystemMessage;
+import com.bupt.androidsip.mananger.DBManager;
 import com.bupt.androidsip.sip.ISipService;
 import com.bupt.androidsip.sip.SipMessageListener;
 import com.bupt.androidsip.sip.SipNetListener;
@@ -200,6 +201,7 @@ public class SipManager implements ISipService {
                 response.offlineMessages = messages;
                 handler.post(() -> listener.onSuccess(response));
                 sendSubScribeForFriendState();
+                establishDialog();
             } catch (JSONException e) {
                 handler.post(() -> listener.onFailure(new SipFailure("无法解析的json串!")));
                 e.printStackTrace();
@@ -314,7 +316,10 @@ public class SipManager implements ISipService {
                             SipMessage sipMessage = SipMessage.createFromJson(object);
                             handler.post(() -> messageListener.onNewMessage(sipMessage));
                         } else {//这是一条系统消息
+                            // TODO: 2017/7/13
                             SipSystemMessage message = SipSystemMessage.createFromJson(service, object);
+                            DBManager.getInstance(context).saveEvent(message);
+                            handler.post(()->systemListener.onNewSystemEvent(message));
                         }
                 }
             } catch (JSONException e) {
