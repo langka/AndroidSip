@@ -128,10 +128,10 @@ public class DBManager {
         for (SipMessage sipMessage : messages) {
             ContentValues contentValues = new ContentValues();
             contentValues.put("type", 0);
-            contentValues.put("createTime", System.currentTimeMillis());
-            contentValues.put("comeTime", System.currentTimeMillis());
+            contentValues.put("createTime", sipMessage.createTime);
+            contentValues.put("comeTime", sipMessage.comeTime);
             contentValues.put("belong", -1);
-            contentValues.put("content", "hello,world");
+            contentValues.put("content", sipMessage.content);
             contentValues.put("fromid", 3);
             contentValues.put("toid", 5);
             db.insert("message", null, contentValues);

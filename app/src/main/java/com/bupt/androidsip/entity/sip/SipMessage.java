@@ -39,7 +39,7 @@ public class SipMessage {
             e.printStackTrace();
             message.createTime = -1;
         }
-        message.comeTime = System.currentTimeMillis();
+        message.comeTime = System.currentTimeMillis()/1000;
         try {
             message.content = object.getString("content");
         } catch (JSONException e) {
