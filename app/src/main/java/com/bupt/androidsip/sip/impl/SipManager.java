@@ -151,18 +151,18 @@ public class SipManager implements ISipService {
 
     //对于一个序号message线程，要阻塞至它的response成功返回
     ConcurrentHashMap<Long, TaskListener> taskListeners;
-    AtomicLong seq = new AtomicLong(0);
+    AtomicLong seq = new AtomicLong(1);
 
     private void setUpDialog() {
 
     }
 
-    private void send200Ok(RequestEvent event){
+    private void send200Ok(RequestEvent event) {
         Response response;
         try {
             response = messageFactory.createResponse(200,
                     event.getRequest());
-            new Thread(()->{
+            new Thread(() -> {
                 try {
                     ServerTransaction serverTransaction = event
                             .getServerTransaction();
@@ -228,7 +228,7 @@ public class SipManager implements ISipService {
                 handler.post(() -> listener.onFailure(new SipFailure("无法解析的json串!")));
                 e.printStackTrace();
             }
-        } else if (status == 404) {
+        } else if (status == 401) {
             byte[] reasonb = (byte[]) event.getResponse().getContent();
             String reason = new String(reasonb);
             handler.post(() -> listener.onFailure(new SipFailure(reason)));
@@ -326,19 +326,25 @@ public class SipManager implements ISipService {
 
     private void processInviteResponse(ResponseEvent event) {
         if (event.getResponse().getStatusCode() == 200) {
-
             Response response = event.getResponse();
             CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
+            ClientTransaction tid = event.getClientTransaction();
+            if (tid != null)
+                dialog = tid.getDialog();
+            else dialog = event.getDialog();
+            dialog = event.getDialog();
             handler.post(() -> Toast.makeText(context, "建立与服务器会话", Toast.LENGTH_SHORT).show());
             if (dialog != null) {
-                Request request = null;
-                try {
-                    request = dialog.createAck(cseq.getSeqNumber());
-                    dialog.sendAck(request);
-                } catch (InvalidArgumentException | SipException e) {
-                    e.printStackTrace();
-                    handler.post(() -> Toast.makeText(context, "ACK异常", Toast.LENGTH_SHORT).show());
-                }
+                new Thread(() -> {
+                    try {
+                        Request r = tid.createAck();
+                        event.getDialog().sendAck(r);
+                    } catch (SipException e) {
+                        handler.post(() -> Toast.makeText(context, "ACK异常", Toast.LENGTH_SHORT).show());
+                        e.printStackTrace();
+                    }
+                }).start();
+
             }
         } else {
             byte[] dd = event.getResponse().getRawContent();
@@ -392,9 +398,14 @@ public class SipManager implements ISipService {
         public void processResponse(ResponseEvent responseEvent) {
             Log.d(TAG, "收到response");
             int status = responseEvent.getResponse().getStatusCode();
+            if(responseEvent.getClientTransaction().getRequest().getMethod().equals(Request.BYE)){
+                handler.post(()-> Toast.makeText(context,"disconnected",Toast.LENGTH_SHORT).show());
+                return;
+            }
             if (status >= 200) {
                 CSeqHeader header = (CSeqHeader) responseEvent.getResponse().getHeader("CSeq");
                 long local = header.getSeqNumber();
+                
                 TaskListener listener = taskListeners.remove(local);
                 if (listener != null) {
                     switch (listener.type) {
@@ -416,12 +427,12 @@ public class SipManager implements ISipService {
                             processAcceptFriendResponse(responseEvent, listener.listener);
                         case SEARCH:
                             processSearchResponse(responseEvent, listener.listener);
+                        case INVITE:
+                            processInviteResponse(responseEvent);
                     }
-                } else if (listener.type.equals(SipTaskType.INVITE)) {
-                    processInviteResponse(responseEvent);
                 }
             } else {
-                handler.post(() -> Toast.makeText(context, "正在处理", Toast.LENGTH_SHORT).show());
+                // handler.post(() -> Toast.makeText(context, "正在处理", Toast.LENGTH_SHORT).show());
             }
         }
 
@@ -600,11 +611,9 @@ public class SipManager implements ISipService {
         try {
             JSONObject jsonObject = new JSONObject();
             Request request = requestBuilder.buildInvite(jsonObject, current);
+            taskListeners.put(current, new TaskListener(null, SipTaskType.INVITE));
             ClientTransaction trans = sipProvider.getNewClientTransaction(request);
-            if (trans.getDialog() != null) {
-                this.dialog = trans.getDialog();
-                Log.d(TAG, "GOT THE DIALOG");
-            }
+            //dialog = trans.getDialog();
             try {
                 taskQueue.put(new SipTask(() -> {
                     try {
@@ -634,12 +643,12 @@ public class SipManager implements ISipService {
                 dealRequest(request, SipTaskType.BYE, new SipNetListener() {
                     @Override
                     public void onSuccess(Object response) {
-
+                       handler.post(()-> Toast.makeText(context,"disconnected",Toast.LENGTH_SHORT).show());
                     }
 
                     @Override
                     public void onFailure(SipFailure failure) {
-
+                        handler.post(()-> Toast.makeText(context,"can't disconenct",Toast.LENGTH_SHORT).show());
                     }
                 });
             } catch (SipException e) {
@@ -837,8 +846,10 @@ public class SipManager implements ISipService {
         try {
             taskQueue.put(new SipTask(() -> {
                 try {
+
                     ClientTransaction transaction = this.sipProvider.getNewClientTransaction(request);
                     transaction.sendRequest();
+
                 } catch (SipException e) {
                     handler.post(() -> listener.onFailure(new SipFailure("Sip访问出现异常")));
                     e.printStackTrace();
