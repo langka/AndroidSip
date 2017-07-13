@@ -148,10 +148,10 @@ public class LoginActivity extends BaseActivity {
                         userManager.searchUser(sipMessages.get(i).from).head, 1,
                         sipMessages.get(i).content, sipMessages.get(i).from));
                 chatManager.addMsgWithUnread(chatManager.getChatList().size() - 1,
-                        getChatMsgTo(sipMessages.get(i).content, sipMessages.get(i).from,
+                        getChatMsgFrom(sipMessages.get(i).content, sipMessages.get(i).from,
                                 sipMessages.get(i).comeTime));
             } else
-                chatManager.addMsgWithUnread(getPosition(sipMessages.get(i).from), getChatMsgTo(sipMessages.get(i).content,
+                chatManager.addMsgWithUnread(getPosition(sipMessages.get(i).from), getChatMsgFrom(sipMessages.get(i).content,
                         sipMessages.get(i).from, sipMessages.get(i).comeTime));
 
 

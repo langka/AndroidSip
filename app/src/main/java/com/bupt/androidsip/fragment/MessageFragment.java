@@ -161,10 +161,10 @@ public class MessageFragment extends BaseFragment {
                             sipMessages.get(i).content, sipMessages.get(i).to.get(0)));
                     //添加此条message
                     chatManager.addMsgFromMe(chatManager.getChatList().size() - 1,
-                            getChatMsgFrom(sipMessages.get(i).content, sipMessages.get(i).to.get(0),
+                            getChatMsgTo(sipMessages.get(i).content, sipMessages.get(i).to.get(0),
                                     sipMessages.get(i).comeTime));
                 } else {
-                    chatManager.addMsgFromMe(chatManager.getPosition(sipMessages.get(i).to.get(0)), getChatMsgFrom(sipMessages.get(i).content,
+                    chatManager.addMsgFromMe(chatManager.getPosition(sipMessages.get(i).to.get(0)), getChatMsgTo(sipMessages.get(i).content,
                             sipMessages.get(i).to.get(0), sipMessages.get(i).comeTime));
                     //直接向list中添加这个message
                 }
@@ -177,14 +177,14 @@ public class MessageFragment extends BaseFragment {
                             userManager.searchUser(sipMessages.get(i).from).head, 1,
                             sipMessages.get(i).content, sipMessages.get(i).from));
                     chatManager.addMsg(chatManager.getChatList().size() - 1,
-                            getChatMsgTo(sipMessages.get(i).content, sipMessages.get(i).from,
+                            getChatMsgFrom(sipMessages.get(i).content, sipMessages.get(i).from,
                                     sipMessages.get(i).comeTime));
                     } catch (NullPointerException e) {
                         e.printStackTrace();
                     }
 
                 } else {
-                    chatManager.addMsg(chatManager.getPosition(sipMessages.get(i).from), getChatMsgTo(sipMessages.get(i).content,
+                    chatManager.addMsg(chatManager.getPosition(sipMessages.get(i).from), getChatMsgFrom(sipMessages.get(i).content,
                             sipMessages.get(i).from, sipMessages.get(i).comeTime));
                 }
             }
