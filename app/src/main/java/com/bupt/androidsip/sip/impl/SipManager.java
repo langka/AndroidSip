@@ -269,6 +269,23 @@ public class SipManager implements ISipService {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                if(messages.size()>=0){
+                    DBManager.getInstance(context).save(messages);
+                }
+                List<SipSystemMessage> sipSystemMessages = new ArrayList<>();
+                try {
+                    JSONArray sys = object.getJSONArray("sys");
+                    for (int i = 0; i < sys.length(); i++) {
+                        JSONObject jsonObject = sys.getJSONObject(i);
+                        String service = jsonObject.getString("service");
+                        sipSystemMessages.add(SipSystemMessage.createFromJson(service,jsonObject));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                for(SipSystemMessage sipSystemMessage:sipSystemMessages){
+                    DBManager.getInstance(context).saveEvent(sipSystemMessage);
+                }
                 response.offlineMessages = messages;
                 handler.post(() -> listener.onSuccess(response));
                 sendSubScribeForFriendState();
@@ -415,6 +432,7 @@ public class SipManager implements ISipService {
 
         @Override
         public void processRequest(RequestEvent requestEvent) {
+            send200Ok(requestEvent);
             handler.post(() -> Toast.makeText(context, "收到request", Toast.LENGTH_SHORT).show());
             Request request = requestEvent.getRequest();
             byte[] dd = request.getRawContent();
@@ -423,7 +441,7 @@ public class SipManager implements ISipService {
                 switch (request.getMethod()) {
                     case Request.MESSAGE:
                         JSONObject object = new JSONObject(x);
-                        send200Ok(requestEvent);
+
                         String service = object.getString("service");
                         if (service.equals(SERVICE_CHAT)) {//这是一条普通的message
                             SipMessage sipMessage = SipMessage.createFromJson(object);

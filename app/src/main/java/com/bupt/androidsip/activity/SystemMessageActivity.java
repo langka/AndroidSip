@@ -56,14 +56,6 @@ public class SystemMessageActivity extends BaseActivity {
         enableLeftImage(R.drawable.ic_arrow_back_24px, e -> finish());
         setTitle("系统消息");
         list = new ArrayList<>();
-        SipSystemMessage jiashuju1 = new SipSystemMessage();
-        jiashuju1.jiashuju(0, "1", 5, 1, 0);
-        SipSystemMessage jiashuju2 = new SipSystemMessage();
-        jiashuju2.jiashuju(0, "2", 5, 1, 0);
-        SipSystemMessage jiashuju3 = new SipSystemMessage();
-        jiashuju3.jiashuju(0, "3", 5, 0, 0);
-        SipSystemMessage jiashuju4 = new SipSystemMessage();
-        jiashuju4.jiashuju(0, "4", 5, 0, 0);
 
 //        DBManager.getInstance(this).saveEvent(jiashuju2);
 //        DBManager.getInstance(this).saveEvent(jiashuju1);

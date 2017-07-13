@@ -170,7 +170,22 @@ public class DBManager {
         db.execSQL(sql2);
     }
 
-    public void restoreSystemMessage(List list){}
+    public void restoreSystemMessage(List<SipSystemMessage> list){
+        String sql1 ="delete from event";
+        String sql2 = "update sqlite_sequence SET seq = 0 where name ='event'";
+        db.execSQL(sql1);
+        db.execSQL(sql2);
+        if(list!=null){
+            for(SipSystemMessage message:list){
+                ContentValues contentValues = new ContentValues();
+                contentValues.put("associated",message.assoicatedUser.id);
+                contentValues.put("name",message.assoicatedUser.name);
+                contentValues.put("type",message.type);
+                contentValues.put("dealed",message.state);
+                db.insert("event",null,contentValues);
+            }
+        }
+    }
 
 
 }

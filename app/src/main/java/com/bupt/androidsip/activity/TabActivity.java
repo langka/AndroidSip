@@ -22,7 +22,10 @@ import com.bupt.androidsip.R;
 import com.bupt.androidsip.entity.Chat;
 import com.bupt.androidsip.entity.EventConst;
 import com.bupt.androidsip.entity.Message;
+import com.bupt.androidsip.entity.User;
+import com.bupt.androidsip.entity.sip.SipEvent;
 import com.bupt.androidsip.entity.sip.SipMessage;
+import com.bupt.androidsip.entity.sip.SipSystemMessage;
 import com.bupt.androidsip.fragment.FriendFragment;
 import com.bupt.androidsip.fragment.MeFragment;
 import com.bupt.androidsip.fragment.MessageFragment;
@@ -31,7 +34,9 @@ import com.bupt.androidsip.mananger.ChatManager;
 import com.bupt.androidsip.mananger.DBManager;
 import com.bupt.androidsip.mananger.EventManager;
 import com.bupt.androidsip.mananger.UserManager;
+import com.bupt.androidsip.sip.SipSystemListener;
 import com.bupt.androidsip.sip.impl.SipManager;
+import com.bupt.androidsip.util.VibratorUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -85,6 +90,23 @@ public class TabActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tab);
         ButterKnife.bind(this);
+        SipManager.getSipManager().setSystemListener(new SipSystemListener() {
+            @Override
+            public void onNewSystemEvent(SipSystemMessage message) {
+                VibratorUtils.Vibrate(TabActivity.this,500);
+                Toast.makeText(TabActivity.this,"你有新的系统消息",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFriendInfoChange(User friend) {
+
+            }
+
+            @Override
+            public void onServerEvent(SipEvent event) {
+
+            }
+        });
         dbManager= DBManager.getInstance(this);
         initData();
         initView();
