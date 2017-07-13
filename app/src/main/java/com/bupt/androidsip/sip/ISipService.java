@@ -1,5 +1,6 @@
 package com.bupt.androidsip.sip;
 
+import com.bupt.androidsip.entity.response.BaseResponse;
 import com.bupt.androidsip.entity.response.SipLoginResponse;
 import com.bupt.androidsip.entity.response.SipModifyUserInfoResponse;
 import com.bupt.androidsip.entity.response.SipRegisterResponse;
@@ -35,5 +36,6 @@ public interface ISipService {
 
     void searchUsers(String key, SipNetListener<SipSearchResponse> listener);
 
+    void deleteFriend(int id, SipNetListener<BaseResponse> listener);
 
 }

@@ -178,6 +178,7 @@ public class LoginActivity extends BaseActivity {
         Message msg = new Message();
         msg.content = message;
         msg.fromOrTo = 0;
+        msg.ID = ID;
         msg.rightAvatar = UserManager.getInstance().getUser().head;
         msg.leftAvatar = getUserAvatarFromID(ID);
         msg.time = time;
@@ -188,6 +189,7 @@ public class LoginActivity extends BaseActivity {
         Message msg = new Message();
         msg.content = message;
         msg.fromOrTo = 1;
+        msg.ID = ID;
         msg.rightAvatar = UserManager.getInstance().getUser().head;
         msg.leftAvatar = getUserAvatarFromID(ID);
         msg.time = time;

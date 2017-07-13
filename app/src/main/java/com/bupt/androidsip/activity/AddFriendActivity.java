@@ -59,6 +59,7 @@ public class AddFriendActivity extends BaseActivity {
         ButterKnife.bind(this);
         List<User> friendlist = new ArrayList<>();
         friendListAdapter = new AddFriendListAdapter(this, R.layout.item_friend_add, friendlist);
+       // friendlist.add(initJiashuju());
         searchtext.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
@@ -88,21 +89,29 @@ public class AddFriendActivity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 User user = friendListAdapter.getItem(i);
-                // TODO: 2017/7/13 发送添加好友请求
-               // UserManager.getInstance().addfriend(??);
+                SipManager.getSipManager().addFriend(user.id, new SipNetListener() {
+                    @Override
+                    public void onSuccess(Object response) {
+                        showText("好友请求已发送");
+                    }
 
-                showText("好友请求已发送");
+                    @Override
+                    public void onFailure(SipFailure failure) {
+                        showText("好友请求发送失败");
+                    }
+                });
+
             }
         });
 
     }
 
-//    private User initJiashuju(){
-//        User jiashuju = new User();
-//        jiashuju.id=1;
-//        jiashuju.name="123";
-//        return jiashuju;
-//    }
+    private User initJiashuju(){
+        User jiashuju = new User();
+        jiashuju.id=1;
+        jiashuju.name="123";
+        return jiashuju;
+    }
 
     //搜索用户信息
     private void search() {

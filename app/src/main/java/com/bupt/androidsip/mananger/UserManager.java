@@ -46,6 +46,7 @@ public class UserManager {
     // TODO: 2017/7/12 删除好友
     public boolean deleteFriend(int id) {
         User temp = user.friends.get(id-1);
+
         user.friends.remove(temp);
         return true;
     }
