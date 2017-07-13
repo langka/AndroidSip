@@ -12,6 +12,7 @@ import android.javax.sip.ObjectInUseException;
 import android.javax.sip.PeerUnavailableException;
 import android.javax.sip.RequestEvent;
 import android.javax.sip.ResponseEvent;
+import android.javax.sip.ServerTransaction;
 import android.javax.sip.SipException;
 import android.javax.sip.SipFactory;
 import android.javax.sip.SipListener;
@@ -100,7 +101,7 @@ public class SipManager implements ISipService {
     public static final String SERVICE_CHAT = "private_chat";
     public static final String SERVICE_DECLINE = "decline_friend";
     public static final String SERVICE_ACC = "acc_friend";
-    public static final String SERVICE_SEARCH="search";
+    public static final String SERVICE_SEARCH = "search";
 
     public static final String TAG = "sipmanagertag";
     private static SipManager sipManager;
@@ -156,14 +157,35 @@ public class SipManager implements ISipService {
 
     }
 
+    private void send200Ok(RequestEvent event){
+        Response response;
+        try {
+            response = messageFactory.createResponse(200,
+                    event.getRequest());
+            new Thread(()->{
+                try {
+                    ServerTransaction serverTransaction = event
+                            .getServerTransaction();
+                    if (serverTransaction == null) {
+                        serverTransaction = sipProvider
+                                .getNewServerTransaction(event.getRequest());
+                    }
+                    serverTransaction.sendResponse(response);
+                } catch (SipException | InvalidArgumentException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void processMessageResponse(ResponseEvent event, SipNetListener<SipSendMsgResponse> listener) {
         if (event.getResponse().getStatusCode() == 200) {
-            try {
-                JSONArray array = new JSONArray(event.getResponse().getContent());
-            } catch (JSONException e) {
-                handler.post(() -> listener.onFailure(new SipFailure("无法解析的json串!")));
-                e.printStackTrace();
-            }
+            handler.post(() -> listener.onSuccess(new SipSendMsgResponse()));
+
         } else handler.post(() -> listener.onFailure(new SipFailure("status code != 200")));
         ;
 
@@ -267,7 +289,7 @@ public class SipManager implements ISipService {
         }
     }
 
-    private void processSearchResponse(ResponseEvent event,SipNetListener<SipSearchResponse> listener){
+    private void processSearchResponse(ResponseEvent event, SipNetListener<SipSearchResponse> listener) {
         byte[] dd = event.getResponse().getRawContent();
         String x = new String(dd);
         try {
@@ -277,12 +299,12 @@ public class SipManager implements ISipService {
                 try {
                     JSONArray users = jsonObject.getJSONArray("users");
                     List<User> applied = new ArrayList<>();
-                    for(int i=0;i<users.length();i++){
+                    for (int i = 0; i < users.length(); i++) {
                         User s = User.createFromJson(users.getJSONObject(i));
                         applied.add(s);
                     }
                     res.users = applied;
-                    handler.post(()->listener.onSuccess(res));
+                    handler.post(() -> listener.onSuccess(res));
                 } catch (JSONException e) {
                     handler.post(() -> listener.onFailure(new SipFailure("异常故障，请稍后重试")));
                     e.printStackTrace();
@@ -308,7 +330,7 @@ public class SipManager implements ISipService {
             Response response = event.getResponse();
             CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
             handler.post(() -> Toast.makeText(context, "建立与服务器会话", Toast.LENGTH_SHORT).show());
-            if(dialog!=null){
+            if (dialog != null) {
                 Request request = null;
                 try {
                     request = dialog.createAck(cseq.getSeqNumber());
@@ -346,6 +368,7 @@ public class SipManager implements ISipService {
                 switch (request.getMethod()) {
                     case Request.MESSAGE:
                         JSONObject object = new JSONObject(x);
+                        send200Ok(requestEvent);
                         String service = object.getString("service");
                         if (service.equals(SERVICE_CHAT)) {//这是一条普通的message
                             SipMessage sipMessage = SipMessage.createFromJson(object);
@@ -354,7 +377,7 @@ public class SipManager implements ISipService {
                             // TODO: 2017/7/13
                             SipSystemMessage message = SipSystemMessage.createFromJson(service, object);
                             DBManager.getInstance(context).saveEvent(message);
-                            handler.post(()->systemListener.onNewSystemEvent(message));
+                            handler.post(() -> systemListener.onNewSystemEvent(message));
                         }
                 }
             } catch (JSONException e) {
@@ -391,10 +414,9 @@ public class SipManager implements ISipService {
                         case ACCFRIEND:
                             processAcceptFriendResponse(responseEvent, listener.listener);
                         case SEARCH:
-                            processSearchResponse(responseEvent,listener.listener);
+                            processSearchResponse(responseEvent, listener.listener);
                     }
-                }
-                else if(listener.type.equals(SipTaskType.INVITE)){
+                } else if (listener.type.equals(SipTaskType.INVITE)) {
                     processInviteResponse(responseEvent);
                 }
             } else {
@@ -604,8 +626,8 @@ public class SipManager implements ISipService {
         }
     }
 
-    public  void bye(){
-        if(dialog!=null){
+    public void bye() {
+        if (dialog != null) {
             try {
                 Request request = dialog.createRequest(Request.BYE);
                 dealRequest(request, SipTaskType.BYE, new SipNetListener() {
@@ -839,7 +861,7 @@ public class SipManager implements ISipService {
     }
 
     enum SipTaskType {
-        MESSAGE, LOGIN, SUBFRIEND, ADDFRIEND, DECLINEFRIEND, ACCFRIEND, INVITE,BYE,
+        MESSAGE, LOGIN, SUBFRIEND, ADDFRIEND, DECLINEFRIEND, ACCFRIEND, INVITE, BYE,
         SEARCH
     }
 
