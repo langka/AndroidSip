@@ -51,7 +51,7 @@ public class SettingsActivity extends BaseActivity {
     RelativeLayout logoutContainer;
     //这里有问题
     ChatManager chatManager = ChatManager.getChatManager();
-    DBManager dbManager = DBManager.getInstance(this);
+    DBManager dbManager = null;
     SharedPreferences pref = null;
     SharedPreferences.Editor editor = null;
 
@@ -69,7 +69,6 @@ public class SettingsActivity extends BaseActivity {
                     showBottomDialog(Arrays.asList("震动", "静音"), Arrays.asList(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            // TODO: 02/07/2017 添加更改通知方式操作
                             editor.putBoolean("isShock", isShock);
                             editor.commit();
                         }
@@ -85,7 +84,6 @@ public class SettingsActivity extends BaseActivity {
                     showBottomDialog(Arrays.asList("开启", "关闭"), Arrays.asList(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            // TODO: 02/07/2017 添加更改发送方式的操作
                             editor.putBoolean("pushEnterToSend", pushEnterToSend);
                             editor.commit();
                         }
@@ -102,10 +100,10 @@ public class SettingsActivity extends BaseActivity {
                     chatManager.removeAllChat();
                     //删除本地服务器上的缓存消息
                     for (int i = 0; i < chatManager.getChatList().size(); ++i) {
+                        //下面得到的ID是与自己聊天的那个人的ID
                         dbManager.delete(chatManager.getChatList().get(i).ID);
                     }
                     showText("清理成功！");
-                    // TODO: 08/07/2017 清空本地聊天信息缓存
                     break;
                 case R.id.frag_change_password:
                     showInputDialog("变更", "请输入新密码", e -> {
@@ -140,6 +138,7 @@ public class SettingsActivity extends BaseActivity {
         setTitle("设置");
         pref = getSharedPreferences("MySettings", MODE_PRIVATE);
         editor = pref.edit();
+        dbManager = DBManager.getInstance(this);
         ActivityManager.getActivityManager().addActivity(this);
         initView();
     }

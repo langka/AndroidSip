@@ -11,7 +11,10 @@ import android.widget.TextView;
 
 import com.bupt.androidsip.R;
 import com.bupt.androidsip.entity.User;
+import com.bupt.androidsip.entity.response.SipModifyUserInfoResponse;
+import com.bupt.androidsip.entity.sip.SipFailure;
 import com.bupt.androidsip.mananger.UserManager;
+import com.bupt.androidsip.sip.SipNetListener;
 import com.bupt.androidsip.sip.impl.SipManager;
 
 import java.text.SimpleDateFormat;
@@ -71,11 +74,20 @@ public class AccountActivity extends BaseActivity {
                             showText("内容为空");
                         else {
                             user.name = e.toString();
-                            sipManager.modifyUserInfo(user);
-                            TextView tv = (TextView) v.findViewById(R.id.frag_nickname).
-                                    findViewById(R.id.item_profile_righttext);
-                            tv.setText(e);
-                            showText("保存成功！");
+                            sipManager.modifyUserInfo(user, new SipNetListener<SipModifyUserInfoResponse>() {
+                                @Override
+                                public void onSuccess(SipModifyUserInfoResponse response) {
+                                    TextView tv = (TextView) v.findViewById(R.id.frag_nickname).
+                                            findViewById(R.id.item_profile_righttext);
+                                    tv.setText(e);
+                                    showText("保存成功！");
+                                }
+
+                                @Override
+                                public void onFailure(SipFailure failure) {
+                                    showText(failure.reason);
+                                }
+                            });
                         }
                     });
                     break;
@@ -85,11 +97,20 @@ public class AccountActivity extends BaseActivity {
                             showText("保存成功！");
                         else {
                             user.description = e.toString();
-                            sipManager.modifyUserInfo(user);
-                            TextView tv = (TextView) v.findViewById(R.id.frag_description).
-                                    findViewById(R.id.item_profile_righttext);
-                            tv.setText(e);
-                            showText("保存成功！");
+                            sipManager.modifyUserInfo(user, new SipNetListener<SipModifyUserInfoResponse>() {
+                                @Override
+                                public void onSuccess(SipModifyUserInfoResponse response) {
+                                    TextView tv = (TextView) v.findViewById(R.id.frag_description).
+                                            findViewById(R.id.item_profile_righttext);
+                                    tv.setText(e);
+                                    showText("保存成功！");
+                                }
+
+                                @Override
+                                public void onFailure(SipFailure failure) {
+                                    showText(failure.reason);
+                                }
+                            });
                         }
                     });
                     break;
@@ -98,26 +119,43 @@ public class AccountActivity extends BaseActivity {
                         @Override
                         public void onClick(View view) {
                             user.sex = "男";
-                            sipManager.modifyUserInfo(user);
-                            TextView tv = (TextView) v.findViewById(R.id.frag_sex).
-                                    findViewById(R.id.item_profile_righttext);
-                            tv.setText("男");
-                            showText("保存成功！");
+                            sipManager.modifyUserInfo(user, new SipNetListener<SipModifyUserInfoResponse>() {
+                                @Override
+                                public void onSuccess(SipModifyUserInfoResponse response) {
+                                    TextView tv = (TextView) v.findViewById(R.id.frag_sex).
+                                            findViewById(R.id.item_profile_righttext);
+                                    tv.setText("男");
+                                    showText("保存成功！");
+                                }
+
+                                @Override
+                                public void onFailure(SipFailure failure) {
+                                    showText(failure.reason);
+                                }
+                            });
                         }
                     }, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             user.sex = "女";
-                            sipManager.modifyUserInfo(user);
-                            TextView tv = (TextView) v.findViewById(R.id.frag_sex).
-                                    findViewById(R.id.item_profile_righttext);
-                            tv.setText("女");
-                            showText("保存成功！");
+                            sipManager.modifyUserInfo(user, new SipNetListener<SipModifyUserInfoResponse>() {
+                                @Override
+                                public void onSuccess(SipModifyUserInfoResponse response) {
+                                    TextView tv = (TextView) v.findViewById(R.id.frag_sex).
+                                            findViewById(R.id.item_profile_righttext);
+                                    tv.setText("女");
+                                    showText("保存成功！");
+                                }
+
+                                @Override
+                                public void onFailure(SipFailure failure) {
+                                    showText(failure.reason);
+                                }
+                            });
                         }
                     }));
                     break;
                 case R.id.frag_account_id:
-                    // TODO: 02/07/2017 添加一个统一的通知板
                     showText("此项无法更改。");
                     break;
                 case R.id.frag_email:
