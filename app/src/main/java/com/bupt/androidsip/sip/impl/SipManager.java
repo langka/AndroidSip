@@ -50,6 +50,7 @@ import android.webkit.ClientCertRequest;
 import android.widget.Toast;
 
 import com.bupt.androidsip.entity.User;
+import com.bupt.androidsip.entity.response.BaseResponse;
 import com.bupt.androidsip.entity.response.SipAcceptResponse;
 import com.bupt.androidsip.entity.response.SipAddResponse;
 import com.bupt.androidsip.entity.response.SipDeclineResponse;
@@ -916,6 +917,11 @@ public class SipManager implements ISipService {
             handler.post(() -> listener.onFailure(new SipFailure("sip消息格式有误")));
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void deleteFriend(int id, SipNetListener<BaseResponse> listener) {
+        
     }
 
     private void dealRequest(Request request, SipTaskType taskType, SipNetListener listener) {
