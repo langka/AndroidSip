@@ -741,6 +741,7 @@ public class SipRequestBuilder {
         JSONObject object = new JSONObject();
         try {
             object.put("service",SipManager.SERVICE_CHAT);
+            object.put("type","plain-text");
             object.put("from", sipMessage.from);
             JSONArray array = new JSONArray();
             for (int i = 0; i < sipMessage.to.size(); i++) {
@@ -749,7 +750,6 @@ public class SipRequestBuilder {
             object.put("to", array.get(0));
             object.put("create_time", sipMessage.createTime);
             object.put("belong", sipMessage.belong);
-            object.put("type", sipMessage.type);
             object.put("content", sipMessage.content);
         } catch (JSONException e) {
             Log.d(TAG, "error message trans to json ");

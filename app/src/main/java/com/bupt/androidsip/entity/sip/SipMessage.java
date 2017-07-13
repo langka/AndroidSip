@@ -26,7 +26,9 @@ public class SipMessage {
     public static SipMessage createFromJson(JSONObject object){
         SipMessage message = new SipMessage();
         try {
-            message.type = object.getInt("type");
+            String type = object.getString("type");
+            if(type.equals("plain-text"))
+                message.type = 0;
         } catch (JSONException e) {
             e.printStackTrace();
             message.type = 0;
