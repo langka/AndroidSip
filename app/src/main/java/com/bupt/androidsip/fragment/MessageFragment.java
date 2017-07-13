@@ -160,11 +160,11 @@ public class MessageFragment extends BaseFragment {
                             userManager.searchUser(sipMessages.get(i).to.get(0)).head, 1,
                             sipMessages.get(i).content, sipMessages.get(i).to.get(0)));
                     //添加此条message
-                    chatManager.addMsg(chatManager.getChatList().size() - 1,
+                    chatManager.addMsgFromMe(chatManager.getChatList().size() - 1,
                             getChatMsgFrom(sipMessages.get(i).content, sipMessages.get(i).to.get(0),
                                     sipMessages.get(i).comeTime));
                 } else {
-                    chatManager.addMsg(getPosition(sipMessages.get(i).to.get(0)), getChatMsgFrom(sipMessages.get(i).content,
+                    chatManager.addMsgFromMe(chatManager.getPosition(sipMessages.get(i).to.get(0)), getChatMsgFrom(sipMessages.get(i).content,
                             sipMessages.get(i).to.get(0), sipMessages.get(i).comeTime));
                     //直接向list中添加这个message
                 }
@@ -172,20 +172,19 @@ public class MessageFragment extends BaseFragment {
                 //别人发给我的
                 if (!chatManager.isInList(sipMessages.get(i).from)) {
                     //不在list中，新建chat
-                    try {
-                        chatManager.addChat(new Chat(userManager.searchUser(sipMessages.get(i).from).name,
-                                userManager.searchUser(sipMessages.get(i).from).head, 1,
-                                sipMessages.get(i).content, sipMessages.get(i).from));
-                        chatManager.addMsg(chatManager.getChatList().size() - 1,
-                                getChatMsgTo(sipMessages.get(i).content, sipMessages.get(i).from,
-                                        sipMessages.get(i).comeTime));
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    }
+//                    try {
+                    chatManager.addChat(new Chat(userManager.searchUser(sipMessages.get(i).from).name,
+                            userManager.searchUser(sipMessages.get(i).from).head, 1,
+                            sipMessages.get(i).content, sipMessages.get(i).from));
+                    chatManager.addMsg(chatManager.getChatList().size() - 1,
+                            getChatMsgTo(sipMessages.get(i).content, sipMessages.get(i).from,
+                                    sipMessages.get(i).comeTime));
+//                    } catch (NullPointerException e) {
+//                        e.printStackTrace();
+//                    }
 
                 } else {
-                    chatManager.addMsg(getPosition(sipMessages.get(i).from), getChatMsgTo(sipMessages.get(i).content,
-
+                    chatManager.addMsg(chatManager.getPosition(sipMessages.get(i).from), getChatMsgTo(sipMessages.get(i).content,
                             sipMessages.get(i).from, sipMessages.get(i).comeTime));
                 }
             }
@@ -193,14 +192,14 @@ public class MessageFragment extends BaseFragment {
         chatManager.sortChatMessages();
     }
 
-    public int getPosition(int id) {
-        //返回所属的chat的position
-        for (int i = 0; i < chatList.size(); i++) {
-            if (chatManager.isInList(id))
-                return i;
-        }
-        return 0;
-    }
+//    public int getPosition(int id) {
+//        //返回所属的chat的position
+//        for (int i = 0; i < chatManager.getChatList().size(); i++) {
+//            if (chatManager.isInList(id))
+//                return i;
+//        }
+//        return 0;
+//    }
 
 
     public void setMyAvatar() {
@@ -450,6 +449,7 @@ public class MessageFragment extends BaseFragment {
         msg.content = message;
         msg.fromOrTo = 0;
         msg.rightAvatar = myAvatar;
+        msg.ID = ID;
         msg.leftAvatar = getUserAvatarFromID(ID);
         msg.time = time;
         return msg;
@@ -459,6 +459,7 @@ public class MessageFragment extends BaseFragment {
         Message msg = new Message();
         msg.content = message;
         msg.fromOrTo = 1;
+        msg.ID = ID;
         msg.rightAvatar = myAvatar;
         msg.leftAvatar = getUserAvatarFromID(ID);
         msg.time = time;

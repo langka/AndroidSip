@@ -101,7 +101,7 @@ public class SettingsActivity extends BaseActivity {
                     //删除内存中的缓存消息
                     chatManager.removeAllChat();
                     //删除本地服务器上的缓存消息
-                    for (int i = 0; i < chatManager.getChatList().size() - 1; ++i) {
+                    for (int i = 0; i < chatManager.getChatList().size(); ++i) {
                         dbManager.delete(chatManager.getChatList().get(i).ID);
                     }
                     showText("清理成功！");

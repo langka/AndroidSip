@@ -50,6 +50,11 @@ public class ChatManager {
         chatList.get(index).messages.add(msg);
     }
 
+    public void addMsgFromMe(int index, Message msg) {
+        msg.fromOrTo = 1;
+        chatList.get(index).messages.add(msg);
+    }
+
     public void addMsgWithUnread(int index, Message msg) {
         chatList.get(index).messages.add(msg);
         chatList.get(index).unread++;
@@ -95,7 +100,17 @@ public class ChatManager {
     public void sortChatMessages() {
         for (int i = 0; i < chatList.size(); ++i) {
             SortListUtil.sort(chatList.get(i).messages, "time", SortListUtil.ASC);
+            chatList.get(i).latestTime = chatList.get(i).messages.get(chatList.get(i).messages.size() - 1).time;
+            chatList.get(i).lastMessage = chatList.get(i).messages.get(chatList.get(i).messages.size() - 1).content;
         }
+    }
+
+    public int getPosition(int id) {
+        for (int i = 0; i < chatList.size(); ++i) {
+            if (chatList.get(i).ID == id)
+                return i;
+        }
+        return 0;
     }
 
 }

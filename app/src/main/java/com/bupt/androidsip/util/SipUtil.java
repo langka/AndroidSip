@@ -45,6 +45,7 @@ public class SipUtil {
         sipMessage.content = message;
         sipMessage.from = UserManager.getInstance().getUser().id;
         sipMessage.createTime = System.currentTimeMillis();
+        sipMessage.comeTime = System.currentTimeMillis();
         return sipMessage;
     }
 

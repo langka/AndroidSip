@@ -142,8 +142,8 @@ public class DBManager {
     public void save(SipMessage message) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("type", 0);
-        contentValues.put("createTime", message.createTime);
-        contentValues.put("comeTime", -1);
+        contentValues.put("createTime", message.comeTime);
+        contentValues.put("comeTime", message.comeTime);
         contentValues.put("belong", -1);
         contentValues.put("content", message.content);
         contentValues.put("fromid", message.from);
