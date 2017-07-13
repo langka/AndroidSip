@@ -215,7 +215,8 @@ public class MessageFragment extends BaseFragment {
                 chatManager.addMsg(i, getChatMsgFrom(sipMessage.content, sipMessage.from,
                         sipMessage.comeTime));
 //                chatList.get(i).setLastMsgWithUnread(sipMessage.content);
-                chatManager.setLastMsgWithUnread(i, sipMessage.content);
+                chatManager.setLastMsgWithUnread(i, sipMessage.content, sipMessage.comeTime
+                );
                 chatListAdapter.notifyDataSetChanged();
                 EventBus.getDefault().post(new EventConst.NewMsg(userManager.searchUser(sipMessage.from),
                         sipMessage.content, sipMessage.comeTime));
@@ -275,7 +276,7 @@ public class MessageFragment extends BaseFragment {
         for (int i = 0; i < chatList.size(); ++i)
             if (chatList.get(i).ID == lastMsg.getID())
 //                chatList.get(i).setLastChat(lastMsg.getMsg());
-                chatManager.setLastMsgWithUnread(i, lastMsg.getMsg());
+                chatManager.setLastMsgWithUnread(i, lastMsg.getMsg(), lastMsg.getTime());
     }
 
 
@@ -365,7 +366,10 @@ public class MessageFragment extends BaseFragment {
             }
 
 
-            holder.time.setText(simpleDateFormat.format(chat.latestTime));
+            if (chat.latestTime == 0)
+                holder.time.setText(" ");
+            else
+                holder.time.setText(simpleDateFormat.format(chat.latestTime));
             holder.badge.setBadgeNumber(chat.getUnread());
             holder.badge.setOnDragStateChangedListener(new Badge.OnDragStateChangedListener() {
                 @Override

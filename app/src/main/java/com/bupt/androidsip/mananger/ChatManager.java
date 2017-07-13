@@ -55,9 +55,10 @@ public class ChatManager {
         chatList.get(index).unread++;
     }
 
-    public void setLastMsgWithUnread(int index, String content) {
+    public void setLastMsgWithUnread(int index, String content, long time) {
         chatList.get(index).lastMessage = content;
         chatList.get(index).unread++;
+        chatList.get(index).latestTime = time;
     }
 
     public void removeUnread(int index) {

@@ -309,7 +309,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
                             msgListView.setSelection(messages.size() - 1);
                             EventBus.getDefault().post(msg);
                             EventBus.getDefault().post(new EventConst.LastMsg(getID(),
-                                    inputMsg));
+                                    inputMsg, msg.time));
                             sendToMsg.setText("");
                         }
 
@@ -876,7 +876,8 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
                     if (msg_left.equals(chat.messages.get(chat.messages.size() - 1)) &&
                             msg_right.equals(chat.messages.get(chat.messages.size() - 1))) {
                         EventBus.getDefault().post(new EventConst.LastMsg(getID(),
-                                chat.messages.get(chat.messages.size() - 2).content));
+                                chat.messages.get(chat.messages.size() - 2).content,
+                                chat.messages.get(chat.messages.size() - 2).time));
                         chat.messages.remove(chat.messages.size() - 1);
                     } else {
                         int times = 0;
