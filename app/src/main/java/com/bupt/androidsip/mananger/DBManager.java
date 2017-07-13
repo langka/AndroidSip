@@ -170,5 +170,7 @@ public class DBManager {
         db.execSQL(sql2);
     }
 
+    public void restoreSystemMessage(List list){}
+
 
 }

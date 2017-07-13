@@ -88,6 +88,7 @@ public class FriendDetailInfoActivity extends BaseActivity {
                     break;
                 case R.id.frag_friend_detail_info_goback:
                     //返回上一页
+                    finish();
                     break;
             }
         }
