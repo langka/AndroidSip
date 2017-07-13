@@ -100,7 +100,7 @@ public class SipManager implements ISipService {
     public static final String SERVICE_CHAT = "private_chat";
     public static final String SERVICE_DECLINE = "decline_friend";
     public static final String SERVICE_ACC = "acc_friend";
-
+    public static final String SERVICE_SEARCH="search";
 
     public static final String TAG = "sipmanagertag";
     private static SipManager sipManager;
@@ -267,6 +267,41 @@ public class SipManager implements ISipService {
         }
     }
 
+    private void processSearchResponse(ResponseEvent event,SipNetListener<SipSearchResponse> listener){
+        byte[] dd = event.getResponse().getRawContent();
+        String x = new String(dd);
+        try {
+            JSONObject jsonObject = new JSONObject(x);
+            if (event.getResponse().getStatusCode() == 200) {
+                SipSearchResponse res = new SipSearchResponse();
+                try {
+                    JSONArray users = jsonObject.getJSONArray("users");
+                    List<User> applied = new ArrayList<>();
+                    for(int i=0;i<users.length();i++){
+                        User s = User.createFromJson(users.getJSONObject(i));
+                        applied.add(s);
+                    }
+                    res.users = applied;
+                    handler.post(()->listener.onSuccess(res));
+                } catch (JSONException e) {
+                    handler.post(() -> listener.onFailure(new SipFailure("异常故障，请稍后重试")));
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    String reason = jsonObject.getString("reason");
+                    handler.post(() -> listener.onFailure(new SipFailure(reason)));
+                } catch (JSONException e) {
+                    handler.post(() -> listener.onFailure(new SipFailure("异常故障，请稍后重试")));
+                    e.printStackTrace();
+                }
+            }
+        } catch (JSONException e) {
+            handler.post(() -> listener.onFailure(new SipFailure("fatal:json解析异常!")));
+            e.printStackTrace();
+        }
+    }
+
     private void processInviteResponse(ResponseEvent event) {
         if (event.getResponse().getStatusCode() == 200) {
 
@@ -356,6 +391,8 @@ public class SipManager implements ISipService {
                             processDeclineFriendResponse(responseEvent, listener.listener);
                         case ACCFRIEND:
                             processAcceptFriendResponse(responseEvent, listener.listener);
+                        case SEARCH:
+                            processSearchResponse(responseEvent,listener.listener);
                     }
                 }
                 else if(listener.type.equals(SipTaskType.INVITE)){
@@ -511,7 +548,6 @@ public class SipManager implements ISipService {
         task.r.run();
     }
 
-
     private void sendSubScribeForFriendState() {
         SipNetListener listener = new SipNetListener() {
             @Override
@@ -566,6 +602,27 @@ public class SipManager implements ISipService {
         } catch (TransactionUnavailableException e) {
             handler.post(() -> Toast.makeText(context, "FATAL:TRANSCTION UNAVAILABLE", Toast.LENGTH_SHORT).show());
             e.printStackTrace();
+        }
+    }
+
+    public  void bye(){
+        if(dialog!=null){
+            try {
+                Request request = dialog.createRequest(Request.BYE);
+                dealRequest(request, SipTaskType.BYE, new SipNetListener() {
+                    @Override
+                    public void onSuccess(Object response) {
+
+                    }
+
+                    @Override
+                    public void onFailure(SipFailure failure) {
+
+                    }
+                });
+            } catch (SipException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -742,7 +799,16 @@ public class SipManager implements ISipService {
 
     @Override
     public void searchUsers(String key, SipNetListener<SipSearchResponse> listener) {
-
+        long current = seq.getAndIncrement();
+        SipMessage message = new SipMessage();
+        try {
+            Request request = requestBuilder.buildSearch(key, current);
+            taskListeners.put(current, new TaskListener(listener, SipTaskType.SEARCH));
+            dealRequest(request, SipTaskType.SEARCH, listener);
+        } catch (ParseException | InvalidArgumentException e) {
+            handler.post(() -> listener.onFailure(new SipFailure("sip消息格式有误")));
+            e.printStackTrace();
+        }
     }
 
     private void dealRequest(Request request, SipTaskType taskType, SipNetListener listener) {
@@ -775,7 +841,8 @@ public class SipManager implements ISipService {
     }
 
     enum SipTaskType {
-        MESSAGE, LOGIN, SUBFRIEND, ADDFRIEND, DECLINEFRIEND, ACCFRIEND, INVITE
+        MESSAGE, LOGIN, SUBFRIEND, ADDFRIEND, DECLINEFRIEND, ACCFRIEND, INVITE,BYE,
+        SEARCH
     }
 
     static class TaskListener {
