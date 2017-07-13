@@ -98,7 +98,7 @@ public class TabActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        saveMsgToLocalDB();
+       // saveMsgToLocalDB();
         super.onDestroy();
         EventBus.getDefault().unregister(TabActivity.this);
     }
