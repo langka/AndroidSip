@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
@@ -56,7 +57,8 @@ public class AddFriendActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_friend);
         ButterKnife.bind(this);
-        friendListAdapter = new AddFriendListAdapter(this, R.layout.item_friend_add, new ArrayList<>());
+        List<User> friendlist = new ArrayList<>();
+        friendListAdapter = new AddFriendListAdapter(this, R.layout.item_friend_add, friendlist);
         searchtext.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
@@ -79,10 +81,28 @@ public class AddFriendActivity extends BaseActivity {
                 finish();
             }
         });
-        searchResult.setAdapter(friendListAdapter);
 
+
+        searchResult.setAdapter(friendListAdapter);
+        searchResult.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                User user = friendListAdapter.getItem(i);
+                // TODO: 2017/7/13 发送添加好友请求
+               // UserManager.getInstance().addfriend(??);
+
+                showText("好友请求已发送");
+            }
+        });
 
     }
+
+//    private User initJiashuju(){
+//        User jiashuju = new User();
+//        jiashuju.id=1;
+//        jiashuju.name="123";
+//        return jiashuju;
+//    }
 
     //搜索用户信息
     private void search() {

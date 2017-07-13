@@ -78,6 +78,11 @@ public class SystemMessageActivity extends BaseActivity {
         messageList.setAdapter(new SystemMessageAdapter(this, R.layout.activity_system_message, list));
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        DBManager.getInstance(this).restoreSystemMessage(list);
+    }
 
     private static class SystemMessageAdapter extends ArrayAdapter<SipSystemMessage> {
 
@@ -119,7 +124,6 @@ public class SystemMessageActivity extends BaseActivity {
                     holder.refuse.setVisibility(View.VISIBLE);
                     holder.acc.setOnClickListener(view -> {
 
-                        // TODO: 2017/7/13 成功的回调
                         SipManager.getSipManager().acceptFriendInvite(sipSystemMessage.assoicatedUser.id, new SipNetListener() {
                             @Override
                             public void onSuccess(Object response) {
@@ -137,7 +141,6 @@ public class SystemMessageActivity extends BaseActivity {
 
                     });
                     holder.refuse.setOnClickListener(view -> {
-                        // TODO: 2017/7/13 拒绝的回调
                         SipManager.getSipManager().declineFriendInvite(sipSystemMessage.assoicatedUser.id, new SipNetListener() {
                             @Override
                             public void onSuccess(Object response) {
