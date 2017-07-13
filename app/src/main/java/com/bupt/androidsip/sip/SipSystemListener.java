@@ -3,6 +3,7 @@ package com.bupt.androidsip.sip;
 import com.bupt.androidsip.entity.sip.SipEvent;
 import com.bupt.androidsip.entity.sip.SipFailure;
 import com.bupt.androidsip.entity.User;
+import com.bupt.androidsip.entity.sip.SipSystemMessage;
 
 /**
  * Created by xusong on 2017/7/8.
@@ -11,11 +12,7 @@ import com.bupt.androidsip.entity.User;
 
 public interface SipSystemListener {
 
-    void onAddFriendSuccess(User newFriend);
-
-    void onAddFriendFailed(User f, SipFailure failure);
-
-    void onReceiveFriendInvite(User from);
+    void onNewSystemEvent(SipSystemMessage message);
 
     void onFriendInfoChange(User friend);
 

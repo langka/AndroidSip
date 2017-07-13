@@ -1,5 +1,6 @@
 package com.bupt.androidsip.sip.impl;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.javax.sip.ClientTransaction;
 import android.javax.sip.Dialog;
@@ -56,6 +57,7 @@ import com.bupt.androidsip.entity.response.SipSearchResponse;
 import com.bupt.androidsip.entity.response.SipSendMsgResponse;
 import com.bupt.androidsip.entity.sip.SipFailure;
 import com.bupt.androidsip.entity.sip.SipMessage;
+import com.bupt.androidsip.entity.sip.SipSystemMessage;
 import com.bupt.androidsip.sip.ISipService;
 import com.bupt.androidsip.sip.SipMessageListener;
 import com.bupt.androidsip.sip.SipNetListener;
@@ -92,6 +94,12 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 
 public class SipManager implements ISipService {
+
+    public static final String SERVICE_ADD = "add_friend";
+    public static final String SERVICE_CHAT = "private_chat";
+    public static final String SERVICE_DECLINE = "decline_friend";
+    public static final String SERVICE_ACC = "acc_friend";
+
 
     public static final String TAG = "sipmanagertag";
     private static SipManager sipManager;
@@ -138,9 +146,14 @@ public class SipManager implements ISipService {
     private volatile StackState stackState = StackState.UNINIT;
     private SipRequestBuilder requestBuilder;
 
+
     //对于一个序号message线程，要阻塞至它的response成功返回
     ConcurrentHashMap<Long, TaskListener> taskListeners;
     AtomicLong seq = new AtomicLong(0);
+
+    private void setUpDialog() {
+
+    }
 
     private void processMessageResponse(ResponseEvent event, SipNetListener<SipSendMsgResponse> listener) {
         if (event.getResponse().getStatusCode() == 200) {
@@ -176,9 +189,13 @@ public class SipManager implements ISipService {
                 }
                 response.friends = friends;
                 List<SipMessage> messages = new ArrayList<>();
-                JSONArray msgs = object.getJSONArray("msg");
-                for (int i = 0; i < msgs.length(); i++) {
-                    messages.add(SipMessage.createFromJson(msgs.getJSONObject(i)));
+                try {
+                    JSONArray msgs = object.getJSONArray("msg");
+                    for (int i = 0; i < msgs.length(); i++) {
+                        messages.add(SipMessage.createFromJson(msgs.getJSONObject(i)));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
                 response.offlineMessages = messages;
                 handler.post(() -> listener.onSuccess(response));
@@ -248,15 +265,62 @@ public class SipManager implements ISipService {
         }
     }
 
+    private void processInviteResponse(ResponseEvent event) {
+        if (event.getResponse().getStatusCode() == 200) {
+
+            Response response = event.getResponse();
+            CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
+            handler.post(() -> Toast.makeText(context, "建立与服务器会话", Toast.LENGTH_SHORT).show());
+            if(dialog!=null){
+                Request request = null;
+                try {
+                    request = dialog.createAck(cseq.getSeqNumber());
+                    dialog.sendAck(request);
+                } catch (InvalidArgumentException | SipException e) {
+                    e.printStackTrace();
+                    handler.post(() -> Toast.makeText(context, "ACK异常", Toast.LENGTH_SHORT).show());
+                }
+            }
+        } else {
+            byte[] dd = event.getResponse().getRawContent();
+            String x = new String(dd);
+            try {
+                JSONObject jsonObject = new JSONObject(x);
+                String reason = jsonObject.getString("reason");
+                handler.post(() -> Toast.makeText(context, reason, Toast.LENGTH_SHORT).show());
+            } catch (JSONException e) {
+                handler.post(() -> Toast.makeText(context, "FATAL:无法解析服务器消息格式！", Toast.LENGTH_SHORT).show());
+                e.printStackTrace();
+            }
+
+        }
+    }
+
     private SipListener sipListener = new SipListener() {
 
 
         @Override
         public void processRequest(RequestEvent requestEvent) {
             handler.post(() -> Toast.makeText(context, "收到request", Toast.LENGTH_SHORT).show());
-            SipMessage sipMessage = new SipMessage();
-            sipMessage.content = requestEvent.getRequest().getContent().toString();
-            handler.post(() -> messageListener.onNewMessage(sipMessage));
+            Request request = requestEvent.getRequest();
+            byte[] dd = request.getRawContent();
+            String x = new String(dd);
+            try {
+                switch (request.getMethod()) {
+                    case Request.MESSAGE:
+                        JSONObject object = new JSONObject(x);
+                        String service = object.getString("service");
+                        if (service.equals(SERVICE_CHAT)) {//这是一条普通的message
+                            SipMessage sipMessage = SipMessage.createFromJson(object);
+                            handler.post(() -> messageListener.onNewMessage(sipMessage));
+                        } else {//这是一条系统消息
+                            SipSystemMessage message = SipSystemMessage.createFromJson(service, object);
+                        }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            //handler.post(() -> messageListener.onNewMessage(sipMessage));
         }
 
         //对于发送消息，回调走这里，应当发送回主线程
@@ -287,6 +351,9 @@ public class SipManager implements ISipService {
                         case ACCFRIEND:
                             processAcceptFriendResponse(responseEvent, listener.listener);
                     }
+                }
+                else if(listener.type.equals(SipTaskType.INVITE)){
+                    processInviteResponse(responseEvent);
                 }
             } else {
                 handler.post(() -> Toast.makeText(context, "正在处理", Toast.LENGTH_SHORT).show());
@@ -460,6 +527,38 @@ public class SipManager implements ISipService {
             dealRequest(request, SipTaskType.SUBFRIEND, listener);
         } catch (ParseException | InvalidArgumentException | JSONException e) {
             handler.post(() -> listener.onFailure(new SipFailure("sip消息格式有误")));
+            e.printStackTrace();
+        }
+    }
+
+    private void establishDialog() {
+        long current = seq.getAndIncrement();
+        try {
+            JSONObject jsonObject = new JSONObject();
+            Request request = requestBuilder.buildInvite(jsonObject, current);
+            ClientTransaction trans = sipProvider.getNewClientTransaction(request);
+            if (trans.getDialog() != null) {
+                this.dialog = trans.getDialog();
+                Log.d(TAG, "GOT THE DIALOG");
+            }
+            try {
+                taskQueue.put(new SipTask(() -> {
+                    try {
+                        trans.sendRequest();
+                    } catch (SipException e) {
+                        handler.post(() -> Toast.makeText(context, "FATAL:SIP ERROR", Toast.LENGTH_SHORT).show());
+                        e.printStackTrace();
+                    }
+                }, SipTaskType.INVITE));
+            } catch (InterruptedException e) {
+                handler.post(() -> Toast.makeText(context, "FATAL:SIP ERROR", Toast.LENGTH_SHORT).show());
+                e.printStackTrace();
+            }
+        } catch (ParseException | InvalidArgumentException e) {
+            handler.post(() -> Toast.makeText(context, "解析失败", Toast.LENGTH_SHORT).show());
+            e.printStackTrace();
+        } catch (TransactionUnavailableException e) {
+            handler.post(() -> Toast.makeText(context, "FATAL:TRANSCTION UNAVAILABLE", Toast.LENGTH_SHORT).show());
             e.printStackTrace();
         }
     }
@@ -669,7 +768,7 @@ public class SipManager implements ISipService {
     }
 
     enum SipTaskType {
-        MESSAGE, LOGIN, SUBFRIEND, ADDFRIEND, DECLINEFRIEND, ACCFRIEND
+        MESSAGE, LOGIN, SUBFRIEND, ADDFRIEND, DECLINEFRIEND, ACCFRIEND, INVITE
     }
 
     static class TaskListener {

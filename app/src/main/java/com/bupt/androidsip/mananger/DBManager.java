@@ -9,8 +9,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.gov.nist.javax.sip.message.Content;
 import android.util.Log;
 
+import com.bupt.androidsip.entity.User;
 import com.bupt.androidsip.entity.sip.SipChat;
 import com.bupt.androidsip.entity.sip.SipMessage;
+import com.bupt.androidsip.entity.sip.SipSystemMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +31,9 @@ public class DBManager {
         private static final String TAG = "SipDBHelper";
          static final String INIT_SQL = "create table message (_id integer primary key autoincrement,type integer," +
                 "createTime long,comeTime long,content text,belong integer,fromid integer,toid integer)";
+        static final String INIT_SQL2 = "create table event (_id integer primary key autoincrement,associated integer,name text,type integer,dealed integer)";
         private static final String DBNAME = "androidsip.db";
-        private static final int VERSION = 1;
+        private static final int VERSION = 2;
 
         public SipDBHelper(Context context) {
             super(context, DBNAME, null, VERSION);
@@ -39,12 +42,14 @@ public class DBManager {
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(INIT_SQL);
+            db.execSQL(INIT_SQL2);
             Log.d(TAG, "CREATE SUCCESS");
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+            if(oldVersion==1)
+                db.execSQL(INIT_SQL2);
         }
     }
 
@@ -65,6 +70,23 @@ public class DBManager {
 
     private SipDBHelper helper;
     private SQLiteDatabase db;
+
+    public List<SipSystemMessage> getAllSystemEvents(){
+        Cursor cursor = db.rawQuery("SELECT * FROM event",null);
+        ArrayList<SipSystemMessage> messages = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            SipSystemMessage sipMessage = new SipSystemMessage();
+            User user = new User();
+            sipMessage.id = cursor.getInt(cursor.getColumnIndex("_id"));
+            user.name = cursor.getString(cursor.getColumnIndex("name"));
+            user.id = cursor.getInt(cursor.getColumnIndex("associated"));
+            sipMessage.type = cursor.getInt(cursor.getColumnIndex("type"));
+            sipMessage.state = cursor.getInt(cursor.getColumnIndex("dealed"));
+            messages.add(sipMessage);
+        }
+        cursor.close();
+        return messages;
+    }
 
     public List<SipMessage> loadAllMessages() {
         Cursor cursor = db.rawQuery("SELECT * FROM message", null);
