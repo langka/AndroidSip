@@ -141,6 +141,122 @@ public class SipRequestBuilder {
     }
 
 
+    public Request buildInfo(int id, long seq) throws ParseException, InvalidArgumentException {
+        SipURI from = addressFactory.createSipURI(sipProfile.getSipUserName(), sipProfile.getLocalEndpoint());
+        Address fromNameAddress = addressFactory.createAddress(from);
+        fromNameAddress.setDisplayName(UserManager.getInstance().getUser().id+"");
+        FromHeader fromHeader = headerFactory.createFromHeader(fromNameAddress,
+                "Tzt0ZEP92");
+
+        //User toUser = UserManager.getInstance().searchUser(message.to.get(0));
+        String to = "sip:" + "Server"+ "@" + SipServerEndPoint;
+        String username = "Server";
+        String address = SipServerEndPoint;
+
+        URI toAddress = addressFactory.createURI(to);
+        Address toNameAddress = addressFactory.createAddress(toAddress);
+        toNameAddress.setDisplayName(username);
+
+        ToHeader toHeader = headerFactory.createToHeader(toNameAddress, "hh");
+
+        SipURI requestURI = addressFactory.createSipURI(username, address);
+        requestURI.setTransportParam("udp");
+
+        ArrayList<ViaHeader> viaHeaders = new ArrayList<>();
+        ViaHeader viaHeader = headerFactory.createViaHeader(sipProfile.getLocalIp(), sipProfile.getLocalPort()
+                , "udp", "xs");
+        viaHeaders.add(viaHeader);
+
+        CallIdHeader callIdHeader = sipProvider.getNewCallId();
+
+        CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(seq,
+                Request.MESSAGE);
+
+        MaxForwardsHeader maxForwards = headerFactory
+                .createMaxForwardsHeader(70);
+
+        Request request = messageFactory.createRequest(requestURI,
+                Request.MESSAGE, callIdHeader, cSeqHeader, fromHeader,
+                toHeader, viaHeaders, maxForwards);
+        SupportedHeader supportedHeader = headerFactory
+                .createSupportedHeader("replaces, outbound");
+        request.addHeader(supportedHeader);
+
+        ContentTypeHeader contentTypeHeader = headerFactory
+                .createContentTypeHeader("text", "plain");
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("service",SipManager.SERVICE_GET_INFO) ;
+            jsonObject.put("id",id);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        request.setContent(jsonObject.toString(), contentTypeHeader);
+        System.out.println(request);
+        return request;
+    }
+
+    public Request buildModify(User user, long seq) throws ParseException, InvalidArgumentException {
+        SipURI from = addressFactory.createSipURI(sipProfile.getSipUserName(), sipProfile.getLocalEndpoint());
+        Address fromNameAddress = addressFactory.createAddress(from);
+        fromNameAddress.setDisplayName(UserManager.getInstance().getUser().id+"");
+        FromHeader fromHeader = headerFactory.createFromHeader(fromNameAddress,
+                "Tzt0ZEP92");
+
+        //User toUser = UserManager.getInstance().searchUser(message.to.get(0));
+        String to = "sip:" + "Server"+ "@" + SipServerEndPoint;
+        String username = "Server";
+        String address = SipServerEndPoint;
+
+        URI toAddress = addressFactory.createURI(to);
+        Address toNameAddress = addressFactory.createAddress(toAddress);
+        toNameAddress.setDisplayName(username);
+
+        ToHeader toHeader = headerFactory.createToHeader(toNameAddress, "hh");
+
+        SipURI requestURI = addressFactory.createSipURI(username, address);
+        requestURI.setTransportParam("udp");
+
+        ArrayList<ViaHeader> viaHeaders = new ArrayList<>();
+        ViaHeader viaHeader = headerFactory.createViaHeader(sipProfile.getLocalIp(), sipProfile.getLocalPort()
+                , "udp", "xs");
+        viaHeaders.add(viaHeader);
+
+        CallIdHeader callIdHeader = sipProvider.getNewCallId();
+
+        CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(seq,
+                Request.MESSAGE);
+
+        MaxForwardsHeader maxForwards = headerFactory
+                .createMaxForwardsHeader(70);
+
+        Request request = messageFactory.createRequest(requestURI,
+                Request.MESSAGE, callIdHeader, cSeqHeader, fromHeader,
+                toHeader, viaHeaders, maxForwards);
+        SupportedHeader supportedHeader = headerFactory
+                .createSupportedHeader("replaces, outbound");
+        request.addHeader(supportedHeader);
+
+        ContentTypeHeader contentTypeHeader = headerFactory
+                .createContentTypeHeader("text", "plain");
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("service",SipManager.SERVICE_MODIFY) ;
+            jsonObject.put("id",user.id);
+            jsonObject.put("name",user.name);
+            jsonObject.put("head",user.head);
+            jsonObject.put("email",user.email);
+            jsonObject.put("sex",user.email);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        request.setContent(jsonObject.toString(), contentTypeHeader);
+        System.out.println(request);
+        return request;
+    }
+
+
+
     public Request buildSearch(String key, long seq) throws ParseException, InvalidArgumentException {
         SipURI from = addressFactory.createSipURI(sipProfile.getSipUserName(), sipProfile.getLocalEndpoint());
         Address fromNameAddress = addressFactory.createAddress(from);
@@ -389,7 +505,58 @@ public class SipRequestBuilder {
         JSONObject object = new JSONObject();
         object.put("service",SipManager.SERVICE_ADD);
         object.put("to",target);
-        request.setContent(object, contentTypeHeader);
+        object.put("from",UserManager.getInstance().getUser().id);
+        request.setContent(object.toString(), contentTypeHeader);
+        System.out.println(request);
+        return request;
+    }
+
+    public Request buildDecline(int target,long seq) throws ParseException, InvalidArgumentException, JSONException {
+        SipURI from = addressFactory.createSipURI(sipProfile.getSipUserName(), sipProfile.getLocalEndpoint());
+        Address fromNameAddress = addressFactory.createAddress(from);
+        fromNameAddress.setDisplayName(sipProfile.getSipUserName());
+        FromHeader fromHeader = headerFactory.createFromHeader(fromNameAddress,
+                "Tzt0ZEP92");
+        String to = "sip:" + "Server" + "@" + SipServerEndPoint;
+        String username = "Server";
+        String address = SipServerEndPoint;
+
+        URI toAddress = addressFactory.createURI(to);
+        Address toNameAddress = addressFactory.createAddress(toAddress);
+        toNameAddress.setDisplayName(username);
+
+        ToHeader toHeader = headerFactory.createToHeader(toNameAddress, "hh");
+
+        SipURI requestURI = addressFactory.createSipURI(username, address);
+        requestURI.setTransportParam("udp");
+
+        ArrayList<ViaHeader> viaHeaders = new ArrayList<>();
+        ViaHeader viaHeader = headerFactory.createViaHeader(sipProfile.getLocalIp(), sipProfile.getLocalPort()
+                , "udp", "xs");
+        viaHeaders.add(viaHeader);
+
+        CallIdHeader callIdHeader = sipProvider.getNewCallId();
+
+        CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(seq,
+                Request.MESSAGE);
+
+        MaxForwardsHeader maxForwards = headerFactory
+                .createMaxForwardsHeader(70);
+
+        Request request = messageFactory.createRequest(requestURI,
+                Request.MESSAGE, callIdHeader, cSeqHeader, fromHeader,
+                toHeader, viaHeaders, maxForwards);
+        SupportedHeader supportedHeader = headerFactory
+                .createSupportedHeader("replaces, outbound");
+        request.addHeader(supportedHeader);
+
+        ContentTypeHeader contentTypeHeader = headerFactory
+                .createContentTypeHeader("text", "plain");
+        JSONObject object = new JSONObject();
+        object.put("service",SipManager.SERVICE_DECLINE);
+        object.put("to",target);
+        object.put("from",UserManager.getInstance().getUser().id);
+        request.setContent(object.toString(), contentTypeHeader);
         System.out.println(request);
         return request;
     }
@@ -534,6 +701,7 @@ public class SipRequestBuilder {
         JSONObject object = new JSONObject();
         object.put("service",SipManager.SERVICE_ACC);
         object.put("to",target);
+        object.put("from",UserManager.getInstance().getUser().id);
         request.setContent(object, contentTypeHeader);
         System.out.println(request);
         return request;
