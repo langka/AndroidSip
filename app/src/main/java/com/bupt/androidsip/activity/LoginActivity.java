@@ -181,7 +181,7 @@ public class LoginActivity extends BaseActivity {
         msg.ID = ID;
         msg.rightAvatar = UserManager.getInstance().getUser().head;
         msg.leftAvatar = getUserAvatarFromID(ID);
-        msg.time = time;
+        msg.time = time*1000;
         return msg;
     }
 

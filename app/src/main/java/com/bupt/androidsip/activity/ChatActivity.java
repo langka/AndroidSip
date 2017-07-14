@@ -873,7 +873,7 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
                 @Override
                 public void onClick(View v) {
                     // TODO: 06/07/2017 添加从chatlist中删除message的操作
-                    if (msg_left.equals(chat.messages.get(chat.messages.size() - 1)) &&
+                    if (msg_left.equals(chat.messages.get(chat.messages.size() - 1)) ||
                             msg_right.equals(chat.messages.get(chat.messages.size() - 1))) {
                         EventBus.getDefault().post(new EventConst.LastMsg(getID(),
                                 chat.messages.get(chat.messages.size() - 2).content,
@@ -882,8 +882,8 @@ public class ChatActivity extends BaseActivity implements DropdownListView.OnRef
                     } else {
                         int times = 0;
                         for (int i = 0; i < chat.messages.size(); ++i) {
-                            if (msg_left.equals(chat.messages.get(i).content) &&
-                                    msg_right.equals(chat.messages.get(i).content) && times == 0) {
+                            if ((msg_left.equals(chat.messages.get(i).content) ||
+                                    msg_right.equals(chat.messages.get(i).content)) && times == 0) {
                                 chat.messages.remove(i);
                                 ++times;
                             }
